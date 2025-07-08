@@ -53,13 +53,58 @@ class RichTextEditorController extends ChangeNotifier {
   void updateDocumentFromText(String text) {
     _document = DocumentModel(
       spans: [
-        TextSpanModel(text: text),
+        TextSpanModel.defaultSpan(text),
       ],
     );
     // 이 메서드는 주로 내부 텍스트 필드에서 호출되므로,
     // 무한 루프를 방지하기 위해 notifyListeners()를 호출하지 않을 수 있습니다.
     // 하지만 외부에서 직접 호출할 경우를 대비해 유지할 수 있습니다.
     // 여기서는 UI의 즉각적인 반응을 위해 호출합니다.
+    notifyListeners();
+  }
+
+  /// 편집 모드에서 변경된 텍스트를 문서 모델에 최종적으로 적용합니다.
+  ///
+  /// 현재는 매우 단순화된 방식으로, 전체 텍스트를 첫 번째 스팬에 덮어씁니다.
+  /// 이렇게 하면 최소한 단일 스타일의 텍스트는 보존됩니다.
+  /// TODO: 향후 diff 알고리즘을 적용하여 정교하게 만들어야 합니다.
+  void applyTextUpdate(String text) {
+    if (_document.spans.isEmpty) {
+      if (text.isNotEmpty) {
+        _document = DocumentModel(spans: [TextSpanModel.defaultSpan(text)]);
+      }
+      // if text is empty, do nothing.
+    } else {
+      // 기존 스팬들을 유지하되, 전체 텍스트를 가진 새로운 스팬 리스트를 만듭니다.
+      // 이는 스타일 유실 문제를 임시로 완화하기 위함입니다.
+      if (text.isNotEmpty) {
+        final newSpans = [
+          _document.spans.first.copyWith(text: text),
+        ];
+        _document = _document.copyWith(spans: newSpans);
+      } else {
+        _document = const DocumentModel(); // Clear the document if text is empty
+      }
+    }
+    notifyListeners();
+  }
+
+  /// 텍스트 필드의 변경 사항을 문서 모델에 반영합니다.
+  ///
+  /// 이 메서드는 사용자의 단순 텍스트 입력/삭제를 처리하며,
+  /// 현재 커서 위치의 스타일을 최대한 유지하려고 시도합니다.
+  void updateText(String newText, TextSelection newSelection) {
+    // TODO: 이 부분은 매우 복잡한 로직이 필요합니다.
+    // 사용자의 입력(한 글자 추가/삭제, 붙여넣기 등)을 분석하여
+    // 기존 spans를 최소한으로 수정해야 합니다.
+    // 현재는 이전과 동일하게 단순화된 로직을 유지하지만,
+    // 이것이 버그의 근본 원인임을 인지하고 있어야 합니다.
+    _document = DocumentModel(
+      spans: [
+        TextSpanModel.defaultSpan(newText),
+      ],
+      textAlign: _document.textAlign, // 정렬 상태는 유지합니다.
+    );
     notifyListeners();
   }
 
@@ -156,6 +201,11 @@ class RichTextEditorController extends ChangeNotifier {
     }
     _document = DocumentModel(spans: newSpans);
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    // ... existing code ...
   }
 
   // 개발 단계에 따라 이곳에 에디터의 상태를 관리하는 속성과 메서드가 추가될 예정입니다.

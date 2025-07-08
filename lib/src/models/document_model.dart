@@ -34,6 +34,11 @@ class DocumentModel {
     };
   }
 
+  /// 문서를 일반 텍스트 문자열로 변환합니다.
+  String toPlainText() {
+    return spans.map((span) => span.text).join('');
+  }
+
   /// 현재 인스턴스를 복사하여 새로운 인스턴스를 생성합니다.
   DocumentModel copyWith({
     List<TextSpanModel>? spans,
