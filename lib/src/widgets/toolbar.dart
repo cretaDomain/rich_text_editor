@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../controllers/rich_text_editor_controller.dart';
+import 'shadow_settings.dart';
 
 /// 텍스트 스타일링을 위한 도구 모음(Toolbar) 위젯입니다.
 class Toolbar extends StatefulWidget {
@@ -92,123 +93,137 @@ class _ToolbarState extends State<Toolbar> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.controller.mode == EditorMode.view) {
+      return const SizedBox.shrink();
+    }
+
     final currentStyle = widget.controller.currentStyle;
     final doc = widget.controller.document;
 
     return Container(
-      height: 56,
       color: Colors.grey.shade200,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            // 폰트 종류
-            if (widget.fontList.isNotEmpty)
-              DropdownButton<String>(
-                value: currentStyle.fontFamily ?? widget.fontList.first,
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    widget.onFontFamilyChanged(newValue);
-                  }
-                },
-                items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
-                  );
-                }).toList(),
-                underline: Container(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 첫 번째 줄: 기존 툴바
+          Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  // 폰트 종류
+                  if (widget.fontList.isNotEmpty)
+                    DropdownButton<String>(
+                      value: currentStyle.fontFamily ?? widget.fontList.first,
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          widget.onFontFamilyChanged(newValue);
+                        }
+                      },
+                      items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
+                        );
+                      }).toList(),
+                      underline: Container(),
+                    ),
+                  const SizedBox(width: 8),
+                  const VerticalDivider(),
+                  const SizedBox(width: 8),
+
+                  // 폰트 크기
+                  IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                      _changeFontSize(currentSize - 1);
+                    },
+                  ),
+                  SizedBox(
+                    width: 40,
+                    child: TextFormField(
+                      controller: _fontSizeController,
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: const InputDecoration(border: InputBorder.none),
+                      onFieldSubmitted: (value) {
+                        final size = double.tryParse(value);
+                        if (size != null) {
+                          _changeFontSize(size);
+                        }
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                      _changeFontSize(currentSize + 1);
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  const VerticalDivider(),
+                  const SizedBox(width: 8),
+
+                  // 색상 선택
+                  IconButton(
+                    icon: Icon(Icons.color_lens, color: currentStyle.color ?? Colors.black),
+                    onPressed: () => _showColorPicker(context),
+                  ),
+
+                  const VerticalDivider(),
+
+                  // 스타일 버튼들
+                  IconButton(
+                    icon: const Icon(Icons.format_bold),
+                    style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
+                    onPressed: widget.onBold,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.format_italic),
+                    style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
+                    onPressed: widget.onItalic,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.format_underline),
+                    style: _getButtonStyle(
+                        currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
+                    onPressed: widget.onUnderline,
+                  ),
+
+                  const VerticalDivider(),
+
+                  // 정렬 버튼들
+                  IconButton(
+                    icon: const Icon(Icons.format_align_left),
+                    style: _getButtonStyle(
+                        doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
+                    onPressed: () => widget.onChangeAlign(TextAlign.left),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.format_align_center),
+                    style: _getButtonStyle(doc.textAlign == TextAlign.center),
+                    onPressed: () => widget.onChangeAlign(TextAlign.center),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.format_align_right),
+                    style: _getButtonStyle(
+                        doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
+                    onPressed: () => widget.onChangeAlign(TextAlign.right),
+                  ),
+                  const VerticalDivider(),
+                  _buildPaddingControls(),
+                ],
               ),
-            const SizedBox(width: 8),
-            const VerticalDivider(),
-            const SizedBox(width: 8),
-
-            // 폰트 크기
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: () {
-                final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
-                _changeFontSize(currentSize - 1);
-              },
             ),
-            SizedBox(
-              width: 40,
-              child: TextFormField(
-                controller: _fontSizeController,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(border: InputBorder.none),
-                onFieldSubmitted: (value) {
-                  final size = double.tryParse(value);
-                  if (size != null) {
-                    _changeFontSize(size);
-                  }
-                },
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
-                _changeFontSize(currentSize + 1);
-              },
-            ),
-            const SizedBox(width: 8),
-            const VerticalDivider(),
-            const SizedBox(width: 8),
-
-            // 색상 선택
-            IconButton(
-              icon: Icon(Icons.color_lens, color: currentStyle.color ?? Colors.black),
-              onPressed: () => _showColorPicker(context),
-            ),
-
-            const VerticalDivider(),
-
-            // 스타일 버튼들
-            IconButton(
-              icon: const Icon(Icons.format_bold),
-              style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
-              onPressed: widget.onBold,
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_italic),
-              style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
-              onPressed: widget.onItalic,
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_underline),
-              style: _getButtonStyle(
-                  currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
-              onPressed: widget.onUnderline,
-            ),
-
-            const VerticalDivider(),
-
-            // 정렬 버튼들
-            IconButton(
-              icon: const Icon(Icons.format_align_left),
-              style: _getButtonStyle(
-                  doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
-              onPressed: () => widget.onChangeAlign(TextAlign.left),
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_align_center),
-              style: _getButtonStyle(doc.textAlign == TextAlign.center),
-              onPressed: () => widget.onChangeAlign(TextAlign.center),
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_align_right),
-              style: _getButtonStyle(
-                  doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
-              onPressed: () => widget.onChangeAlign(TextAlign.right),
-            ),
-            const VerticalDivider(),
-            _buildPaddingControls(),
-          ],
-        ),
+          ),
+          // 두 번째 줄: 그림자 설정
+          const ShadowSettings(),
+        ],
       ),
     );
   }
