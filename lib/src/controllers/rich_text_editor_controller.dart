@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:rich_text_editor/src/models/document_model.dart';
+import 'package:rich_text_editor/src/models/text_span_model.dart';
 
 /// 에디터의 모드를 정의합니다. (편집 모드 / 뷰 모드)
 enum EditorMode {
@@ -34,6 +35,23 @@ class RichTextEditorController extends ChangeNotifier {
   /// 문서를 새로운 내용으로 교체하고, 변경 사항을 구독자에게 알립니다.
   void setDocument(DocumentModel newDocument) {
     _document = newDocument;
+    notifyListeners();
+  }
+
+  /// 일반 텍스트로부터 문서를 업데이트합니다.
+  ///
+  /// 현재는 모든 텍스트를 기본 스타일의 단일 스팬으로 만듭니다.
+  /// 향후 스타일 병합 로직이 추가될 예정입니다.
+  void updateDocumentFromText(String text) {
+    _document = DocumentModel(
+      spans: [
+        TextSpanModel(text: text),
+      ],
+    );
+    // 이 메서드는 주로 내부 텍스트 필드에서 호출되므로,
+    // 무한 루프를 방지하기 위해 notifyListeners()를 호출하지 않을 수 있습니다.
+    // 하지만 외부에서 직접 호출할 경우를 대비해 유지할 수 있습니다.
+    // 여기서는 UI의 즉각적인 반응을 위해 호출합니다.
     notifyListeners();
   }
 

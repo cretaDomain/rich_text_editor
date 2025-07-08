@@ -52,9 +52,16 @@ class RichTextEditor extends StatefulWidget {
 }
 
 class _RichTextEditorState extends State<RichTextEditor> {
+  late final TextEditingController _textEditingController;
+
   @override
   void initState() {
     super.initState();
+    // 편집 모드에서 사용할 텍스트 컨트롤러를 초기화합니다.
+    _textEditingController = TextEditingController(
+      text: widget.controller.document.spans.map((s) => s.text).join(''),
+    )..addListener(_onTextChanged); // 텍스트 변경 리스너 추가
+
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
     widget.controller.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
@@ -63,15 +70,61 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   @override
   void dispose() {
-    // 위젯이 제거될 때 리스너를 해제하여 메모리 누수를 방지합니다.
+    // 컨트롤러들을 정리하여 메모리 누수를 방지합니다.
+    _textEditingController.removeListener(_onTextChanged);
+    _textEditingController.dispose();
     widget.controller.removeListener(_update);
     super.dispose();
+  }
+
+  /// 텍스트 필드의 내용이 변경될 때 호출됩니다.
+  void _onTextChanged() {
+    // 텍스트 필드의 변경 내용을 RichTextEditorController의 document에 반영합니다.
+    // 스타일 정보가 유실되는 것을 방지하기 위해, 현재 커서 위치 등을 고려한
+    // 정교한 로직이 필요하지만, 현재 단계에서는 전체 텍스트를 업데이트합니다.
+    if (widget.controller.mode == EditorMode.edit) {
+      widget.controller.updateDocumentFromText(_textEditingController.text);
+    }
   }
 
   void _update() {
     // 컨트롤러에서 변경이 발생하면 위젯을 다시 빌드하도록 요청합니다.
     if (mounted) {
+      // 뷰 -> 편집 모드로 전환 시, 최신 문서 내용으로 텍스트 필드를 업데이트합니다.
+      if (widget.controller.mode == EditorMode.edit) {
+        final newText = widget.controller.document.spans.map((s) => s.text).join('');
+        if (_textEditingController.text != newText) {
+          // 리스너의 무한 호출을 방지하기 위해 잠시 리스너를 제거하고 텍스트를 설정합니다.
+          _textEditingController.removeListener(_onTextChanged);
+          _textEditingController.text = newText;
+          _textEditingController.addListener(_onTextChanged);
+        }
+      }
       setState(() {});
+    }
+  }
+
+  /// 에디터의 본문 영역을 현재 모드에 따라 빌드합니다.
+  Widget _buildEditorBody() {
+    if (widget.controller.mode == EditorMode.view) {
+      return GestureDetector(
+        onDoubleTap: () {
+          widget.controller.setMode(EditorMode.edit);
+        },
+        child: DocumentView(document: widget.controller.document),
+      );
+    } else {
+      // 편집 모드일 경우, 텍스트 입력 필드를 표시합니다.
+      return TextFormField(
+        controller: _textEditingController,
+        maxLines: null, // 여러 줄 입력 가능
+        expands: true, // 사용 가능한 공간을 모두 채움
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.all(16.0),
+        ),
+        textAlignVertical: TextAlignVertical.top,
+      );
     }
   }
 
@@ -92,31 +145,33 @@ class _RichTextEditorState extends State<RichTextEditor> {
               height: widget.titleBarHeight,
               color: widget.titleBarColor ?? Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.title!,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.title!,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  // 편집/뷰 모드 전환 버튼
+                  IconButton(
+                    icon: Icon(
+                      widget.controller.mode == EditorMode.edit ? Icons.visibility : Icons.edit,
+                    ),
+                    onPressed: () {
+                      final newMode = widget.controller.mode == EditorMode.edit
+                          ? EditorMode.view
+                          : EditorMode.edit;
+                      widget.controller.setMode(newMode);
+                    },
+                    tooltip: widget.controller.mode == EditorMode.edit ? 'View Mode' : 'Edit Mode',
+                  ),
+                ],
               ),
             ),
 
           // 에디터 본문 영역
           Expanded(
-            child: GestureDetector(
-              onDoubleTap: () {
-                // 뷰 모드에서 더블 클릭 시 편집 모드로 전환합니다.
-                if (widget.controller.mode == EditorMode.view) {
-                  widget.controller.setMode(EditorMode.edit);
-                }
-              },
-              child: widget.controller.mode == EditorMode.view
-                  ? DocumentView(document: widget.controller.document)
-                  : const Center(
-                      // 현재는 편집 모드 플레이스홀더입니다.
-                      child: Text('Edit Mode'),
-                    ),
-            ),
+            child: _buildEditorBody(),
           ),
         ],
       ),
