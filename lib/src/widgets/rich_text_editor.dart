@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/rich_text_editor_controller.dart';
+import '../views/document_view.dart';
 
 /// 실제 UI를 렌더링하는 Rich Text Editor 위젯입니다.
 ///
@@ -109,10 +110,12 @@ class _RichTextEditorState extends State<RichTextEditor> {
                   widget.controller.setMode(EditorMode.edit);
                 }
               },
-              child: Center(
-                // 현재는 모드 상태를 텍스트로 보여주는 플레이스홀더입니다.
-                child: Text('Current Mode: ${widget.controller.mode.name}'),
-              ),
+              child: widget.controller.mode == EditorMode.view
+                  ? DocumentView(document: widget.controller.document)
+                  : const Center(
+                      // 현재는 편집 모드 플레이스홀더입니다.
+                      child: Text('Edit Mode'),
+                    ),
             ),
           ),
         ],

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rich_text_editor/src/controllers/rich_text_editor_controller.dart';
+import 'package:rich_text_editor/src/models/document_model.dart';
+import 'package:rich_text_editor/src/models/span_attribute.dart';
+import 'package:rich_text_editor/src/models/text_span_model.dart';
 import 'package:rich_text_editor/src/widgets/rich_text_editor.dart';
 
 void main() {
@@ -63,6 +66,44 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _controller = RichTextEditorController();
+
+    // 뷰 모드 렌더링을 테스트하기 위한 샘플 데이터 생성
+    final sampleDocument = DocumentModel(
+      spans: [
+        const TextSpanModel(
+          text: '이것은 ',
+          attribute: SpanAttribute(fontSize: 16),
+        ),
+        const TextSpanModel(
+          text: '굵은',
+          attribute: SpanAttribute(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const TextSpanModel(
+          text: ' 글씨와 ',
+          attribute: SpanAttribute(fontSize: 16),
+        ),
+        const TextSpanModel(
+          text: '기울임',
+          attribute: SpanAttribute(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue),
+        ),
+        const TextSpanModel(
+          text: ' 글씨, 그리고 ',
+          attribute: SpanAttribute(fontSize: 16),
+        ),
+        const TextSpanModel(
+          text: '밑줄',
+          attribute:
+              SpanAttribute(fontSize: 20, decoration: TextDecoration.underline, color: Colors.red),
+        ),
+        const TextSpanModel(
+          text: '을 포함하는 리치 텍스트입니다.',
+          attribute: SpanAttribute(fontSize: 16),
+        ),
+      ],
+    );
+
+    // 컨트롤러에 샘플 데이터 설정
+    _controller.setDocument(sampleDocument);
   }
 
   @override
