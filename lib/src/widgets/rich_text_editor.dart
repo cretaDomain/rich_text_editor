@@ -230,6 +230,12 @@ class _RichTextEditorState extends State<RichTextEditor> {
                   _textEditingController.text, _textEditingController.selection, value),
               onChangeLineHeight: (value) => widget.controller.changeLineHeight(
                   _textEditingController.text, _textEditingController.selection, value),
+              onFontFamilyChanged: (value) => widget.controller.changeFontFamily(
+                  _textEditingController.text, _textEditingController.selection, value),
+              onFontSizeChanged: (value) => widget.controller.changeFontSize(
+                  _textEditingController.text, _textEditingController.selection, value),
+              onFontColorChanged: (value) => widget.controller.changeFontColor(
+                  _textEditingController.text, _textEditingController.selection, value),
             ),
 
           // 에디터 본문 영역

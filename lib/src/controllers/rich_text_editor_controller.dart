@@ -197,8 +197,23 @@ class RichTextEditorController extends ChangeNotifier {
   }
 
   /// 폰트 패밀리를 변경하고, 변경 사항을 알립니다.
-  void changeFontFamily(String fontFamily) {
-    _currentStyle = _currentStyle.copyWith(fontFamily: fontFamily);
+  void changeFontFamily(String currentText, TextSelection selection, String fontFamily) {
+    _applyTextUpdateInternal(currentText);
+    _toggleStyle(selection, (attr) => attr.copyWith(fontFamily: fontFamily));
+    notifyListeners();
+  }
+
+  /// 선택된 영역의 폰트 크기를 변경합니다.
+  void changeFontSize(String currentText, TextSelection selection, double fontSize) {
+    _applyTextUpdateInternal(currentText);
+    _toggleStyle(selection, (attr) => attr.copyWith(fontSize: fontSize));
+    notifyListeners();
+  }
+
+  /// 선택된 영역의 폰트 색상을 변경합니다.
+  void changeFontColor(String currentText, TextSelection selection, Color color) {
+    _applyTextUpdateInternal(currentText);
+    _toggleStyle(selection, (attr) => attr.copyWith(color: color));
     notifyListeners();
   }
 
