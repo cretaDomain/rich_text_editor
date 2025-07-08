@@ -246,7 +246,8 @@ class RichTextEditorController extends ChangeNotifier {
   }
 
   /// 문서의 텍스트 정렬을 변경합니다.
-  void changeTextAlign(TextAlign align) {
+  void changeTextAlign(String currentText, TextAlign align) {
+    _applyTextUpdateInternal(currentText);
     _document = _document.copyWith(textAlign: align);
     notifyListeners();
   }

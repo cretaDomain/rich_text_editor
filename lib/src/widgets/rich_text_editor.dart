@@ -59,6 +59,7 @@ class RichTextEditor extends StatefulWidget {
 class _RichTextEditorState extends State<RichTextEditor> {
   late final TextEditingController _textEditingController;
   late final FocusNode _focusNode;
+  double? _currentWidth;
 
   @override
   void initState() {
@@ -67,8 +68,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
     _focusNode = FocusNode();
     // 편집 모드에서 사용할 텍스트 컨트롤러를 초기화합니다.
     _textEditingController = TextEditingController(
-      text: widget.controller.document.spans.map((s) => s.text).join(''),
+      text: widget.controller.document.toPlainText(),
     )..addListener(_onTextChanged); // 텍스트 변경 리스너 추가
+
+    _currentWidth = widget.width;
 
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
     widget.controller.setMode(widget.initialMode);
@@ -97,7 +100,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
     if (mounted) {
       // 뷰 -> 편집 모드로 전환 시, 최신 문서 내용으로 텍스트 필드를 업데이트합니다.
       if (widget.controller.mode == EditorMode.edit) {
-        final newText = widget.controller.document.spans.map((s) => s.text).join('');
+        if (widget.width != null && widget.width! < 800) {
+          _currentWidth = 800;
+        }
+        final newText = widget.controller.document.toPlainText();
         if (_textEditingController.text != newText) {
           // 리스너의 무한 호출을 방지하기 위해 잠시 리스너를 제거하고 텍스트를 설정합니다.
           _textEditingController.removeListener(_onTextChanged);
@@ -107,6 +113,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
       }
       // 편집 -> 뷰 모드로 전환 시, 텍스트 필드의 내용을 DocumentModel에 반영합니다.
       else if (widget.controller.mode == EditorMode.view) {
+        _currentWidth = widget.width;
         // 편집 모드에서 수정한 최종 텍스트를 컨트롤러에 적용합니다.
         // 텍스트가 실제로 변경되었을 때만 업데이트를 적용하여 불필요한 재빌드와 스타일 유실을 방지합니다.
         final originalText = widget.controller.document.toPlainText();
@@ -165,7 +172,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: widget.width,
+      width: _currentWidth,
       height: widget.height,
       decoration: BoxDecoration(
         color: widget.backgroundColor,
@@ -225,7 +232,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
                   .toggleItalic(_textEditingController.text, _textEditingController.selection),
               onUnderline: () => widget.controller
                   .toggleUnderline(_textEditingController.text, _textEditingController.selection),
-              onChangeAlign: widget.controller.changeTextAlign,
+              onChangeAlign: (align) =>
+                  widget.controller.changeTextAlign(_textEditingController.text, align),
               onChangeLetterSpacing: (value) => widget.controller.changeLetterSpacing(
                   _textEditingController.text, _textEditingController.selection, value),
               onChangeLineHeight: (value) => widget.controller.changeLineHeight(

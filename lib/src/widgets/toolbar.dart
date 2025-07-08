@@ -138,7 +138,8 @@ class Toolbar extends StatelessWidget {
             // Align Left
             IconButton(
               icon: const Icon(Icons.format_align_left),
-              style: _getButtonStyle(doc.textAlign == TextAlign.left),
+              style: _getButtonStyle(
+                  doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
               onPressed: () => onChangeAlign(TextAlign.left),
             ),
             // Align Center
@@ -150,7 +151,8 @@ class Toolbar extends StatelessWidget {
             // Align Right
             IconButton(
               icon: const Icon(Icons.format_align_right),
-              style: _getButtonStyle(doc.textAlign == TextAlign.right),
+              style: _getButtonStyle(
+                  doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
               onPressed: () => onChangeAlign(TextAlign.right),
             ),
           ],
