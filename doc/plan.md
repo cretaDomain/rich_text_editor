@@ -23,24 +23,24 @@
 - [x] **1-4. UI 와이어프레임 작성**: UI 와이어프레임을 작성하여 `doc/wireframe.svg` 파일로 저장합니다.
 
 ### Phase 2: 데이터 모델 구현
-- [ ] **2-1. 데이터 모델 클래스 정의**:
+- [x] **2-1. 데이터 모델 클래스 정의**:
     - 텍스트 조각의 속성을 담는 `SpanAttribute` 클래스 정의 (폰트, 색상, 크기 등).
     - 텍스트 내용과 속성을 담는 `TextSpanModel` 클래스 정의.
     - 전체 문서를 표현하는 `DocumentModel` 클래스 정의 (`List<TextSpanModel>`).
-- [ ] **2-2. JSON 직렬화/역직렬화 구현**:
+- [x] **2-2. JSON 직렬화/역직렬화 구현**:
     - `SpanAttribute`, `TextSpanModel`, `DocumentModel` 클래스에 `fromJson`, `toJson` 메서드를 구현합니다.
 
 ### Phase 3: 뷰 모드(읽기 전용) 기능 구현
-- [ ] **3-1. `DocumentModel` 렌더링**: `DocumentModel`을 Flutter의 `RichText` 위젯과 `TextSpan`으로 변환하여 화면에 렌더링하는 뷰(`DocumentView`)를 구현합니다.
-- [ ] **3-2. 외부 인수 연동 (View)**:
+- [x] **3-1. `DocumentModel` 렌더링**: `DocumentModel`을 Flutter의 `RichText` 위젯과 `TextSpan`으로 변환하여 화면에 렌더링하는 뷰(`DocumentView`)를 구현합니다.
+- [x] **3-2. 외부 인수 연동 (View)**:
     - 위젯 생성자를 통해 `RichTextEditorController`를 주입받습니다.
     - 컨트롤러의 `DocumentModel`이 변경될 때마다 화면이 다시 렌더링되도록 구현합니다.
     - 배경색(기본값: 완전 투명) 및 내부 여백(Padding)을 위젯 인수로 받아 뷰에 적용합니다.
 
 ### Phase 4: 편집 모드 기능 구현
-- [ ] **4-1. 기본 텍스트 필드 추가**: 편집 모드에서 사용할 `TextFormField`를 `RichTextEditor` 위젯에 추가합니다.
-- [ ] **4-2. 컨트롤러 연동 (Edit)**: `TextFormField`의 `controller`를 `RichTextEditorController`와 연동하여 기본적인 텍스트 입력, 수정, 삭제(한글 포함), 여러 줄 편집이 가능하도록 구현합니다.
-- [ ] **4-3. 편집/뷰 모드 전환**:
+- [x] **4-1. 기본 텍스트 필드 추가**: 편집 모드에서 사용할 `TextFormField`를 `RichTextEditor` 위젯에 추가합니다.
+- [x] **4-2. 컨트롤러 연동 (Edit)**: `TextFormField`의 `controller`를 `RichTextEditorController`와 연동하여 기본적인 텍스트 입력, 수정, 삭제(한글 포함), 여러 줄 편집이 가능하도록 구현합니다.
+- [x] **4-3. 편집/뷰 모드 전환**:
     - 모드 상태를 관리할 변수를 컨트롤러에 추가합니다.
     - 모드 전환 토글 버튼 UI를 구현하고, 버튼 클릭 시 편집 모드(`TextFormField`)와 뷰 모드(`DocumentView`)가 전환되도록 로직을 구현합니다.
 

@@ -143,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.blueGrey.shade50,
             titleBarColor: Colors.blueGrey.shade200,
             initialMode: EditorMode.view,
+            fontList: const ['Roboto', 'Arial', 'Courier'],
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:rich_text_editor/src/models/document_model.dart';
+import 'package:rich_text_editor/src/models/span_attribute.dart';
 import 'package:rich_text_editor/src/models/text_span_model.dart';
 
 /// 에디터의 모드를 정의합니다. (편집 모드 / 뷰 모드)
@@ -18,11 +19,17 @@ class RichTextEditorController extends ChangeNotifier {
   /// 에디터가 현재 가지고 있는 문서 데이터입니다.
   DocumentModel _document = const DocumentModel();
 
+  /// 현재 툴바 또는 다음 입력에 적용될 스타일 속성입니다.
+  SpanAttribute _currentStyle = const SpanAttribute();
+
   /// 현재 모드를 반환합니다.
   EditorMode get mode => _mode;
 
   /// 현재 문서를 반환합니다.
   DocumentModel get document => _document;
+
+  /// 현재 스타일 속성을 반환합니다.
+  SpanAttribute get currentStyle => _currentStyle;
 
   /// 에디터 모드를 변경하고, 변경 사항을 구독자에게 알립니다.
   void setMode(EditorMode newMode) {
@@ -52,6 +59,12 @@ class RichTextEditorController extends ChangeNotifier {
     // 무한 루프를 방지하기 위해 notifyListeners()를 호출하지 않을 수 있습니다.
     // 하지만 외부에서 직접 호출할 경우를 대비해 유지할 수 있습니다.
     // 여기서는 UI의 즉각적인 반응을 위해 호출합니다.
+    notifyListeners();
+  }
+
+  /// 폰트 패밀리를 변경하고, 변경 사항을 알립니다.
+  void changeFontFamily(String fontFamily) {
+    _currentStyle = _currentStyle.copyWith(fontFamily: fontFamily);
     notifyListeners();
   }
 

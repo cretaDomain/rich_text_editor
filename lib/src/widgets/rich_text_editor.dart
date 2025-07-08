@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import '../views/document_view.dart';
+import 'toolbar.dart';
 
 /// 실제 UI를 렌더링하는 Rich Text Editor 위젯입니다.
 ///
@@ -18,6 +19,7 @@ class RichTextEditor extends StatefulWidget {
     this.titleBarColor,
     this.titleBarHeight = 48.0,
     this.initialMode = EditorMode.edit,
+    this.fontList = const [],
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -46,6 +48,9 @@ class RichTextEditor extends StatefulWidget {
 
   /// 위젯이 처음 생성될 때의 초기 모드입니다. (기본값: 편집 모드)
   final EditorMode initialMode;
+
+  /// 폰트 드롭다운에 표시될 폰트 리스트입니다.
+  final List<String> fontList;
 
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
@@ -167,6 +172,13 @@ class _RichTextEditorState extends State<RichTextEditor> {
                   ),
                 ],
               ),
+            ),
+
+          // 편집 모드일 때만 툴바를 표시합니다.
+          if (widget.controller.mode == EditorMode.edit)
+            Toolbar(
+              controller: widget.controller,
+              fontList: widget.fontList,
             ),
 
           // 에디터 본문 영역
