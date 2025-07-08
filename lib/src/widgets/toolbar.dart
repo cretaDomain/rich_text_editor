@@ -253,22 +253,26 @@ class _ToolbarState extends State<Toolbar> {
   Widget _buildPaddingControls() {
     final currentPadding = widget.padding;
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text('여백:'),
-        const SizedBox(width: 8),
-        _buildPaddingInput('상', currentPadding.top, (v) {
-          widget.onPaddingChanged(currentPadding.copyWith(top: v));
-        }),
-        const SizedBox(width: 8),
-        _buildPaddingInput('하', currentPadding.bottom, (v) {
-          widget.onPaddingChanged(currentPadding.copyWith(bottom: v));
-        }),
-        const SizedBox(width: 8),
         _buildPaddingInput('좌', currentPadding.left, (v) {
           widget.onPaddingChanged(currentPadding.copyWith(left: v));
         }),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildPaddingInput('상', currentPadding.top, (v) {
+              widget.onPaddingChanged(currentPadding.copyWith(top: v));
+            }),
+            const SizedBox(height: 2),
+            _buildPaddingInput('하', currentPadding.bottom, (v) {
+              widget.onPaddingChanged(currentPadding.copyWith(bottom: v));
+            }),
+          ],
+        ),
+        const SizedBox(width: 4),
         _buildPaddingInput('우', currentPadding.right, (v) {
           widget.onPaddingChanged(currentPadding.copyWith(right: v));
         }),
@@ -276,17 +280,21 @@ class _ToolbarState extends State<Toolbar> {
     );
   }
 
-  Widget _buildPaddingInput(String label, double value, ValueChanged<double> onChanged) {
+  Widget _buildPaddingInput(String hint, double value, ValueChanged<double> onChanged) {
     final controller = TextEditingController(text: value.toInt().toString());
     controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
     return SizedBox(
-      width: 60,
+      width: 25,
+      height: 25,
       child: TextField(
         controller: controller,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 12),
         decoration: InputDecoration(
-          labelText: label,
+          hintText: hint,
+          isDense: true,
           border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+          contentPadding: EdgeInsets.zero,
         ),
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
