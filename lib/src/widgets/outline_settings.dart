@@ -125,6 +125,15 @@ class _OutlineSettingsState extends State<OutlineSettings> {
             controller: _strokeWidthController,
             onChanged: (v) => _onChanged(),
           ),
+          const SizedBox(width: 8),
+          // 외곽선 제거 버튼
+          IconButton(
+            icon: const Icon(Icons.clear, size: 18),
+            onPressed: () => widget.onChanged(null, null),
+            tooltip: '외곽선 제거',
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
         ],
       ),
     );
