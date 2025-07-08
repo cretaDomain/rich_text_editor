@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../controllers/rich_text_editor_controller.dart';
 
 /// 텍스트 스타일링을 위한 도구 모음(Toolbar) 위젯입니다.
-class Toolbar extends StatelessWidget {
+class Toolbar extends StatefulWidget {
   const Toolbar({
     super.key,
     required this.controller,
@@ -53,10 +54,38 @@ class Toolbar extends StatelessWidget {
   final ValueChanged<Color> onFontColorChanged;
 
   @override
+  State<Toolbar> createState() => _ToolbarState();
+}
+
+class _ToolbarState extends State<Toolbar> {
+  late final TextEditingController _fontSizeController;
+
+  @override
+  void initState() {
+    super.initState();
+    // 초기 폰트 크기는 14로 설정합니다. 이 값은 외부 상태와 동기화되지 않습니다.
+    _fontSizeController = TextEditingController(text: '14');
+  }
+
+  @override
+  void dispose() {
+    _fontSizeController.dispose();
+    super.dispose();
+  }
+
+  void _changeFontSize(double newSize) {
+    // 폰트 크기를 10-256 사이로 제한합니다.
+    final clampedSize = newSize.clamp(10.0, 256.0);
+    // 변경된 값을 외부로 알립니다.
+    widget.onFontSizeChanged(clampedSize);
+    // 내부 텍스트 필드의 값도 갱신합니다.
+    _fontSizeController.text = clampedSize.toInt().toString();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final currentStyle = controller.currentStyle;
-    final doc = controller.document;
-    const fontSizes = [10.0, 12.0, 14.0, 16.0, 18.0, 20.0, 24.0, 32.0];
+    final currentStyle = widget.controller.currentStyle;
+    final doc = widget.controller.document;
 
     return Container(
       height: 56,
@@ -66,46 +95,63 @@ class Toolbar extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            // 폰트 리스트가 비어있지 않은 경우에만 드롭다운을 표시합니다.
-            if (fontList.isNotEmpty)
+            // 폰트 종류
+            if (widget.fontList.isNotEmpty)
               DropdownButton<String>(
-                value: currentStyle.fontFamily ?? fontList.first,
+                value: currentStyle.fontFamily ?? widget.fontList.first,
                 onChanged: (String? newValue) {
                   if (newValue != null) {
-                    onFontFamilyChanged(newValue);
+                    widget.onFontFamilyChanged(newValue);
                   }
                 },
-                items: fontList.map<DropdownMenuItem<String>>((String value) {
+                items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
                   );
                 }).toList(),
-                underline: Container(), // 기본 밑줄 제거
+                underline: Container(),
               ),
-
+            const SizedBox(width: 8),
             const VerticalDivider(),
+            const SizedBox(width: 8),
 
-            // Font size
-            DropdownButton<double>(
-              value: fontSizes.contains(currentStyle.fontSize) ? currentStyle.fontSize : 14.0,
-              onChanged: (double? newValue) {
-                if (newValue != null) {
-                  onFontSizeChanged(newValue);
-                }
+            // 폰트 크기
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: () {
+                final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                _changeFontSize(currentSize - 1);
               },
-              items: fontSizes.map<DropdownMenuItem<double>>((double value) {
-                return DropdownMenuItem<double>(
-                  value: value,
-                  child: Text(value.toInt().toString()),
-                );
-              }).toList(),
-              underline: Container(),
             ),
-
+            SizedBox(
+              width: 40,
+              child: TextFormField(
+                controller: _fontSizeController,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(border: InputBorder.none),
+                onFieldSubmitted: (value) {
+                  final size = double.tryParse(value);
+                  if (size != null) {
+                    _changeFontSize(size);
+                  }
+                },
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                _changeFontSize(currentSize + 1);
+              },
+            ),
+            const SizedBox(width: 8),
             const VerticalDivider(),
+            const SizedBox(width: 8),
 
-            // Color Picker
+            // 색상 선택
             IconButton(
               icon: Icon(Icons.color_lens, color: currentStyle.color ?? Colors.black),
               onPressed: () => _showColorPicker(context),
@@ -113,47 +159,43 @@ class Toolbar extends StatelessWidget {
 
             const VerticalDivider(),
 
-            // Bold 버튼
+            // 스타일 버튼들
             IconButton(
               icon: const Icon(Icons.format_bold),
               style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
-              onPressed: onBold,
+              onPressed: widget.onBold,
             ),
-            // Italic 버튼
             IconButton(
               icon: const Icon(Icons.format_italic),
               style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
-              onPressed: onItalic,
+              onPressed: widget.onItalic,
             ),
-            // Underline 버튼
             IconButton(
               icon: const Icon(Icons.format_underline),
               style: _getButtonStyle(
                   currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
-              onPressed: onUnderline,
+              onPressed: widget.onUnderline,
             ),
 
             const VerticalDivider(),
 
-            // Align Left
+            // 정렬 버튼들
             IconButton(
               icon: const Icon(Icons.format_align_left),
               style: _getButtonStyle(
                   doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
-              onPressed: () => onChangeAlign(TextAlign.left),
+              onPressed: () => widget.onChangeAlign(TextAlign.left),
             ),
-            // Align Center
             IconButton(
               icon: const Icon(Icons.format_align_center),
               style: _getButtonStyle(doc.textAlign == TextAlign.center),
-              onPressed: () => onChangeAlign(TextAlign.center),
+              onPressed: () => widget.onChangeAlign(TextAlign.center),
             ),
-            // Align Right
             IconButton(
               icon: const Icon(Icons.format_align_right),
               style: _getButtonStyle(
                   doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
-              onPressed: () => onChangeAlign(TextAlign.right),
+              onPressed: () => widget.onChangeAlign(TextAlign.right),
             ),
           ],
         ),
@@ -169,8 +211,8 @@ class Toolbar extends StatelessWidget {
           title: const Text('Pick a color!'),
           content: SingleChildScrollView(
             child: ColorPicker(
-              pickerColor: controller.currentStyle.color ?? Colors.black,
-              onColorChanged: onFontColorChanged,
+              pickerColor: widget.controller.currentStyle.color ?? Colors.black,
+              onColorChanged: widget.onFontColorChanged,
             ),
           ),
           actions: <Widget>[

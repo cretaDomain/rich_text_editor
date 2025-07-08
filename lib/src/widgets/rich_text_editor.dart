@@ -60,6 +60,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   late final TextEditingController _textEditingController;
   late final FocusNode _focusNode;
   double? _currentWidth;
+  TextSelection _lastSelection = const TextSelection.collapsed(offset: -1);
 
   @override
   void initState() {
@@ -91,9 +92,13 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   /// 텍스트 필드의 내용이 변경될 때 호출됩니다.
   void _onTextChanged() {
-    // 편집 중에는 DocumentModel을 직접 업데이트하지 않습니다.
-    // 스타일 정보가 유실되는 것을 방지하기 위함입니다.
-    // 뷰 모드로 전환될 때 한 번에 반영합니다.
+    final currentSelection = _textEditingController.selection;
+    // 텍스트 필드가 포커스를 잃을 때 selection이 유효하지 않은 값(-1)으로 설정될 수 있습니다.
+    // 유효한 selection일 때만 마지막 선택 영역을 업데이트합니다.
+    if (currentSelection.start > -1 && currentSelection.end > -1) {
+      _lastSelection = currentSelection;
+    }
+    // "실시간 스타일 감지" 기능이 제거되었으므로, 관련 코드는 여기에 없습니다.
   }
 
   void _update() {
@@ -226,24 +231,24 @@ class _RichTextEditorState extends State<RichTextEditor> {
             Toolbar(
               controller: widget.controller,
               fontList: widget.fontList,
-              onBold: () => widget.controller
-                  .toggleBold(_textEditingController.text, _textEditingController.selection),
-              onItalic: () => widget.controller
-                  .toggleItalic(_textEditingController.text, _textEditingController.selection),
-              onUnderline: () => widget.controller
-                  .toggleUnderline(_textEditingController.text, _textEditingController.selection),
+              onBold: () =>
+                  widget.controller.toggleBold(_textEditingController.text, _lastSelection),
+              onItalic: () =>
+                  widget.controller.toggleItalic(_textEditingController.text, _lastSelection),
+              onUnderline: () =>
+                  widget.controller.toggleUnderline(_textEditingController.text, _lastSelection),
               onChangeAlign: (align) =>
                   widget.controller.changeTextAlign(_textEditingController.text, align),
-              onChangeLetterSpacing: (value) => widget.controller.changeLetterSpacing(
-                  _textEditingController.text, _textEditingController.selection, value),
-              onChangeLineHeight: (value) => widget.controller.changeLineHeight(
-                  _textEditingController.text, _textEditingController.selection, value),
-              onFontFamilyChanged: (value) => widget.controller.changeFontFamily(
-                  _textEditingController.text, _textEditingController.selection, value),
-              onFontSizeChanged: (value) => widget.controller.changeFontSize(
-                  _textEditingController.text, _textEditingController.selection, value),
-              onFontColorChanged: (value) => widget.controller.changeFontColor(
-                  _textEditingController.text, _textEditingController.selection, value),
+              onChangeLetterSpacing: (value) => widget.controller
+                  .changeLetterSpacing(_textEditingController.text, _lastSelection, value),
+              onChangeLineHeight: (value) => widget.controller
+                  .changeLineHeight(_textEditingController.text, _lastSelection, value),
+              onFontFamilyChanged: (value) => widget.controller
+                  .changeFontFamily(_textEditingController.text, _lastSelection, value),
+              onFontSizeChanged: (value) => widget.controller
+                  .changeFontSize(_textEditingController.text, _lastSelection, value),
+              onFontColorChanged: (value) => widget.controller
+                  .changeFontColor(_textEditingController.text, _lastSelection, value),
             ),
 
           // 에디터 본문 영역
