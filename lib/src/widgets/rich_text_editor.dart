@@ -179,6 +179,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
             Toolbar(
               controller: widget.controller,
               fontList: widget.fontList,
+              onBold: () => widget.controller.toggleBold(_textEditingController.selection),
+              onItalic: () => widget.controller.toggleItalic(_textEditingController.selection),
+              onUnderline: () =>
+                  widget.controller.toggleUnderline(_textEditingController.selection),
             ),
 
           // 에디터 본문 영역

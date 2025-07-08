@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rich_text_editor/src/models/document_model.dart';
 import 'package:rich_text_editor/src/models/span_attribute.dart';
@@ -65,6 +66,79 @@ class RichTextEditorController extends ChangeNotifier {
   /// 폰트 패밀리를 변경하고, 변경 사항을 알립니다.
   void changeFontFamily(String fontFamily) {
     _currentStyle = _currentStyle.copyWith(fontFamily: fontFamily);
+    notifyListeners();
+  }
+
+  /// 선택된 영역의 Bold 스타일을 토글합니다.
+  void toggleBold(TextSelection selection) {
+    _toggleStyle(
+        selection,
+        (attr) =>
+            attr.copyWith(fontWeight: attr.fontWeight == FontWeight.bold ? null : FontWeight.bold));
+  }
+
+  /// 선택된 영역의 Italic 스타일을 토글합니다.
+  void toggleItalic(TextSelection selection) {
+    _toggleStyle(
+        selection,
+        (attr) =>
+            attr.copyWith(fontStyle: attr.fontStyle == FontStyle.italic ? null : FontStyle.italic));
+  }
+
+  /// 선택된 영역의 Underline 스타일을 토글합니다.
+  void toggleUnderline(TextSelection selection) {
+    _toggleStyle(
+        selection,
+        (attr) => attr.copyWith(
+            decoration:
+                attr.decoration == TextDecoration.underline ? null : TextDecoration.underline));
+  }
+
+  /// 선택 영역에 특정 스타일 변경을 적용하는 비공개 헬퍼 메서드입니다.
+  void _toggleStyle(TextSelection selection, SpanAttribute Function(SpanAttribute) updateFunc) {
+    if (selection.isCollapsed) {
+      _currentStyle = updateFunc(_currentStyle);
+      notifyListeners();
+      return;
+    }
+
+    final newSpans = <TextSpanModel>[];
+    int currentPos = 0;
+
+    for (final span in _document.spans) {
+      final spanEnd = currentPos + span.text.length;
+
+      // 선택 영역과 겹치지 않는 경우
+      if (selection.end <= currentPos || selection.start >= spanEnd) {
+        newSpans.add(span);
+      }
+      // 선택 영역이 스팬을 완전히 포함하는 경우
+      else if (selection.start <= currentPos && selection.end >= spanEnd) {
+        newSpans.add(span.copyWith(attribute: updateFunc(span.attribute)));
+      }
+      // 그 외 겹치는 모든 경우 (스팬 분할 필요)
+      else {
+        // 1. 선택 영역 앞부분
+        if (currentPos < selection.start) {
+          newSpans.add(span.copyWith(text: span.text.substring(0, selection.start - currentPos)));
+        }
+        // 2. 선택 영역 부분
+        final start = selection.start > currentPos ? selection.start - currentPos : 0;
+        final end = selection.end < spanEnd ? selection.end - currentPos : span.text.length;
+        newSpans.add(
+          span.copyWith(
+            text: span.text.substring(start, end),
+            attribute: updateFunc(span.attribute),
+          ),
+        );
+        // 3. 선택 영역 뒷부분
+        if (spanEnd > selection.end) {
+          newSpans.add(span.copyWith(text: span.text.substring(selection.end - currentPos)));
+        }
+      }
+      currentPos = spanEnd;
+    }
+    _document = DocumentModel(spans: newSpans);
     notifyListeners();
   }
 
