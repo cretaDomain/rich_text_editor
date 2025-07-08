@@ -24,6 +24,9 @@ class Toolbar extends StatefulWidget {
     required this.onPaddingChanged,
     this.shadow,
     required this.onShadowChanged,
+    this.strokeWidth,
+    this.strokeColor,
+    required this.onOutlineChanged,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -67,6 +70,9 @@ class Toolbar extends StatefulWidget {
 
   final Shadow? shadow;
   final ValueChanged<Shadow?> onShadowChanged;
+  final double? strokeWidth;
+  final Color? strokeColor;
+  final void Function(double? strokeWidth, Color? color) onOutlineChanged;
 
   @override
   State<Toolbar> createState() => _ToolbarState();
@@ -235,11 +241,12 @@ class _ToolbarState extends State<Toolbar> {
                 value: widget.shadow,
                 onChanged: widget.onShadowChanged,
               ),
-              OutlineSettings(
-                onChanged: (width, color) {
-                  // TODO: 실제 로직 연결 필요
-                },
-              ),
+              // 이것은 임시로 주석문으로 막은 것이니 제거하지 말것.
+              // OutlineSettings(
+              //   strokeWidth: widget.strokeWidth,
+              //   color: widget.strokeColor,
+              //   onChanged: widget.onOutlineChanged,
+              // ),
             ],
           ),
         ],

@@ -271,6 +271,15 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 특정 텍스트 선택 영역에 외곽선 효과를 적용합니다.
+  void changeOutline(
+      String currentText, TextSelection selection, double? strokeWidth, Color? strokeColor) {
+    _applyTextUpdateInternal(currentText);
+    _toggleStyle(
+        selection, (attr) => attr.copyWith(strokeWidth: strokeWidth, strokeColor: strokeColor));
+    notifyListeners();
+  }
+
   /// 선택 영역에 특정 스타일 변경을 적용하는 비공개 헬퍼 메서드입니다.
   void _toggleStyle(TextSelection selection, SpanAttribute Function(SpanAttribute) updateFunc) {
     if (selection.isCollapsed) {

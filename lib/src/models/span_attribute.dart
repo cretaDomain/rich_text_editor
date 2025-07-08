@@ -1,205 +1,170 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-/// 텍스트의 한 조각(span)에 적용될 스타일 속성을 나타내는 클래스입니다.
-///
-/// 이 클래스는 불변(immutable) 객체로, 모든 속성은 final로 선언됩니다.
-/// 속성을 변경하려면 `copyWith` 메소드를 사용하여 새로운 인스턴스를 생성해야 합니다.
-@immutable
 class SpanAttribute {
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final FontStyle? fontStyle;
+  final Color? color;
+  final Paint? foreground;
+  final double? letterSpacing;
+  final double? height;
+  final String? fontFamily;
+  final TextDecoration? decoration;
+  final List<Shadow>? shadows;
+  final double? strokeWidth;
+  final Color? strokeColor;
+
   const SpanAttribute({
-    this.fontFamily,
     this.fontSize,
-    this.color,
     this.fontWeight,
     this.fontStyle,
-    this.decoration,
-    this.shadows,
+    this.color,
     this.foreground,
     this.letterSpacing,
     this.height,
+    this.fontFamily,
+    this.decoration,
+    this.shadows,
+    this.strokeWidth,
+    this.strokeColor,
   });
 
-  /// 폰트 종류
-  final String? fontFamily;
-
-  /// 글자 크기
-  final double? fontSize;
-
-  /// 글자 색상
-  final Color? color;
-
-  /// 글자 굵기 (e.g., FontWeight.bold)
-  final FontWeight? fontWeight;
-
-  /// 글자 스타일 (e.g., FontStyle.italic)
-  final FontStyle? fontStyle;
-
-  /// 텍스트 꾸미기 (e.g., TextDecoration.underline)
-  final TextDecoration? decoration;
-
-  /// 그림자 효과
-  final List<Shadow>? shadows;
-
-  /// 외곽선 효과 등을 위한 전경 Paint
-  final Paint? foreground;
-
-  /// 글자 간격 (장평)
-  final double? letterSpacing;
-
-  /// 줄 간격 (라인 높이)
-  final double? height;
-
-  /// JSON 맵으로부터 `SpanAttribute` 인스턴스를 생성합니다.
-  factory SpanAttribute.fromJson(Map<String, dynamic> json) {
-    // TextDecoration 역직렬화
-    TextDecoration? decoration;
-    if (json['decoration'] != null) {
-      final List<TextDecoration> decorations = [];
-      if (json['decoration']['underline'] == true) {
-        decorations.add(TextDecoration.underline);
-      }
-      if (json['decoration']['lineThrough'] == true) {
-        decorations.add(TextDecoration.lineThrough);
-      }
-      if (json['decoration']['overline'] == true) {
-        decorations.add(TextDecoration.overline);
-      }
-      if (decorations.isNotEmpty) {
-        decoration = TextDecoration.combine(decorations);
-      }
-    }
-
-    return SpanAttribute(
-      fontFamily: json['fontFamily'],
-      fontSize: json['fontSize'],
-      color: json['color'] != null ? Color(json['color']) : null,
-      fontWeight: json['fontWeight'] != null ? FontWeight.values[json['fontWeight']] : null,
-      fontStyle: json['fontStyle'] != null ? FontStyle.values[json['fontStyle']] : null,
-      decoration: decoration,
-      shadows: (json['shadows'] as List?)
-          ?.map((s) => Shadow(
-                color: Color(s['color']),
-                offset: Offset(s['offset']['dx'], s['offset']['dy']),
-                blurRadius: s['blurRadius'],
-              ))
-          .toList(),
-      foreground: json['foreground'] != null
-          ? (Paint()
-            ..color = Color(json['foreground']['color'])
-            ..strokeWidth = json['foreground']['strokeWidth']
-            ..style = PaintingStyle.values[json['foreground']['style']])
-          : null,
-      letterSpacing: json['letterSpacing'],
-      height: json['height'],
-    );
-  }
-
-  /// `SpanAttribute` 인스턴스를 JSON 맵으로 변환합니다.
-  Map<String, dynamic> toJson() {
-    return {
-      'fontFamily': fontFamily,
-      'fontSize': fontSize,
-      // ignore: deprecated_member_use
-      'color': color?.value,
-      'fontWeight': fontWeight?.index,
-      'fontStyle': fontStyle?.index,
-      // TextDecoration 직렬화
-      'decoration': decoration != null
-          ? {
-              'underline': decoration!.contains(TextDecoration.underline),
-              'lineThrough': decoration!.contains(TextDecoration.lineThrough),
-              'overline': decoration!.contains(TextDecoration.overline),
-            }
-          : null,
-      'shadows': shadows
-          ?.map((s) => {
-                // ignore: deprecated_member_use
-                'color': s.color.value,
-                'offset': {'dx': s.offset.dx, 'dy': s.offset.dy},
-                'blurRadius': s.blurRadius,
-              })
-          .toList(),
-      'foreground': foreground != null
-          ? {
-              // ignore: deprecated_member_use
-              'color': foreground!.color.value,
-              'strokeWidth': foreground!.strokeWidth,
-              'style': foreground!.style.index,
-            }
-          : null,
-      'letterSpacing': letterSpacing,
-      'height': height,
-    };
-  }
-
-  /// 현재 인스턴스를 복사하여 새로운 인스턴스를 생성합니다.
-  ///
-  /// 주어진 값으로 속성을 갱신하고, 나머지는 기존 값을 유지합니다.
   SpanAttribute copyWith({
-    String? fontFamily,
     double? fontSize,
-    Color? color,
     FontWeight? fontWeight,
     FontStyle? fontStyle,
-    TextDecoration? decoration,
-    List<Shadow>? shadows,
+    Color? color,
     Paint? foreground,
     double? letterSpacing,
     double? height,
+    String? fontFamily,
+    TextDecoration? decoration,
+    List<Shadow>? shadows,
+    double? strokeWidth,
+    Color? strokeColor,
   }) {
     return SpanAttribute(
-      fontFamily: fontFamily ?? this.fontFamily,
       fontSize: fontSize ?? this.fontSize,
-      color: color ?? this.color,
       fontWeight: fontWeight ?? this.fontWeight,
       fontStyle: fontStyle ?? this.fontStyle,
-      decoration: decoration ?? this.decoration,
-      shadows: shadows ?? this.shadows,
+      color: color ?? this.color,
       foreground: foreground ?? this.foreground,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       height: height ?? this.height,
+      fontFamily: fontFamily ?? this.fontFamily,
+      decoration: decoration ?? this.decoration,
+      shadows: shadows ?? this.shadows,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+      strokeColor: strokeColor ?? this.strokeColor,
     );
   }
 
   TextStyle toTextStyle() {
+    Paint? foregroundPaint;
+    if ((strokeWidth ?? 0) > 0 && strokeColor != null) {
+      foregroundPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth!
+        ..color = strokeColor!;
+    } else {
+      foregroundPaint = foreground;
+    }
+
     return TextStyle(
-      fontFamily: fontFamily,
       fontSize: fontSize,
-      color: color,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
+      color: foregroundPaint == null ? color : null,
+      foreground: foregroundPaint,
+      letterSpacing: letterSpacing, // 이 줄이 추가되었습니다.
+      height: height, // 이 줄이 추가되었습니다.
+      fontFamily: fontFamily,
       decoration: decoration,
       shadows: shadows,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (fontSize != null) json['fontSize'] = fontSize;
+    if (fontWeight != null) json['fontWeight'] = fontWeight.toString();
+    if (fontStyle != null) json['fontStyle'] = fontStyle.toString();
+    if (color != null) json['color'] = color!.value;
+    if (letterSpacing != null) json['letterSpacing'] = letterSpacing;
+    if (height != null) json['height'] = height;
+    if (fontFamily != null) json['fontFamily'] = fontFamily;
+    if (decoration != null) json['decoration'] = decoration.toString();
+    if (strokeWidth != null) json['strokeWidth'] = strokeWidth;
+    if (strokeColor != null) json['strokeColor'] = strokeColor!.value;
+    return json;
+  }
+
+  factory SpanAttribute.fromJson(Map<String, dynamic> json) {
+    return SpanAttribute(
+      fontSize: json['fontSize'],
+      fontWeight: json['fontWeight'] != null
+          ? FontWeight.values.firstWhere((e) => e.toString() == json['fontWeight'])
+          : null,
+      fontStyle: json['fontStyle'] != null
+          ? FontStyle.values.firstWhere((e) => e.toString() == json['fontStyle'])
+          : null,
+      color: json['color'] != null ? Color(json['color']) : null,
+      letterSpacing: json['letterSpacing'],
+      height: json['height'],
+      fontFamily: json['fontFamily'],
+      decoration: json['decoration'] != null ? _decorationFromString(json['decoration']) : null,
+      strokeWidth: json['strokeWidth'],
+      strokeColor: json['strokeColor'] != null ? Color(json['strokeColor']) : null,
+    );
+  }
+
+  static TextDecoration? _decorationFromString(String value) {
+    switch (value) {
+      case 'TextDecoration.underline':
+        return TextDecoration.underline;
+      case 'TextDecoration.overline':
+        return TextDecoration.overline;
+      case 'TextDecoration.lineThrough':
+        return TextDecoration.lineThrough;
+      case 'TextDecoration.none':
+        return TextDecoration.none;
+      default:
+        return null;
+    }
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! SpanAttribute) return false;
-    return other.fontFamily == fontFamily &&
-        other.fontSize == fontSize &&
-        other.color == color &&
+    return other.fontSize == fontSize &&
         other.fontWeight == fontWeight &&
         other.fontStyle == fontStyle &&
-        other.decoration == decoration &&
-        other.shadows == shadows &&
+        other.color == color &&
         other.foreground == foreground &&
         other.letterSpacing == letterSpacing &&
-        other.height == height;
+        other.height == height &&
+        other.fontFamily == fontFamily &&
+        other.decoration == decoration &&
+        other.shadows == shadows &&
+        other.strokeWidth == strokeWidth &&
+        other.strokeColor == strokeColor;
   }
 
   @override
   int get hashCode => Object.hash(
-        fontFamily,
         fontSize,
-        color,
         fontWeight,
         fontStyle,
-        decoration,
-        shadows,
+        color,
         foreground,
         letterSpacing,
         height,
+        fontFamily,
+        decoration,
+        shadows,
+        strokeWidth,
+        strokeColor,
       );
 }

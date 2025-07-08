@@ -261,8 +261,24 @@ class _RichTextEditorState extends State<RichTextEditor> {
               fontList: widget.fontList,
               padding: _padding,
               onPaddingChanged: _onPaddingChanged,
-              shadow: _shadows?.firstOrNull,
-              onShadowChanged: _onShadowChanged,
+              shadow: widget.controller.currentStyle.shadows?.firstOrNull,
+              onShadowChanged: (shadow) {
+                widget.controller.changeShadows(
+                  _textEditingController.text,
+                  _lastSelection,
+                  shadow == null ? null : [shadow],
+                );
+              },
+              strokeWidth: widget.controller.currentStyle.strokeWidth,
+              strokeColor: widget.controller.currentStyle.strokeColor,
+              onOutlineChanged: (width, color) {
+                widget.controller.changeOutline(
+                  _textEditingController.text,
+                  _lastSelection,
+                  width,
+                  color,
+                );
+              },
               onBold: () =>
                   widget.controller.toggleBold(_textEditingController.text, _lastSelection),
               onItalic: () =>
