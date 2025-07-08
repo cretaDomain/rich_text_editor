@@ -147,6 +147,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // 컨트롤러에서 문서의 JSON 표현을 가져와 콘솔에 출력합니다.
+          final jsonString = _controller.document.toJson();
+          // ignore: avoid_print
+          print(jsonString);
+        },
+        tooltip: 'Print JSON',
+        child: const Icon(Icons.data_object),
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/document_model.dart';
 import '../models/span_attribute.dart';
-import '../models/text_span_model.dart';
+//import '../models/text_span_model.dart';
 
 /// `DocumentModel`을 화면에 렌더링하는 읽기 전용 뷰 위젯입니다.
 class DocumentView extends StatelessWidget {

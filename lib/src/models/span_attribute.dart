@@ -99,6 +99,7 @@ class SpanAttribute {
     return {
       'fontFamily': fontFamily,
       'fontSize': fontSize,
+      // ignore: deprecated_member_use
       'color': color?.value,
       'fontWeight': fontWeight?.index,
       'fontStyle': fontStyle?.index,
@@ -112,6 +113,7 @@ class SpanAttribute {
           : null,
       'shadows': shadows
           ?.map((s) => {
+                // ignore: deprecated_member_use
                 'color': s.color.value,
                 'offset': {'dx': s.offset.dx, 'dy': s.offset.dy},
                 'blurRadius': s.blurRadius,
@@ -119,6 +121,7 @@ class SpanAttribute {
           .toList(),
       'foreground': foreground != null
           ? {
+              // ignore: deprecated_member_use
               'color': foreground!.color.value,
               'strokeWidth': foreground!.strokeWidth,
               'style': foreground!.style.index,

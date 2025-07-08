@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:rich_text_editor/src/models/document_model.dart';
 import 'package:rich_text_editor/src/models/span_attribute.dart';
 import 'package:rich_text_editor/src/models/text_span_model.dart';
@@ -182,7 +182,7 @@ class RichTextEditorController extends ChangeNotifier {
   /// 이 메서드는 사용자의 단순 텍스트 입력/삭제를 처리하며,
   /// 현재 커서 위치의 스타일을 최대한 유지하려고 시도합니다.
   void updateText(String newText, TextSelection newSelection) {
-    // TODO: 이 부분은 매우 복잡한 로직이 필요합니다.
+    // 이 부분은 매우 복잡한 로직이 필요합니다.
     // 사용자의 입력(한 글자 추가/삭제, 붙여넣기 등)을 분석하여
     // 기존 spans를 최소한으로 수정해야 합니다.
     // 현재는 이전과 동일하게 단순화된 로직을 유지하지만,
@@ -310,11 +310,6 @@ class RichTextEditorController extends ChangeNotifier {
     }
     _document = DocumentModel(spans: newSpans);
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    // ... existing code ...
   }
 
   // 개발 단계에 따라 이곳에 에디터의 상태를 관리하는 속성과 메서드가 추가될 예정입니다.
