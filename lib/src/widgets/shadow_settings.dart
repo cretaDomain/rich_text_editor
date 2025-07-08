@@ -170,22 +170,25 @@ class _ShadowSettingsState extends State<ShadowSettings> {
     required TextEditingController controller,
     required ValueChanged<String> onChanged,
   }) {
-    return SizedBox(
-      width: 48,
-      height: 24,
-      child: TextField(
-        controller: controller,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 12),
-        decoration: InputDecoration(
-          labelText: label,
-          isDense: true,
-          border: const OutlineInputBorder(),
-          contentPadding: EdgeInsets.zero,
+    return Padding(
+      padding: const EdgeInsets.only(top: 7.0),
+      child: SizedBox(
+        width: 48,
+        height: 24,
+        child: TextField(
+          controller: controller,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12),
+          decoration: InputDecoration(
+            labelText: label,
+            isDense: true,
+            border: const OutlineInputBorder(),
+            contentPadding: EdgeInsets.zero,
+          ),
+          keyboardType: const TextInputType.numberWithOptions(signed: true),
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*'))],
+          onChanged: onChanged,
         ),
-        keyboardType: const TextInputType.numberWithOptions(signed: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*'))],
-        onChanged: onChanged,
       ),
     );
   }

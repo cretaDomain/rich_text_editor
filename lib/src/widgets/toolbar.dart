@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import 'shadow_settings.dart';
+import 'outline_settings.dart';
 
 /// 텍스트 스타일링을 위한 도구 모음(Toolbar) 위젯입니다.
 class Toolbar extends StatefulWidget {
@@ -226,10 +227,20 @@ class _ToolbarState extends State<Toolbar> {
               ),
             ),
           ),
-          // 두 번째 줄: 그림자 설정
-          ShadowSettings(
-            value: widget.shadow,
-            onChanged: widget.onShadowChanged,
+          // 두 번째 줄: 그림자 및 외곽선 설정
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ShadowSettings(
+                value: widget.shadow,
+                onChanged: widget.onShadowChanged,
+              ),
+              OutlineSettings(
+                onChanged: (width, color) {
+                  // TODO: 실제 로직 연결 필요
+                },
+              ),
+            ],
           ),
         ],
       ),
