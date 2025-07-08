@@ -219,15 +219,17 @@ class _RichTextEditorState extends State<RichTextEditor> {
             Toolbar(
               controller: widget.controller,
               fontList: widget.fontList,
-              onBold: () => widget.controller.toggleBold(_textEditingController.selection),
-              onItalic: () => widget.controller.toggleItalic(_textEditingController.selection),
-              onUnderline: () =>
-                  widget.controller.toggleUnderline(_textEditingController.selection),
+              onBold: () => widget.controller
+                  .toggleBold(_textEditingController.text, _textEditingController.selection),
+              onItalic: () => widget.controller
+                  .toggleItalic(_textEditingController.text, _textEditingController.selection),
+              onUnderline: () => widget.controller
+                  .toggleUnderline(_textEditingController.text, _textEditingController.selection),
               onChangeAlign: widget.controller.changeTextAlign,
-              onChangeLetterSpacing: (value) =>
-                  widget.controller.changeLetterSpacing(_textEditingController.selection, value),
-              onChangeLineHeight: (value) =>
-                  widget.controller.changeLineHeight(_textEditingController.selection, value),
+              onChangeLetterSpacing: (value) => widget.controller.changeLetterSpacing(
+                  _textEditingController.text, _textEditingController.selection, value),
+              onChangeLineHeight: (value) => widget.controller.changeLineHeight(
+                  _textEditingController.text, _textEditingController.selection, value),
             ),
 
           // 에디터 본문 영역
