@@ -18,6 +18,8 @@ class Toolbar extends StatefulWidget {
     required this.onFontFamilyChanged,
     required this.onFontSizeChanged,
     required this.onFontColorChanged,
+    required this.padding,
+    required this.onPaddingChanged,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -52,6 +54,12 @@ class Toolbar extends StatefulWidget {
 
   /// Font Color가 변경되었을 때 호출될 콜백 함수입니다.
   final ValueChanged<Color> onFontColorChanged;
+
+  /// 현재 에디터의 여백 값입니다.
+  final EdgeInsets padding;
+
+  /// 여백 값이 변경되었을 때 호출될 콜백 함수입니다.
+  final ValueChanged<EdgeInsets> onPaddingChanged;
 
   @override
   State<Toolbar> createState() => _ToolbarState();
@@ -197,6 +205,8 @@ class _ToolbarState extends State<Toolbar> {
                   doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
               onPressed: () => widget.onChangeAlign(TextAlign.right),
             ),
+            const VerticalDivider(),
+            _buildPaddingControls(),
           ],
         ),
       ),
@@ -236,6 +246,54 @@ class _ToolbarState extends State<Toolbar> {
       ),
       shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
+      ),
+    );
+  }
+
+  Widget _buildPaddingControls() {
+    final currentPadding = widget.padding;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text('여백:'),
+        const SizedBox(width: 8),
+        _buildPaddingInput('상', currentPadding.top, (v) {
+          widget.onPaddingChanged(currentPadding.copyWith(top: v));
+        }),
+        const SizedBox(width: 8),
+        _buildPaddingInput('하', currentPadding.bottom, (v) {
+          widget.onPaddingChanged(currentPadding.copyWith(bottom: v));
+        }),
+        const SizedBox(width: 8),
+        _buildPaddingInput('좌', currentPadding.left, (v) {
+          widget.onPaddingChanged(currentPadding.copyWith(left: v));
+        }),
+        const SizedBox(width: 8),
+        _buildPaddingInput('우', currentPadding.right, (v) {
+          widget.onPaddingChanged(currentPadding.copyWith(right: v));
+        }),
+      ],
+    );
+  }
+
+  Widget _buildPaddingInput(String label, double value, ValueChanged<double> onChanged) {
+    final controller = TextEditingController(text: value.toInt().toString());
+    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+    return SizedBox(
+      width: 60,
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChanged: (text) {
+          final newValue = double.tryParse(text) ?? 0.0;
+          onChanged(newValue);
+        },
       ),
     );
   }

@@ -61,6 +61,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   late final FocusNode _focusNode;
   double? _currentWidth;
   TextSelection _lastSelection = const TextSelection.collapsed(offset: -1);
+  EdgeInsets _padding = const EdgeInsets.all(16.0);
 
   @override
   void initState() {
@@ -88,6 +89,13 @@ class _RichTextEditorState extends State<RichTextEditor> {
     _textEditingController.dispose();
     widget.controller.removeListener(_update);
     super.dispose();
+  }
+
+  /// 여백이 변경될 때 호출됩니다.
+  void _onPaddingChanged(EdgeInsets newPadding) {
+    setState(() {
+      _padding = newPadding;
+    });
   }
 
   /// 텍스트 필드의 내용이 변경될 때 호출됩니다.
@@ -149,7 +157,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
               });
             },
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: _padding,
               child: DocumentView(document: widget.controller.document),
             ),
           ),
@@ -163,9 +171,9 @@ class _RichTextEditorState extends State<RichTextEditor> {
             maxLines: null,
             expands: true,
             textAlign: widget.controller.document.textAlign,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: InputBorder.none,
-              contentPadding: EdgeInsets.all(16.0),
+              contentPadding: _padding,
             ),
             textAlignVertical: TextAlignVertical.top,
           ),
@@ -239,6 +247,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
             Toolbar(
               controller: widget.controller,
               fontList: widget.fontList,
+              padding: _padding,
+              onPaddingChanged: _onPaddingChanged,
               onBold: () =>
                   widget.controller.toggleBold(_textEditingController.text, _lastSelection),
               onItalic: () =>
