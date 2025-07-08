@@ -160,4 +160,46 @@ class SpanAttribute {
       height: height ?? this.height,
     );
   }
+
+  TextStyle toTextStyle() {
+    return TextStyle(
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      color: color,
+      fontWeight: fontWeight,
+      fontStyle: fontStyle,
+      decoration: decoration,
+      shadows: shadows,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SpanAttribute) return false;
+    return other.fontFamily == fontFamily &&
+        other.fontSize == fontSize &&
+        other.color == color &&
+        other.fontWeight == fontWeight &&
+        other.fontStyle == fontStyle &&
+        other.decoration == decoration &&
+        other.shadows == shadows &&
+        other.foreground == foreground &&
+        other.letterSpacing == letterSpacing &&
+        other.height == height;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        fontFamily,
+        fontSize,
+        color,
+        fontWeight,
+        fontStyle,
+        decoration,
+        shadows,
+        foreground,
+        letterSpacing,
+        height,
+      );
 }

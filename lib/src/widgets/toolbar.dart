@@ -21,6 +21,8 @@ class Toolbar extends StatefulWidget {
     required this.onFontColorChanged,
     required this.padding,
     required this.onPaddingChanged,
+    this.shadow,
+    required this.onShadowChanged,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -61,6 +63,9 @@ class Toolbar extends StatefulWidget {
 
   /// 여백 값이 변경되었을 때 호출될 콜백 함수입니다.
   final ValueChanged<EdgeInsets> onPaddingChanged;
+
+  final Shadow? shadow;
+  final ValueChanged<Shadow?> onShadowChanged;
 
   @override
   State<Toolbar> createState() => _ToolbarState();
@@ -222,7 +227,10 @@ class _ToolbarState extends State<Toolbar> {
             ),
           ),
           // 두 번째 줄: 그림자 설정
-          const ShadowSettings(),
+          ShadowSettings(
+            value: widget.shadow,
+            onChanged: widget.onShadowChanged,
+          ),
         ],
       ),
     );
