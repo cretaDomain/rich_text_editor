@@ -1,0 +1,57 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .sans-serif { font-family: sans-serif; }
+      .title { font-size: 20px; text-anchor: middle; }
+      .label { font-size: 14px; }
+      .btn-text { font-size: 14px; text-anchor: middle; }
+      .icon-text { font-size: 16px; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect x="1" y="1" width="598" height="398" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  
+  <!-- Title -->
+  <text x="300" y="30" class="sans-serif title">Rich Text Editor Wireframe</text>
+  
+  <!-- Mode Toggle -->
+  <g id="mode-toggle">
+    <rect x="450" y="50" width="120" height="30" rx="5" fill="#e0e0e0" stroke="#999"/>
+    <text x="510" y="70" class="sans-serif btn-text">Edit / View</text>
+    <circle cx="470" cy="65" r="10" fill="#bbb"/>
+    <circle cx="530" cy="65" r="10" fill="#fff" stroke="#999" stroke-width="1"/>
+    <text x="470" y="70" class="sans-serif btn-text" fill="white" font-size="12">E</text>
+    <text x="530" y="70" class="sans-serif btn-text" fill="black" font-size="12">V</text>
+  </g>
+
+  <!-- Toolbar -->
+  <g id="toolbar">
+    <rect x="20" y="90" width="560" height="50" fill="#d9d9d9" stroke="#aaa"/>
+    <text x="30" y="120" class="sans-serif label">Font: [Dropdown]</text>
+    <text x="150" y="120" class="sans-serif label">Size: [Input]</text>
+    
+    <!-- Bold Button -->
+    <rect x="250" y="100" width="30" height="30" fill="#fff" stroke="#999"/>
+    <text x="265" y="122" class="sans-serif icon-text" font-weight="bold">B</text>
+    
+    <!-- Italic Button -->
+    <rect x="290" y="100" width="30" height="30" fill="#fff" stroke="#999"/>
+    <text x="305" y="122" class="sans-serif icon-text" font-style="italic">I</text>
+
+    <!-- Underline Button -->
+    <rect x="330" y="100" width="30" height="30" fill="#fff" stroke="#999"/>
+    <text x="345" y="122" class="sans-serif icon-text" text-decoration="underline">U</text>
+
+    <!-- Color Picker -->
+    <rect x="370" y="100" width="30" height="30" fill="#fff" stroke="#999"/>
+    <circle cx="385" cy="115" r="10" fill="red"/>
+  </g>
+  
+  <!-- Editor Content Area -->
+  <g id="content-area">
+    <rect x="20" y="150" width="560" height="230" fill="#fff" stroke="#ccc"/>
+    <text x="30" y="175" class="sans-serif label">Lorem ipsum dolor sit amet...</text>
+    <text x="30" y="195" class="sans-serif label" font-weight="bold">Consectetur adipiscing elit.</text>
+    <text x="30" y="215" class="sans-serif label" font-style="italic">Sed do eiusmod tempor incididunt.</text>
+  </g>
+</svg> 

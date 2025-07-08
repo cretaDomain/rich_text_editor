@@ -15,11 +15,12 @@
 ## 2. 개발 단계 (체크리스트)
 
 ### Phase 1: 프로젝트 설정 및 기본 구조 수립
-- [ ] **1-1. Flutter 신규 프로젝트 생성**: `rich_text_editor`라는 이름의 Flutter 프로젝트를 초기화합니다.
+- [x] **1-1. Flutter 신규 프로젝트 생성**: `rich_text_editor`라는 이름의 Flutter 프로젝트를 초기화합니다.
 - [ ] **1-2. 디렉토리 구조 설정**: 기능별로 코드를 분리하기 위해 `lib/src` 내부에 `models`, `controllers`, `widgets`, `views` 디렉토리를 생성합니다.
 - [ ] **1-3. 기본 위젯 및 컨트롤러 정의**:
     - `RichTextEditor` 위젯의 기본 골격(`StatefulWidget`)을 생성합니다.
     - `RichTextEditorController` 클래스의 기본 골격을 정의합니다. 이 컨트롤러는 `ChangeNotifier`를 상속받아 상태 변경을 알립니다.
+- [ ] **1-4. UI 와이어프레임 작성**: UI 와이어프레임을 작성하여 `doc/wireframe.svg` 파일로 저장합니다.
 
 ### Phase 2: 데이터 모델 구현
 - [ ] **2-1. 데이터 모델 클래스 정의**:
