@@ -21,7 +21,7 @@ class DocumentView extends StatelessWidget {
     }
 
     return RichText(
-      textAlign: TextAlign.start, // TODO: 단락별 정렬 기능 추가 필요
+      textAlign: document.textAlign,
       text: TextSpan(
         style: DefaultTextStyle.of(context).style, // 기본 스타일 적용
         children: _buildTextSpans(),

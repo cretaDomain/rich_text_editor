@@ -94,6 +94,22 @@ class RichTextEditorController extends ChangeNotifier {
                 attr.decoration == TextDecoration.underline ? null : TextDecoration.underline));
   }
 
+  /// 문서의 텍스트 정렬을 변경합니다.
+  void changeTextAlign(TextAlign align) {
+    _document = _document.copyWith(textAlign: align);
+    notifyListeners();
+  }
+
+  /// 선택된 영역의 글자 간격(letter spacing)을 변경합니다.
+  void changeLetterSpacing(TextSelection selection, double spacing) {
+    _toggleStyle(selection, (attr) => attr.copyWith(letterSpacing: spacing));
+  }
+
+  /// 선택된 영역의 줄 간격(height)을 변경합니다.
+  void changeLineHeight(TextSelection selection, double height) {
+    _toggleStyle(selection, (attr) => attr.copyWith(height: height));
+  }
+
   /// 선택 영역에 특정 스타일 변경을 적용하는 비공개 헬퍼 메서드입니다.
   void _toggleStyle(TextSelection selection, SpanAttribute Function(SpanAttribute) updateFunc) {
     if (selection.isCollapsed) {

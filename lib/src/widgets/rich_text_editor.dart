@@ -113,17 +113,15 @@ class _RichTextEditorState extends State<RichTextEditor> {
   Widget _buildEditorBody() {
     if (widget.controller.mode == EditorMode.view) {
       return GestureDetector(
-        onDoubleTap: () {
-          widget.controller.setMode(EditorMode.edit);
-        },
+        onDoubleTap: () => widget.controller.setMode(EditorMode.edit),
         child: DocumentView(document: widget.controller.document),
       );
     } else {
-      // 편집 모드일 경우, 텍스트 입력 필드를 표시합니다.
       return TextFormField(
         controller: _textEditingController,
-        maxLines: null, // 여러 줄 입력 가능
-        expands: true, // 사용 가능한 공간을 모두 채움
+        maxLines: null,
+        expands: true,
+        textAlign: widget.controller.document.textAlign,
         decoration: const InputDecoration(
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(16.0),
@@ -183,6 +181,11 @@ class _RichTextEditorState extends State<RichTextEditor> {
               onItalic: () => widget.controller.toggleItalic(_textEditingController.selection),
               onUnderline: () =>
                   widget.controller.toggleUnderline(_textEditingController.selection),
+              onChangeAlign: widget.controller.changeTextAlign,
+              onChangeLetterSpacing: (value) =>
+                  widget.controller.changeLetterSpacing(_textEditingController.selection, value),
+              onChangeLineHeight: (value) =>
+                  widget.controller.changeLineHeight(_textEditingController.selection, value),
             ),
 
           // 에디터 본문 영역

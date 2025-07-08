@@ -10,6 +10,9 @@ class Toolbar extends StatelessWidget {
     required this.onBold,
     required this.onItalic,
     required this.onUnderline,
+    required this.onChangeLetterSpacing,
+    required this.onChangeLineHeight,
+    required this.onChangeAlign,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -27,9 +30,19 @@ class Toolbar extends StatelessWidget {
   /// Underline 버튼이 눌렸을 때 호출될 콜백 함수입니다.
   final VoidCallback onUnderline;
 
+  /// Letter Spacing 변경이 요청되었을 때 호출될 콜백 함수입니다.
+  final ValueChanged<double> onChangeLetterSpacing;
+
+  /// Line Height 변경이 요청되었을 때 호출될 콜백 함수입니다.
+  final ValueChanged<double> onChangeLineHeight;
+
+  /// Text Align 변경이 요청되었을 때 호출될 콜백 함수입니다.
+  final ValueChanged<TextAlign> onChangeAlign;
+
   @override
   Widget build(BuildContext context) {
     final currentStyle = controller.currentStyle;
+    final doc = controller.document;
 
     return Container(
       height: 56,
@@ -74,6 +87,27 @@ class Toolbar extends StatelessWidget {
             icon: const Icon(Icons.format_underline),
             style: _getButtonStyle(currentStyle.decoration == TextDecoration.underline),
             onPressed: onUnderline,
+          ),
+
+          const VerticalDivider(),
+
+          // Align Left
+          IconButton(
+            icon: const Icon(Icons.format_align_left),
+            style: _getButtonStyle(doc.textAlign == TextAlign.left),
+            onPressed: () => onChangeAlign(TextAlign.left),
+          ),
+          // Align Center
+          IconButton(
+            icon: const Icon(Icons.format_align_center),
+            style: _getButtonStyle(doc.textAlign == TextAlign.center),
+            onPressed: () => onChangeAlign(TextAlign.center),
+          ),
+          // Align Right
+          IconButton(
+            icon: const Icon(Icons.format_align_right),
+            style: _getButtonStyle(doc.textAlign == TextAlign.right),
+            onPressed: () => onChangeAlign(TextAlign.right),
           ),
         ],
       ),
