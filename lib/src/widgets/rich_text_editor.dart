@@ -176,13 +176,21 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   @override
   Widget build(BuildContext context) {
+    // 현재 모드에 따라 외곽선 스타일을 동적으로 결정합니다.
+    final boxDecoration = widget.controller.mode == EditorMode.edit
+        ? BoxDecoration(
+            color: widget.backgroundColor,
+            border: Border.all(color: Colors.grey),
+          )
+        : BoxDecoration(
+            color: widget.backgroundColor,
+            border: Border.all(color: Colors.transparent), // 뷰 모드에서는 투명한 테두리
+          );
+
     return Container(
       width: _currentWidth,
       height: widget.height,
-      decoration: BoxDecoration(
-        color: widget.backgroundColor,
-        border: Border.all(color: Colors.grey),
-      ),
+      decoration: boxDecoration,
       child: Column(
         children: [
           // 타이틀 바 표시가 활성화되어 있고, 타이틀이 지정된 경우에만 타이틀 바를 표시합니다.
