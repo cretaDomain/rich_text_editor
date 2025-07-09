@@ -264,6 +264,7 @@ class RichTextEditorController extends ChangeNotifier {
         selection,
         (attr) =>
             attr.copyWith(fontWeight: attr.fontWeight == FontWeight.bold ? null : FontWeight.bold));
+    notifyListeners();
   }
 
   /// 선택된 영역의 Italic 스타일을 토글합니다.
@@ -273,6 +274,7 @@ class RichTextEditorController extends ChangeNotifier {
         selection,
         (attr) =>
             attr.copyWith(fontStyle: attr.fontStyle == FontStyle.italic ? null : FontStyle.italic));
+    notifyListeners();
   }
 
   /// 선택된 영역의 Underline 스타일을 토글합니다.
@@ -283,6 +285,7 @@ class RichTextEditorController extends ChangeNotifier {
         (attr) => attr.copyWith(
             decoration:
                 attr.decoration == TextDecoration.underline ? null : TextDecoration.underline));
+    notifyListeners();
   }
 
   /// 문서의 텍스트 정렬을 변경합니다.
