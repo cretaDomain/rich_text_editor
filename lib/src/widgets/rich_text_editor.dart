@@ -237,10 +237,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
     return Column(
       children: [
         // 상단: 뷰 위젯 (고정 높이)
-        SizedBox(
-          height: widget.height ?? 300,
+        Center(
           child: Container(
-            width: double.infinity,
+            width: widget.width,
+            height: widget.height ?? 300,
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: Colors.grey.shade300),
