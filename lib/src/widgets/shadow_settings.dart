@@ -112,20 +112,28 @@ class _ShadowSettingsState extends State<ShadowSettings> {
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SizedBox(height: 24, child: const Text('Shadow:', style: TextStyle(fontSize: 14))),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2.0),
+            child:
+                SizedBox(height: 24, child: const Text('Shadow:', style: TextStyle(fontSize: 14))),
+          ),
           const SizedBox(width: 4),
           // 색상 선택 버튼
           InkWell(
             onTap: _showColorPicker,
-            child: Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: _color,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade600),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: _color,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade600),
+                ),
               ),
             ),
           ),
