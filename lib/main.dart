@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:rich_text_editor/src/controllers/rich_text_editor_controller.dart';
-import 'package:rich_text_editor/src/models/document_model.dart';
-import 'package:rich_text_editor/src/models/span_attribute.dart';
-import 'package:rich_text_editor/src/models/text_span_model.dart';
 import 'package:rich_text_editor/src/widgets/rich_text_editor.dart';
 
 void main() {

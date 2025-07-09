@@ -62,7 +62,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   double? _currentWidth;
   TextSelection _lastSelection = const TextSelection.collapsed(offset: -1);
   EdgeInsets _padding = const EdgeInsets.all(16.0);
-  List<Shadow>? _shadows;
+  //List<Shadow>? _shadows;
 
   @override
   void initState() {
@@ -99,16 +99,16 @@ class _RichTextEditorState extends State<RichTextEditor> {
     });
   }
 
-  void _onShadowChanged(Shadow? shadow) {
-    widget.controller.changeShadows(
-      _textEditingController.text,
-      _lastSelection,
-      shadow == null ? null : [shadow],
-    );
-    // setState(() {
-    //   _shadows = shadow == null ? null : [shadow];
-    // });
-  }
+  // void _onShadowChanged(Shadow? shadow) {
+  //   widget.controller.changeShadows(
+  //     _textEditingController.text,
+  //     _lastSelection,
+  //     shadow == null ? null : [shadow],
+  //   );
+  //   // setState(() {
+  //   //   _shadows = shadow == null ? null : [shadow];
+  //   // });
+  // }
 
   /// 텍스트 필드의 내용이 변경될 때 호출됩니다.
   void _onTextChanged() {

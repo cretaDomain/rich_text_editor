@@ -1,4 +1,4 @@
-import 'dart:ui';
+//import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class SpanAttribute {
@@ -90,12 +90,14 @@ class SpanAttribute {
     if (fontSize != null) json['fontSize'] = fontSize;
     if (fontWeight != null) json['fontWeight'] = fontWeight.toString();
     if (fontStyle != null) json['fontStyle'] = fontStyle.toString();
+    // ignore: deprecated_member_use
     if (color != null) json['color'] = color!.value;
     if (letterSpacing != null) json['letterSpacing'] = letterSpacing;
     if (height != null) json['height'] = height;
     if (fontFamily != null) json['fontFamily'] = fontFamily;
     if (decoration != null) json['decoration'] = decoration.toString();
     if (strokeWidth != null) json['strokeWidth'] = strokeWidth;
+    // ignore: deprecated_member_use
     if (strokeColor != null) json['strokeColor'] = strokeColor!.value;
     return json;
   }
