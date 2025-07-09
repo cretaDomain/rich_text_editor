@@ -114,6 +114,9 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   /// 텍스트 필드의 내용이 변경될 때 호출됩니다.
   void _onTextChanged() {
+    // 텍스트 필드의 변경 사항을 즉시 문서 모델에 적용합니다.
+    widget.controller.applyTextUpdate(_textEditingController.text);
+
     final currentSelection = _textEditingController.selection;
     // 텍스트 필드가 포커스를 잃을 때 selection이 유효하지 않은 값(-1)으로 설정될 수 있습니다.
     // 유효한 selection일 때만 마지막 선택 영역을 업데이트합니다.
