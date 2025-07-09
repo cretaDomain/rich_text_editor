@@ -32,6 +32,16 @@ class RichTextEditorController extends ChangeNotifier {
   /// 현재 스타일 속성을 반환합니다.
   SpanAttribute get currentStyle => _currentStyle;
 
+  /// 현재 커서 위치 또는 선택 영역의 스타일을 감지하여 `currentStyle`을 업데이트합니다.
+  void updateStyleAtSelection(TextSelection selection) {
+    // 선택 영역이든 커서든 시작점을 기준으로 스타일을 결정합니다.
+    final attr = _document.getSpanAttributeAt(selection.start);
+    if (_currentStyle != attr) {
+      _currentStyle = attr;
+      notifyListeners();
+    }
+  }
+
   /// 에디터 모드를 변경하고, 변경 사항을 구독자에게 알립니다.
   void setMode(EditorMode newMode) {
     if (_mode != newMode) {
@@ -283,10 +293,10 @@ class RichTextEditorController extends ChangeNotifier {
   }
 
   /// 선택 영역에 특정 스타일 변경을 적용하는 비공개 헬퍼 메서드입니다.
-  void _toggleStyle(TextSelection selection, SpanAttribute Function(SpanAttribute) updateFunc) {
+  void _toggleStyle(TextSelection selection, SpanAttribute Function(SpanAttribute) update) {
     if (selection.isCollapsed) {
-      _currentStyle = updateFunc(_currentStyle);
-      notifyListeners();
+      _currentStyle = update(_currentStyle);
+      // notifyListeners()는 이 메서드를 호출한 상위 메서드에서 처리하므로 여기서 중복 호출하지 않습니다.
       return;
     }
 
@@ -302,7 +312,7 @@ class RichTextEditorController extends ChangeNotifier {
       }
       // 선택 영역이 스팬을 완전히 포함하는 경우
       else if (selection.start <= currentPos && selection.end >= spanEnd) {
-        newSpans.add(span.copyWith(attribute: updateFunc(span.attribute)));
+        newSpans.add(span.copyWith(attribute: update(span.attribute)));
       }
       // 그 외 겹치는 모든 경우 (스팬 분할 필요)
       else {
@@ -316,7 +326,7 @@ class RichTextEditorController extends ChangeNotifier {
         newSpans.add(
           span.copyWith(
             text: span.text.substring(start, end),
-            attribute: updateFunc(span.attribute),
+            attribute: update(span.attribute),
           ),
         );
         // 3. 선택 영역 뒷부분
@@ -327,7 +337,9 @@ class RichTextEditorController extends ChangeNotifier {
       currentPos = spanEnd;
     }
     _document = DocumentModel(spans: newSpans);
-    notifyListeners();
+    // 스타일을 적용한 후, 변경된 내용을 _currentStyle에 즉시 반영합니다.
+    // 이렇게 해야 툴바의 UI(예: 슬라이더)가 현재 선택 영역의 상태와 동기화됩니다.
+    _currentStyle = update(_document.getSpanAttributeAt(selection.start));
   }
 
   // 개발 단계에 따라 이곳에 에디터의 상태를 관리하는 속성과 메서드가 추가될 예정입니다.

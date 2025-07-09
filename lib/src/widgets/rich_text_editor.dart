@@ -116,9 +116,12 @@ class _RichTextEditorState extends State<RichTextEditor> {
     // 텍스트 필드가 포커스를 잃을 때 selection이 유효하지 않은 값(-1)으로 설정될 수 있습니다.
     // 유효한 selection일 때만 마지막 선택 영역을 업데이트합니다.
     if (currentSelection.start > -1 && currentSelection.end > -1) {
-      _lastSelection = currentSelection;
+      if (_lastSelection != currentSelection) {
+        _lastSelection = currentSelection;
+        // 선택 영역이 변경될 때마다 컨트롤러에 알려 스타일을 업데이트합니다.
+        widget.controller.updateStyleAtSelection(currentSelection);
+      }
     }
-    // "실시간 스타일 감지" 기능이 제거되었으므로, 관련 코드는 여기에 없습니다.
   }
 
   void _update() {

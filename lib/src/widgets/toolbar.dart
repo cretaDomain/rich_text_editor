@@ -241,17 +241,23 @@ class _ToolbarState extends State<Toolbar> {
                 value: widget.shadow,
                 onChanged: widget.onShadowChanged,
               ),
-              const SizedBox(width: 8),
-              _buildSpacingInput(
-                '자간',
-                widget.controller.currentStyle.letterSpacing ?? 0.0,
-                widget.onChangeLetterSpacing,
+              const SizedBox(width: 16),
+              _buildSpacingSlider(
+                label: '자간',
+                value: widget.controller.currentStyle.letterSpacing ?? 0.0,
+                onChanged: widget.onChangeLetterSpacing,
+                min: -5.0,
+                max: 10.0,
+                divisions: 30,
               ),
-              const SizedBox(width: 8),
-              _buildSpacingInput(
-                '행간',
-                widget.controller.currentStyle.height ?? 1.0,
-                widget.onChangeLineHeight,
+              const SizedBox(width: 16),
+              _buildSpacingSlider(
+                label: '행간',
+                value: widget.controller.currentStyle.height ?? 1.0,
+                onChanged: widget.onChangeLineHeight,
+                min: 0.5,
+                max: 3.0,
+                divisions: 25,
               ),
               // 이것은 임시로 주석문으로 막은 것이니 제거하지 말것.
               // OutlineSettings(
@@ -266,31 +272,34 @@ class _ToolbarState extends State<Toolbar> {
     );
   }
 
-  Widget _buildSpacingInput(String hint, double value, ValueChanged<double> onChanged) {
-    final controller = TextEditingController(text: value.toString());
-    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: SizedBox(
-        width: 60,
-        height: 40,
-        child: TextField(
-          controller: controller,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-            labelText: hint,
-            isDense: true,
-            border: const OutlineInputBorder(),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          ),
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
-          onChanged: (text) {
-            final newValue = double.tryParse(text) ?? 0.0;
-            onChanged(newValue);
-          },
+  Widget _buildSpacingSlider({
+    required String label,
+    required double value,
+    required ValueChanged<double> onChanged,
+    required double min,
+    required double max,
+    required int divisions,
+  }) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$label: ${value.toStringAsFixed(1)}',
+          style: const TextStyle(fontSize: 12),
         ),
-      ),
+        SizedBox(
+          width: 150,
+          child: Slider(
+            value: value,
+            min: min,
+            max: max,
+            divisions: divisions,
+            label: value.toStringAsFixed(1),
+            onChanged: onChanged,
+          ),
+        ),
+      ],
     );
   }
 

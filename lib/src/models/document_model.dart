@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rich_text_editor/src/models/span_attribute.dart';
 import 'text_span_model.dart';
 
 /// 전체 Rich Text 문서를 나타내는 모델 클래스입니다.
@@ -48,5 +49,32 @@ class DocumentModel {
       spans: spans ?? this.spans,
       textAlign: textAlign ?? this.textAlign,
     );
+  }
+
+  /// 특정 위치(offset)에 있는 텍스트의 `SpanAttribute`를 반환합니다.
+  SpanAttribute getSpanAttributeAt(int offset) {
+    if (spans.isEmpty) {
+      return const SpanAttribute(); // 문서가 비어있으면 기본 속성 반환
+    }
+
+    int currentPos = 0;
+    for (final span in spans) {
+      final spanEnd = currentPos + span.text.length;
+
+      // 커서가 스팬 내부에 있거나, 스팬의 끝(다음 글자 앞)에 위치할 경우
+      if (offset >= currentPos && offset <= spanEnd) {
+        // 커서가 정확히 스팬의 시작점에 있고, 이전 스팬이 있다면
+        // 보통 커서는 다음 글자에 대한 입력을 의미하므로, 현재 스팬의 스타일을 반환하는 것이 맞습니다.
+        // 하지만 커서가 텍스트 맨 앞에 있는 경우(offset=0)도 이 조건에 포함됩니다.
+        // 또한, 사용자가 왼쪽 글자의 스타일을 따라가길 원할 수 있습니다.
+        // 현재 로직: 커서 위치가 포함된 스팬의 스타일을 반환
+        return span.attribute;
+      }
+      currentPos = spanEnd;
+    }
+
+    // offset이 모든 스팬의 범위를 벗어난 경우 (보통 텍스트 맨 끝)
+    // 마지막 스팬의 속성을 반환합니다.
+    return spans.last.attribute;
   }
 }
