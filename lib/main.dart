@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:rich_text_editor/src/controllers/rich_text_editor_controller.dart';
 import 'package:rich_text_editor/src/models/document_model.dart';
@@ -72,38 +73,101 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.microtask(() {
       const sampleJsonString = '''
       {
-        "textAlign": 0,
-        "spans": [
-          {
+    "spans": [
+        {
             "text": "이것은 ",
-            "attribute": {"fontSize": 16.0}
-          },
-          {
-            "text": "굵은",
-            "attribute": {"fontSize": 16.0, "fontWeight": "FontWeight.bold"}
-          },
-          {
+            "attribute": {
+                "fontSize": 16,
+                "fontWeight": "FontWeight.w700",
+                "color": 4294384668
+            }
+        },
+        {
+            "text": "",
+            "attribute": {
+                "fontSize": 14,
+                "fontWeight": "FontWeight.w700",
+                "color": 4294384668
+            }
+        },
+        {
             "text": " 글씨와 ",
-            "attribute": {"fontSize": 16.0}
-          },
-          {
-            "text": "기울임",
-            "attribute": {"fontSize": 16.0, "fontStyle": "FontStyle.italic", "color": 4280391411}
-          },
-          {
+            "attribute": {
+                "fontSize": 16,
+                "fontWeight": "FontWeight.w700",
+                "color": 4294384668
+            }
+        },
+        {
+            "text": "기",
+            "attribute": {
+                "fontSize": 16,
+                "fontWeight": "FontWeight.w700",
+                "fontStyle": "FontStyle.italic",
+                "color": 4294384668
+            }
+        },
+        {
+            "text": "울임",
+            "attribute": {
+                "fontSize": 16,
+                "fontStyle": "FontStyle.italic",
+                "color": 4280391411
+            }
+        },
+        {
             "text": " 글씨, 그리고 ",
-            "attribute": {"fontSize": 16.0}
-          },
-          {
+            "attribute": {
+                "fontSize": 16
+            }
+        },
+        {
+            "text": "기",
+            "attribute": {
+                "fontSize": 16,
+                "fontWeight": "FontWeight.w700",
+                "fontStyle": "FontStyle.italic",
+                "color": 4294384668
+            }
+        },
+        {
+            "text": "울임",
+            "attribute": {
+                "fontSize": 16,
+                "fontStyle": "FontStyle.italic",
+                "color": 4280391411
+            }
+        },
+        {
+            "text": " 글씨, 그리고 ",
+            "attribute": {
+                "fontSize": 16
+            }
+        },
+        {
             "text": "밑줄",
-            "attribute": {"fontSize": 20.0, "decoration": "TextDecoration.underline", "color": 4294901760}
-          },
-          {
-            "text": "을 포함하는 리치 텍스트입니다.",
-            "attribute": {"fontSize": 16.0}
-          }
-        ]
-      }
+            "attribute": {
+                "fontSize": 20,
+                "color": 4294901760,
+                "letterSpacing": 0,
+                "decoration": "TextDecoration.underline"
+            }
+        },
+        {
+            "text": "을 포함하는 리치 텍스",
+            "attribute": {
+                "fontSize": 16,
+                "letterSpacing": 0
+            }
+        },
+        {
+            "text": "트입니다.  가나다라 마바사아자차 카타파하.",
+            "attribute": {
+                "fontSize": 16
+            }
+        }
+    ]
+}
       ''';
       _controller.setDocumentFromJsonString(sampleJsonString);
     });
@@ -190,8 +254,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // 컨트롤러에서 문서의 JSON 표현을 가져와 콘솔에 출력합니다.
-          final jsonString = _controller.document.toJson();
+          // 컨트롤러에서 문서의 JSON 표현을 가져옵니다.
+          final jsonMap = _controller.document.toJson();
+          // jsonEncode를 사용하여 Dart 맵을 사람이 읽기 좋은 형식의 JSON 문자열로 변환합니다.
+          final jsonString = jsonEncode(jsonMap, toEncodable: (e) => e.toString());
           // ignore: avoid_print
           print(jsonString);
         },
