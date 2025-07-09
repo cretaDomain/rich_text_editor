@@ -373,7 +373,8 @@ class _ToolbarState extends State<Toolbar> {
     final theme = Theme.of(context);
     return IconButton.styleFrom(
       foregroundColor: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-      backgroundColor: isActive ? theme.colorScheme.primary.withOpacity(0.12) : Colors.transparent,
+      backgroundColor:
+          isActive ? theme.colorScheme.primary.withValues(alpha: 0.12) : Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
     );
   }

@@ -60,13 +60,15 @@ class _RichTextEditorState extends State<RichTextEditor> {
   late final TextEditingController _textEditingController;
   late final FocusNode _focusNode;
   double? _currentWidth;
+  double? _currentEditorHeight;
   TextSelection _lastSelection = const TextSelection.collapsed(offset: -1);
   EdgeInsets _padding = const EdgeInsets.all(16.0);
-  //List<Shadow>? _shadows;
+  List<Shadow>? _shadows;
 
   @override
   void initState() {
     super.initState();
+    _currentEditorHeight = widget.height;
     // 포커스 노드를 초기화합니다.
     _focusNode = FocusNode();
     // 편집 모드에서 사용할 텍스트 컨트롤러를 초기화합니다.
@@ -126,27 +128,27 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   void _update() {
     if (mounted) {
-      // 컨트롤러의 데이터가 변경될 때마다 UI를 다시 빌드합니다.
-      // 뷰 -> 편집 모드로 전환될 때, 또는 외부에서 문서가 변경되었을 때
-      // 텍스트 필드의 내용을 최신 문서 내용으로 업데이트합니다.
       if (widget.controller.mode == EditorMode.edit) {
         final newText = widget.controller.document.toPlainText();
         if (_textEditingController.text != newText) {
-          // 리스너의 무한 호출을 방지하기 위해 잠시 리스너를 제거하고 텍스트를 설정합니다.
           _textEditingController.removeListener(_onTextChanged);
           _textEditingController.text = newText;
           _textEditingController.addListener(_onTextChanged);
         }
       }
 
-      // 모드에 따라 UI 상태(예: 너비)를 조정하고 화면을 다시 그립니다.
       setState(() {
+        const double estimatedToolbarHeight = 160.0; // 2-3줄 높이 추정치
+        final double originalHeight = widget.height ?? 300.0;
+
         if (widget.controller.mode == EditorMode.edit) {
           if (widget.width != null && widget.width! < 800) {
             _currentWidth = 800;
           }
+          _currentEditorHeight = originalHeight * 2 + estimatedToolbarHeight;
         } else {
           _currentWidth = widget.width;
+          _currentEditorHeight = originalHeight;
         }
       });
     }
@@ -186,15 +188,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
           offstage: widget.controller.mode != EditorMode.view,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onDoubleTap: () {
-              widget.controller.setMode(EditorMode.edit);
-              // Future.delayed를 사용하여 브라우저가 상태를 동기화할 시간을 줍니다.
-              Future.delayed(const Duration(milliseconds: 50), () {
-                if (mounted) {
-                  _focusNode.requestFocus();
-                }
-              });
-            },
+            onDoubleTap: _toggleMode,
             child: Padding(
               padding: _padding,
               child: DocumentView(document: widget.controller.document),
@@ -223,107 +217,142 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    // 현재 모드에 따라 외곽선 스타일을 동적으로 결정합니다.
-    final boxDecoration = widget.controller.mode == EditorMode.edit
-        ? BoxDecoration(
-            color: widget.backgroundColor,
-            border: Border.all(color: Colors.grey),
-          )
-        : BoxDecoration(
-            color: widget.backgroundColor,
-            border: Border.all(color: Colors.transparent), // 뷰 모드에서는 투명한 테두리
-          );
-
-    return Container(
+    return SizedBox(
       width: _currentWidth,
-      height: widget.height,
-      decoration: boxDecoration,
-      child: Column(
-        children: [
-          // 타이틀 바 표시가 활성화되어 있고, 타이틀이 지정된 경우에만 타이틀 바를 표시합니다.
-          if (widget.showTitleBar && widget.title != null)
-            Container(
-              height: widget.titleBarHeight,
-              color: widget.titleBarColor ?? Theme.of(context).colorScheme.surface,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.title!,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  // 편집/뷰 모드 전환 버튼은 툴바로 이동했습니다.
-                ],
-              ),
-            ),
+      height: _currentEditorHeight,
+      child: _buildContent(),
+    );
+  }
 
-          // 편집 모드일 때만 툴바를 표시합니다.
-          if (widget.controller.mode == EditorMode.edit)
-            Toolbar(
-              controller: widget.controller,
-              fontList: widget.fontList,
+  Widget _buildContent() {
+    // 뷰 모드일 경우
+    if (widget.controller.mode == EditorMode.view) {
+      return Container(
+        decoration: BoxDecoration(color: widget.backgroundColor),
+        child: _buildEditorBody(),
+      );
+    }
+
+    // 편집 모드일 경우: 상단 뷰 + 하단 에디터
+    return Column(
+      children: [
+        // 상단: 뷰 위젯 (고정 높이)
+        SizedBox(
+          height: widget.height ?? 300,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Padding(
               padding: _padding,
-              onPaddingChanged: _onPaddingChanged,
-              shadow: widget.controller.currentStyle.shadows?.firstOrNull,
-              onShadowChanged: (shadow) {
-                widget.controller.changeShadows(
-                  _textEditingController.text,
-                  _lastSelection,
-                  shadow == null ? null : [shadow],
-                );
-              },
-              onOutlineChanged: (outline, color) {
-                widget.controller.changeOutline(
-                  _textEditingController.text,
-                  _lastSelection,
-                  outline,
-                  color,
-                );
-              },
-              strokeWidth: widget.controller.currentStyle.strokeWidth,
-              strokeColor: widget.controller.currentStyle.strokeColor,
-              onBold: () => widget.controller.toggleBold(
-                _textEditingController.text,
-                _lastSelection,
-              ),
-              onItalic: () => widget.controller.toggleItalic(
-                _textEditingController.text,
-                _lastSelection,
-              ),
-              onUnderline: () => widget.controller.toggleUnderline(
-                _textEditingController.text,
-                _lastSelection,
-              ),
-              onChangeLetterSpacing: (spacing) => widget.controller.changeLetterSpacing(
-                _textEditingController.text,
-                _lastSelection,
-                spacing,
-              ),
-              onChangeLineHeight: (height) => widget.controller.changeLineHeight(
-                _textEditingController.text,
-                _lastSelection,
-                height,
-              ),
-              onChangeAlign: (align) => widget.controller.changeTextAlign(
-                _textEditingController.text,
-                align,
-              ),
-              onFontFamilyChanged: (value) => widget.controller
-                  .changeFontFamily(_textEditingController.text, _lastSelection, value),
-              onFontSizeChanged: (value) => widget.controller
-                  .changeFontSize(_textEditingController.text, _lastSelection, value),
-              onFontColorChanged: (value) => widget.controller
-                  .changeFontColor(_textEditingController.text, _lastSelection, value),
-              onToggleMode: _toggleMode,
+              child: DocumentView(document: widget.controller.document),
             ),
-
-          // 에디터 본문 영역
-          Expanded(
-            child: _buildEditorBody(),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+
+        // 하단: 에디터 위젯 (나머지 공간 모두 사용)
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+              border: Border.all(color: Colors.grey),
+            ),
+            child: Column(
+              children: [
+                if (widget.showTitleBar && widget.title != null)
+                  Container(
+                    height: widget.titleBarHeight,
+                    color: widget.titleBarColor ?? Theme.of(context).colorScheme.surface,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.title!,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                Toolbar(
+                  controller: widget.controller,
+                  fontList: widget.fontList,
+                  padding: _padding,
+                  onPaddingChanged: _onPaddingChanged,
+                  shadow: widget.controller.currentStyle.shadows?.firstOrNull,
+                  onShadowChanged: (shadow) {
+                    widget.controller.changeShadows(
+                      _textEditingController.text,
+                      _lastSelection,
+                      shadow == null ? null : [shadow],
+                    );
+                  },
+                  onOutlineChanged: (outline, color) {
+                    widget.controller.changeOutline(
+                      _textEditingController.text,
+                      _lastSelection,
+                      outline,
+                      color,
+                    );
+                  },
+                  strokeWidth: widget.controller.currentStyle.strokeWidth,
+                  strokeColor: widget.controller.currentStyle.strokeColor,
+                  onBold: () => widget.controller.toggleBold(
+                    _textEditingController.text,
+                    _lastSelection,
+                  ),
+                  onItalic: () => widget.controller.toggleItalic(
+                    _textEditingController.text,
+                    _lastSelection,
+                  ),
+                  onUnderline: () => widget.controller.toggleUnderline(
+                    _textEditingController.text,
+                    _lastSelection,
+                  ),
+                  onChangeLetterSpacing: (spacing) => widget.controller.changeLetterSpacing(
+                    _textEditingController.text,
+                    _lastSelection,
+                    spacing,
+                  ),
+                  onChangeLineHeight: (height) => widget.controller.changeLineHeight(
+                    _textEditingController.text,
+                    _lastSelection,
+                    height,
+                  ),
+                  onChangeAlign: (align) => widget.controller.changeTextAlign(
+                    _textEditingController.text,
+                    align,
+                  ),
+                  onFontFamilyChanged: (value) => widget.controller
+                      .changeFontFamily(_textEditingController.text, _lastSelection, value),
+                  onFontSizeChanged: (value) => widget.controller
+                      .changeFontSize(_textEditingController.text, _lastSelection, value),
+                  onFontColorChanged: (value) => widget.controller
+                      .changeFontColor(_textEditingController.text, _lastSelection, value),
+                  onToggleMode: _toggleMode,
+                ),
+                Expanded(
+                  child: TextFormField(
+                    controller: _textEditingController,
+                    focusNode: _focusNode,
+                    maxLines: null,
+                    expands: true,
+                    textAlign: widget.controller.document.textAlign,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: _padding,
+                    ),
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
