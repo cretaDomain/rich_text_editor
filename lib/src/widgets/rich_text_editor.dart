@@ -185,6 +185,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   /// 에디터의 본문 영역을 현재 모드에 따라 빌드합니다.
   Widget _buildEditorBody() {
     return Stack(
+      fit: StackFit.expand, // 자식 위젯이 Stack의 전체 크기를 채우도록 합니다.
       children: [
         // 뷰 모드 위젯
         Offstage(
