@@ -114,167 +114,200 @@ class _ToolbarState extends State<Toolbar> {
     final currentStyle = widget.controller.currentStyle;
     final doc = widget.controller.document;
 
-    return Container(
-      color: Colors.grey.shade200,
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      child: Wrap(
-        spacing: 8.0, // 가로 방향의 위젯 사이 간격
-        runSpacing: 4.0, // 세로 방향(줄) 사이 간격
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          // 모드 전환 버튼
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                color: Colors.red,
-                style: _getButtonStyle(widget.controller.mode == EditorMode.view),
-                tooltip: 'View Mode',
-                onPressed: widget.onToggleMode,
-              ),
-            ],
-          ),
-          const VerticalDivider(),
+    // 각 도구 그룹을 생성하는 헬퍼 메서드
+    Widget buildToolGroup({required List<Widget> children}) {
+      return Container(
+        height: 66.0, // 모든 그룹에 동일한 높이를 적용합니다.
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center, // 자식 위젯들을 수직으로 중앙 정렬합니다.
+          children: children,
+        ),
+      );
+    }
 
-          // 폰트 종류 및 크기
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.fontList.isNotEmpty)
-                DropdownButton<String>(
-                  value: currentStyle.fontFamily ?? widget.fontList.first,
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      widget.onFontFamilyChanged(newValue);
-                    }
-                  },
-                  items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
-                    );
-                  }).toList(),
-                  underline: Container(),
+    return Material(
+      elevation: 1.0,
+      color: Theme.of(context).cardColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            // 모드 전환 버튼
+            buildToolGroup(
+              children: [
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.arrow_back),
+                  color: Colors.red.shade700,
+                  tooltip: 'View Mode',
+                  onPressed: widget.onToggleMode,
                 ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: () {
-                  final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
-                  _changeFontSize(currentSize - 1);
-                },
-              ),
-              SizedBox(
-                width: 40,
-                child: TextFormField(
-                  controller: _fontSizeController,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(border: InputBorder.none),
-                  onFieldSubmitted: (value) {
-                    final size = double.tryParse(value);
-                    if (size != null) {
-                      _changeFontSize(size);
-                    }
+              ],
+            ),
+
+            // 폰트 종류 및 크기
+            buildToolGroup(
+              children: [
+                if (widget.fontList.isNotEmpty)
+                  DropdownButton<String>(
+                    value: currentStyle.fontFamily ?? widget.fontList.first,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        widget.onFontFamilyChanged(newValue);
+                      }
+                    },
+                    items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
+                      );
+                    }).toList(),
+                    underline: Container(),
+                  ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                    _changeFontSize(currentSize - 1);
                   },
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
-                  _changeFontSize(currentSize + 1);
-                },
-              ),
-            ],
-          ),
-          const VerticalDivider(),
+                SizedBox(
+                  width: 40,
+                  child: TextFormField(
+                    controller: _fontSizeController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    ),
+                    onFieldSubmitted: (value) {
+                      final size = double.tryParse(value);
+                      if (size != null) {
+                        _changeFontSize(size);
+                      }
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                    _changeFontSize(currentSize + 1);
+                  },
+                ),
+              ],
+            ),
 
-          // 색상 선택 및 스타일
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.color_lens, color: currentStyle.color ?? Colors.black),
-                onPressed: () => _showColorPicker(context),
-              ),
-              const VerticalDivider(),
-              IconButton(
-                icon: const Icon(Icons.format_bold),
-                style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
-                onPressed: widget.onBold,
-              ),
-              IconButton(
-                icon: const Icon(Icons.format_italic),
-                style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
-                onPressed: widget.onItalic,
-              ),
-              IconButton(
-                icon: const Icon(Icons.format_underline),
-                style: _getButtonStyle(
-                    currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
-                onPressed: widget.onUnderline,
-              ),
-            ],
-          ),
-          const VerticalDivider(),
+            // 색상 선택 및 스타일
+            buildToolGroup(
+              children: [
+                IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey.shade400),
+                    ),
+                    child: CircleAvatar(
+                      radius: 10,
+                      backgroundColor: currentStyle.color ?? Colors.black,
+                    ),
+                  ),
+                  tooltip: 'Change color',
+                  onPressed: () => _showColorPicker(context),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.format_bold),
+                  style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
+                  onPressed: widget.onBold,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.format_italic),
+                  style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
+                  onPressed: widget.onItalic,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.format_underline),
+                  style: _getButtonStyle(
+                      currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
+                  onPressed: widget.onUnderline,
+                ),
+              ],
+            ),
 
-          // 정렬
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.format_align_left),
-                style: _getButtonStyle(
-                    doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
-                onPressed: () => widget.onChangeAlign(TextAlign.left),
-              ),
-              IconButton(
-                icon: const Icon(Icons.format_align_center),
-                style: _getButtonStyle(doc.textAlign == TextAlign.center),
-                onPressed: () => widget.onChangeAlign(TextAlign.center),
-              ),
-              IconButton(
-                icon: const Icon(Icons.format_align_right),
-                style: _getButtonStyle(
-                    doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
-                onPressed: () => widget.onChangeAlign(TextAlign.right),
-              ),
-            ],
-          ),
-          const VerticalDivider(),
+            // 정렬
+            buildToolGroup(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.format_align_left),
+                  style: _getButtonStyle(
+                      doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
+                  onPressed: () => widget.onChangeAlign(TextAlign.left),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.format_align_center),
+                  style: _getButtonStyle(doc.textAlign == TextAlign.center),
+                  onPressed: () => widget.onChangeAlign(TextAlign.center),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.format_align_right),
+                  style: _getButtonStyle(
+                      doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
+                  onPressed: () => widget.onChangeAlign(TextAlign.right),
+                ),
+              ],
+            ),
 
-          // 패딩
-          _buildPaddingControls(),
-          const VerticalDivider(),
+            // 패딩
+            buildToolGroup(children: [_buildPaddingControls()]),
 
-          // 그림자
-          ShadowSettings(
-            value: widget.shadow,
-            onChanged: widget.onShadowChanged,
-          ),
-          const VerticalDivider(),
+            // 그림자
+            buildToolGroup(
+              children: [
+                ShadowSettings(
+                  value: widget.shadow,
+                  onChanged: widget.onShadowChanged,
+                ),
+              ],
+            ),
 
-          // 자간/행간
-          _buildSpacingSlider(
-            label: '자간',
-            value: widget.controller.currentStyle.letterSpacing ?? 0.0,
-            onChanged: widget.onChangeLetterSpacing,
-            min: -5.0,
-            max: 10.0,
-            divisions: 30,
-          ),
-          _buildSpacingSlider(
-            label: '행간',
-            value: widget.controller.currentStyle.height ?? 1.0,
-            onChanged: widget.onChangeLineHeight,
-            min: 0.5,
-            max: 3.0,
-            divisions: 25,
-          ),
-        ],
+            // 자간/행간
+            buildToolGroup(
+              children: [
+                _buildSpacingSlider(
+                  label: '자간',
+                  value: widget.controller.currentStyle.letterSpacing ?? 0.0,
+                  onChanged: widget.onChangeLetterSpacing,
+                  min: -5.0,
+                  max: 10.0,
+                  divisions: 30,
+                ),
+                const SizedBox(width: 16),
+                _buildSpacingSlider(
+                  label: '행간',
+                  value: widget.controller.currentStyle.height ?? 1.0,
+                  onChanged: widget.onChangeLineHeight,
+                  min: 0.5,
+                  max: 3.0,
+                  divisions: 25,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -337,13 +370,11 @@ class _ToolbarState extends State<Toolbar> {
 
   /// 버튼의 활성화 상태에 따라 다른 배경색을 적용하는 스타일을 반환합니다.
   ButtonStyle _getButtonStyle(bool isActive) {
-    return ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(
-        isActive ? Colors.grey.shade400 : Colors.transparent,
-      ),
-      shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
-      ),
+    final theme = Theme.of(context);
+    return IconButton.styleFrom(
+      foregroundColor: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+      backgroundColor: isActive ? theme.colorScheme.primary.withOpacity(0.12) : Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
     );
   }
 

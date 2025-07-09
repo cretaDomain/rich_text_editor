@@ -104,12 +104,12 @@ class _ShadowSettingsState extends State<ShadowSettings> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      // decoration: BoxDecoration(
+      //   border: Border.all(color: Colors.grey.shade400),
+      //   borderRadius: BorderRadius.circular(4.0),
+      // ),
+      // margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
