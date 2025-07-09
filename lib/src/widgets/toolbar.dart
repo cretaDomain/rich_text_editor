@@ -116,172 +116,163 @@ class _ToolbarState extends State<Toolbar> {
 
     return Container(
       color: Colors.grey.shade200,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      child: Wrap(
+        spacing: 8.0, // 가로 방향의 위젯 사이 간격
+        runSpacing: 4.0, // 세로 방향(줄) 사이 간격
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          // 첫 번째 줄: 기존 툴바
-          Container(
-            height: 56,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    color: Colors.red,
-                    style: _getButtonStyle(widget.controller.mode == EditorMode.view),
-                    tooltip: 'View Mode',
-                    onPressed: widget.onToggleMode,
-                  ),
-                  const VerticalDivider(),
-                  Row(
-                    children: [
-                      // 폰트 종류
-                      if (widget.fontList.isNotEmpty)
-                        DropdownButton<String>(
-                          value: currentStyle.fontFamily ?? widget.fontList.first,
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              widget.onFontFamilyChanged(newValue);
-                            }
-                          },
-                          items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
-                            );
-                          }).toList(),
-                          underline: Container(),
-                        ),
-                      const SizedBox(width: 8),
-                      const VerticalDivider(),
-                      const SizedBox(width: 8),
-
-                      // 폰트 크기
-                      IconButton(
-                        icon: const Icon(Icons.remove),
-                        onPressed: () {
-                          final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
-                          _changeFontSize(currentSize - 1);
-                        },
-                      ),
-                      SizedBox(
-                        width: 40,
-                        child: TextFormField(
-                          controller: _fontSizeController,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: const InputDecoration(border: InputBorder.none),
-                          onFieldSubmitted: (value) {
-                            final size = double.tryParse(value);
-                            if (size != null) {
-                              _changeFontSize(size);
-                            }
-                          },
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
-                          _changeFontSize(currentSize + 1);
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      const VerticalDivider(),
-                      const SizedBox(width: 8),
-
-                      // 색상 선택
-                      IconButton(
-                        icon: Icon(Icons.color_lens, color: currentStyle.color ?? Colors.black),
-                        onPressed: () => _showColorPicker(context),
-                      ),
-
-                      const VerticalDivider(),
-
-                      // 스타일 버튼들
-                      IconButton(
-                        icon: const Icon(Icons.format_bold),
-                        style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
-                        onPressed: widget.onBold,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.format_italic),
-                        style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
-                        onPressed: widget.onItalic,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.format_underline),
-                        style: _getButtonStyle(
-                            currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
-                        onPressed: widget.onUnderline,
-                      ),
-
-                      const VerticalDivider(),
-
-                      // 정렬 버튼들
-                      IconButton(
-                        icon: const Icon(Icons.format_align_left),
-                        style: _getButtonStyle(
-                            doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
-                        onPressed: () => widget.onChangeAlign(TextAlign.left),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.format_align_center),
-                        style: _getButtonStyle(doc.textAlign == TextAlign.center),
-                        onPressed: () => widget.onChangeAlign(TextAlign.center),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.format_align_right),
-                        style: _getButtonStyle(
-                            doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
-                        onPressed: () => widget.onChangeAlign(TextAlign.right),
-                      ),
-
-                      const VerticalDivider(),
-                      _buildPaddingControls(),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // 두 번째 줄: 그림자 및 외곽선 설정
+          // 모드 전환 버튼
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ShadowSettings(
-                value: widget.shadow,
-                onChanged: widget.onShadowChanged,
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                color: Colors.red,
+                style: _getButtonStyle(widget.controller.mode == EditorMode.view),
+                tooltip: 'View Mode',
+                onPressed: widget.onToggleMode,
               ),
-              const SizedBox(width: 16),
-              _buildSpacingSlider(
-                label: '자간',
-                value: widget.controller.currentStyle.letterSpacing ?? 0.0,
-                onChanged: widget.onChangeLetterSpacing,
-                min: -5.0,
-                max: 10.0,
-                divisions: 30,
-              ),
-              const SizedBox(width: 16),
-              _buildSpacingSlider(
-                label: '행간',
-                value: widget.controller.currentStyle.height ?? 1.0,
-                onChanged: widget.onChangeLineHeight,
-                min: 0.5,
-                max: 3.0,
-                divisions: 25,
-              ),
-              // 이것은 임시로 주석문으로 막은 것이니 제거하지 말것.
-              // OutlineSettings(
-              //   strokeWidth: widget.strokeWidth,
-              //   color: widget.strokeColor,
-              //   onChanged: widget.onOutlineChanged,
-              // ),
             ],
+          ),
+          const VerticalDivider(),
+
+          // 폰트 종류 및 크기
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.fontList.isNotEmpty)
+                DropdownButton<String>(
+                  value: currentStyle.fontFamily ?? widget.fontList.first,
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      widget.onFontFamilyChanged(newValue);
+                    }
+                  },
+                  items: widget.fontList.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(fontFamily: value, fontSize: 14)),
+                    );
+                  }).toList(),
+                  underline: Container(),
+                ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                  _changeFontSize(currentSize - 1);
+                },
+              ),
+              SizedBox(
+                width: 40,
+                child: TextFormField(
+                  controller: _fontSizeController,
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(border: InputBorder.none),
+                  onFieldSubmitted: (value) {
+                    final size = double.tryParse(value);
+                    if (size != null) {
+                      _changeFontSize(size);
+                    }
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                  _changeFontSize(currentSize + 1);
+                },
+              ),
+            ],
+          ),
+          const VerticalDivider(),
+
+          // 색상 선택 및 스타일
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.color_lens, color: currentStyle.color ?? Colors.black),
+                onPressed: () => _showColorPicker(context),
+              ),
+              const VerticalDivider(),
+              IconButton(
+                icon: const Icon(Icons.format_bold),
+                style: _getButtonStyle(currentStyle.fontWeight == FontWeight.bold),
+                onPressed: widget.onBold,
+              ),
+              IconButton(
+                icon: const Icon(Icons.format_italic),
+                style: _getButtonStyle(currentStyle.fontStyle == FontStyle.italic),
+                onPressed: widget.onItalic,
+              ),
+              IconButton(
+                icon: const Icon(Icons.format_underline),
+                style: _getButtonStyle(
+                    currentStyle.decoration?.contains(TextDecoration.underline) ?? false),
+                onPressed: widget.onUnderline,
+              ),
+            ],
+          ),
+          const VerticalDivider(),
+
+          // 정렬
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.format_align_left),
+                style: _getButtonStyle(
+                    doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
+                onPressed: () => widget.onChangeAlign(TextAlign.left),
+              ),
+              IconButton(
+                icon: const Icon(Icons.format_align_center),
+                style: _getButtonStyle(doc.textAlign == TextAlign.center),
+                onPressed: () => widget.onChangeAlign(TextAlign.center),
+              ),
+              IconButton(
+                icon: const Icon(Icons.format_align_right),
+                style: _getButtonStyle(
+                    doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
+                onPressed: () => widget.onChangeAlign(TextAlign.right),
+              ),
+            ],
+          ),
+          const VerticalDivider(),
+
+          // 패딩
+          _buildPaddingControls(),
+          const VerticalDivider(),
+
+          // 그림자
+          ShadowSettings(
+            value: widget.shadow,
+            onChanged: widget.onShadowChanged,
+          ),
+          const VerticalDivider(),
+
+          // 자간/행간
+          _buildSpacingSlider(
+            label: '자간',
+            value: widget.controller.currentStyle.letterSpacing ?? 0.0,
+            onChanged: widget.onChangeLetterSpacing,
+            min: -5.0,
+            max: 10.0,
+            divisions: 30,
+          ),
+          _buildSpacingSlider(
+            label: '행간',
+            value: widget.controller.currentStyle.height ?? 1.0,
+            onChanged: widget.onChangeLineHeight,
+            min: 0.5,
+            max: 3.0,
+            divisions: 25,
           ),
         ],
       ),
