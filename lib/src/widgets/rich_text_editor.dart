@@ -152,6 +152,31 @@ class _RichTextEditorState extends State<RichTextEditor> {
     }
   }
 
+  /// 에디터의 모드를 토글하는 내부 메서드입니다.
+  void _toggleMode() {
+    final currentMode = widget.controller.mode;
+    if (currentMode == EditorMode.edit) {
+      // 편집 -> 뷰 모드로 전환 시, 먼저 텍스트 필드의 내용을 모델에 반영합니다.
+      final originalText = widget.controller.document.toPlainText();
+      if (_textEditingController.text != originalText) {
+        widget.controller.applyTextUpdate(_textEditingController.text);
+      }
+      // 그런 다음 모드를 변경합니다.
+      widget.controller.setMode(EditorMode.view);
+      _focusNode.unfocus();
+    } else {
+      // 뷰 -> 편집 모드로 전환합니다.
+      // _update 리스너가 텍스트 필드 내용을 동기화할 것입니다.
+      widget.controller.setMode(EditorMode.edit);
+      // Future.delayed를 사용하여 브라우저가 상태를 동기화할 시간을 줍니다.
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (mounted) {
+          _focusNode.requestFocus();
+        }
+      });
+    }
+  }
+
   /// 에디터의 본문 영역을 현재 모드에 따라 빌드합니다.
   Widget _buildEditorBody() {
     return Stack(
@@ -228,36 +253,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
                     widget.title!,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  // 편집/뷰 모드 전환 버튼
-                  IconButton(
-                    icon: Icon(
-                      widget.controller.mode == EditorMode.edit ? Icons.visibility : Icons.edit,
-                    ),
-                    onPressed: () {
-                      final currentMode = widget.controller.mode;
-                      if (currentMode == EditorMode.edit) {
-                        // 편집 -> 뷰 모드로 전환 시, 먼저 텍스트 필드의 내용을 모델에 반영합니다.
-                        final originalText = widget.controller.document.toPlainText();
-                        if (_textEditingController.text != originalText) {
-                          widget.controller.applyTextUpdate(_textEditingController.text);
-                        }
-                        // 그런 다음 모드를 변경합니다.
-                        widget.controller.setMode(EditorMode.view);
-                        _focusNode.unfocus();
-                      } else {
-                        // 뷰 -> 편집 모드로 전환합니다.
-                        // _update 리스너가 텍스트 필드 내용을 동기화할 것입니다.
-                        widget.controller.setMode(EditorMode.edit);
-                        // Future.delayed를 사용하여 브라우저가 상태를 동기화할 시간을 줍니다.
-                        Future.delayed(const Duration(milliseconds: 50), () {
-                          if (mounted) {
-                            _focusNode.requestFocus();
-                          }
-                        });
-                      }
-                    },
-                    tooltip: widget.controller.mode == EditorMode.edit ? 'View Mode' : 'Edit Mode',
-                  ),
+                  // 편집/뷰 모드 전환 버튼은 툴바로 이동했습니다.
                 ],
               ),
             ),
@@ -319,6 +315,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
                   .changeFontSize(_textEditingController.text, _lastSelection, value),
               onFontColorChanged: (value) => widget.controller
                   .changeFontColor(_textEditingController.text, _lastSelection, value),
+              onToggleMode: _toggleMode,
             ),
 
           // 에디터 본문 영역
