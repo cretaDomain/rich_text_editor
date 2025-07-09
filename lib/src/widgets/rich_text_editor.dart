@@ -269,28 +269,42 @@ class _RichTextEditorState extends State<RichTextEditor> {
                   shadow == null ? null : [shadow],
                 );
               },
-              strokeWidth: widget.controller.currentStyle.strokeWidth,
-              strokeColor: widget.controller.currentStyle.strokeColor,
-              onOutlineChanged: (width, color) {
+              onOutlineChanged: (outline, color) {
                 widget.controller.changeOutline(
                   _textEditingController.text,
                   _lastSelection,
-                  width,
+                  outline,
                   color,
                 );
               },
-              onBold: () =>
-                  widget.controller.toggleBold(_textEditingController.text, _lastSelection),
-              onItalic: () =>
-                  widget.controller.toggleItalic(_textEditingController.text, _lastSelection),
-              onUnderline: () =>
-                  widget.controller.toggleUnderline(_textEditingController.text, _lastSelection),
-              onChangeAlign: (align) =>
-                  widget.controller.changeTextAlign(_textEditingController.text, align),
-              onChangeLetterSpacing: (value) => widget.controller
-                  .changeLetterSpacing(_textEditingController.text, _lastSelection, value),
-              onChangeLineHeight: (value) => widget.controller
-                  .changeLineHeight(_textEditingController.text, _lastSelection, value),
+              strokeWidth: widget.controller.currentStyle.strokeWidth,
+              strokeColor: widget.controller.currentStyle.strokeColor,
+              onBold: () => widget.controller.toggleBold(
+                _textEditingController.text,
+                _lastSelection,
+              ),
+              onItalic: () => widget.controller.toggleItalic(
+                _textEditingController.text,
+                _lastSelection,
+              ),
+              onUnderline: () => widget.controller.toggleUnderline(
+                _textEditingController.text,
+                _lastSelection,
+              ),
+              onChangeLetterSpacing: (spacing) => widget.controller.changeLetterSpacing(
+                _textEditingController.text,
+                _lastSelection,
+                spacing,
+              ),
+              onChangeLineHeight: (height) => widget.controller.changeLineHeight(
+                _textEditingController.text,
+                _lastSelection,
+                height,
+              ),
+              onChangeAlign: (align) => widget.controller.changeTextAlign(
+                _textEditingController.text,
+                align,
+              ),
               onFontFamilyChanged: (value) => widget.controller
                   .changeFontFamily(_textEditingController.text, _lastSelection, value),
               onFontSizeChanged: (value) => widget.controller

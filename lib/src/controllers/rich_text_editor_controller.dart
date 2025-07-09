@@ -210,6 +210,20 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 선택된 영역의 자간을 변경합니다.
+  void changeLetterSpacing(String currentText, TextSelection selection, double letterSpacing) {
+    _applyTextUpdateInternal(currentText);
+    _toggleStyle(selection, (attr) => attr.copyWith(letterSpacing: letterSpacing));
+    notifyListeners();
+  }
+
+  /// 선택된 영역의 행간을 변경합니다.
+  void changeLineHeight(String currentText, TextSelection selection, double lineHeight) {
+    _applyTextUpdateInternal(currentText);
+    _toggleStyle(selection, (attr) => attr.copyWith(height: lineHeight));
+    notifyListeners();
+  }
+
   /// 선택된 영역의 폰트 색상을 변경합니다.
   void changeFontColor(String currentText, TextSelection selection, Color color) {
     _applyTextUpdateInternal(currentText);
@@ -250,18 +264,6 @@ class RichTextEditorController extends ChangeNotifier {
     _applyTextUpdateInternal(currentText);
     _document = _document.copyWith(textAlign: align);
     notifyListeners();
-  }
-
-  /// 선택된 영역의 글자 간격(letter spacing)을 변경합니다.
-  void changeLetterSpacing(String currentText, TextSelection selection, double spacing) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(letterSpacing: spacing));
-  }
-
-  /// 선택된 영역의 줄 간격(height)을 변경합니다.
-  void changeLineHeight(String currentText, TextSelection selection, double height) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(height: height));
   }
 
   /// 특정 텍스트 선택 영역에 그림자 효과를 적용합니다.
