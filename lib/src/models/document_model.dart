@@ -21,10 +21,21 @@ class DocumentModel {
 
   /// JSON 맵으로부터 `DocumentModel` 인스턴스를 생성합니다.
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
-    return DocumentModel(
-      spans: (json['spans'] as List).map((spanJson) => TextSpanModel.fromJson(spanJson)).toList(),
-      textAlign: TextAlign.values[json['textAlign'] ?? TextAlign.start.index],
-    );
+    try {
+      // 'spans' 필드가 리스트 형태인지 확인합니다.
+      final spansList = json['spans'] as List?;
+      if (spansList == null) {
+        throw const FormatException('Required "spans" field is missing or not a List.');
+      }
+      return DocumentModel(
+        spans: spansList.map((spanJson) => TextSpanModel.fromJson(spanJson)).toList(),
+        textAlign: TextAlign.values[json['textAlign'] ?? TextAlign.start.index],
+      );
+    } catch (e) {
+      debugPrint('Failed to parse DocumentModel from JSON: $e. Source: $json');
+      // 오류 발생 시, 비어있는 DocumentModel을 반환하여 앱의 비정상 종료를 방지합니다.
+      return const DocumentModel();
+    }
   }
 
   /// `DocumentModel` 인스턴스를 JSON 맵으로 변환합니다.

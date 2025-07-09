@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 //import 'package:flutter/foundation.dart';
 import 'package:rich_text_editor/src/models/document_model.dart';
@@ -53,6 +54,21 @@ class RichTextEditorController extends ChangeNotifier {
   /// 문서를 새로운 내용으로 교체하고, 변경 사항을 구독자에게 알립니다.
   void setDocument(DocumentModel newDocument) {
     _document = newDocument;
+    notifyListeners();
+  }
+
+  /// JSON 문자열로부터 문서를 설정합니다.
+  ///
+  /// 잘못된 형식의 JSON이 입력될 경우 에러를 로깅하고 현재 문서를 비웁니다.
+  void setDocumentFromJsonString(String jsonString) {
+    try {
+      final json = jsonDecode(jsonString);
+      _document = DocumentModel.fromJson(json);
+    } catch (e) {
+      // JSON 파싱 또는 모델 변환 중 에러 발생 시 처리
+      debugPrint('Error parsing JSON string: $e');
+      _document = const DocumentModel(); // 안전을 위해 문서를 비웁니다.
+    }
     notifyListeners();
   }
 

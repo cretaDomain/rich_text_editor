@@ -21,10 +21,20 @@ class TextSpanModel {
 
   /// JSON 맵으로부터 `TextSpanModel` 인스턴스를 생성합니다.
   factory TextSpanModel.fromJson(Map<String, dynamic> json) {
-    return TextSpanModel(
-      text: json['text'],
-      attribute: SpanAttribute.fromJson(json['attribute']),
-    );
+    try {
+      // 필수 필드인 'text'와 'attribute'가 존재하는지 확인합니다.
+      if (json['text'] == null || json['attribute'] == null) {
+        throw const FormatException('Required fields "text" or "attribute" are missing.');
+      }
+      return TextSpanModel(
+        text: json['text'],
+        attribute: SpanAttribute.fromJson(json['attribute']),
+      );
+    } catch (e) {
+      debugPrint('Failed to parse TextSpanModel from JSON: $e. Source: $json');
+      // 오류 발생 시, 텍스트가 없는 기본 스팬을 반환하여 앱의 비정상 종료를 방지합니다.
+      return TextSpanModel.defaultSpan('');
+    }
   }
 
   /// `TextSpanModel` 인스턴스를 JSON 맵으로 변환합니다.

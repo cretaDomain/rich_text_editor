@@ -67,43 +67,84 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _controller = RichTextEditorController();
 
-    // 뷰 모드 렌더링을 테스트하기 위한 샘플 데이터 생성
-    final sampleDocument = DocumentModel(
-      spans: [
-        const TextSpanModel(
-          text: '이것은 ',
-          attribute: SpanAttribute(fontSize: 16),
-        ),
-        const TextSpanModel(
-          text: '굵은',
-          attribute: SpanAttribute(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const TextSpanModel(
-          text: ' 글씨와 ',
-          attribute: SpanAttribute(fontSize: 16),
-        ),
-        const TextSpanModel(
-          text: '기울임',
-          attribute: SpanAttribute(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue),
-        ),
-        const TextSpanModel(
-          text: ' 글씨, 그리고 ',
-          attribute: SpanAttribute(fontSize: 16),
-        ),
-        const TextSpanModel(
-          text: '밑줄',
-          attribute:
-              SpanAttribute(fontSize: 20, decoration: TextDecoration.underline, color: Colors.red),
-        ),
-        const TextSpanModel(
-          text: '을 포함하는 리치 텍스트입니다.',
-          attribute: SpanAttribute(fontSize: 16),
-        ),
-      ],
-    );
+    // Future.microtask를 사용하여 위젯의 첫 빌드가 완료된 후 데이터를 설정합니다.
+    // 이렇게 하면 컨트롤러의 리스너가 준비된 상태에서 데이터 변경을 감지할 수 있습니다.
+    Future.microtask(() {
+      const sampleJsonString = '''
+      {
+        "textAlign": 0,
+        "spans": [
+          {
+            "text": "이것은 ",
+            "attribute": {"fontSize": 16.0}
+          },
+          {
+            "text": "굵은",
+            "attribute": {"fontSize": 16.0, "fontWeight": "FontWeight.bold"}
+          },
+          {
+            "text": " 글씨와 ",
+            "attribute": {"fontSize": 16.0}
+          },
+          {
+            "text": "기울임",
+            "attribute": {"fontSize": 16.0, "fontStyle": "FontStyle.italic", "color": 4280391411}
+          },
+          {
+            "text": " 글씨, 그리고 ",
+            "attribute": {"fontSize": 16.0}
+          },
+          {
+            "text": "밑줄",
+            "attribute": {"fontSize": 20.0, "decoration": "TextDecoration.underline", "color": 4294901760}
+          },
+          {
+            "text": "을 포함하는 리치 텍스트입니다.",
+            "attribute": {"fontSize": 16.0}
+          }
+        ]
+      }
+      ''';
+      _controller.setDocumentFromJsonString(sampleJsonString);
+    });
 
-    // 컨트롤러에 샘플 데이터 설정
-    _controller.setDocument(sampleDocument);
+    // // 뷰 모드 렌더링을 테스트하기 위한 샘플 데이터 생성
+    // final sampleDocument = DocumentModel(
+    //   spans: [
+    //     const TextSpanModel(
+    //       text: '이것은 ',
+    //       attribute: SpanAttribute(fontSize: 16),
+    //     ),
+    //     const TextSpanModel(
+    //       text: '굵은',
+    //       attribute: SpanAttribute(fontSize: 16, fontWeight: FontWeight.bold),
+    //     ),
+    //     const TextSpanModel(
+    //       text: ' 글씨와 ',
+    //       attribute: SpanAttribute(fontSize: 16),
+    //     ),
+    //     const TextSpanModel(
+    //       text: '기울임',
+    //       attribute: SpanAttribute(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.blue),
+    //     ),
+    //     const TextSpanModel(
+    //       text: ' 글씨, 그리고 ',
+    //       attribute: SpanAttribute(fontSize: 16),
+    //     ),
+    //     const TextSpanModel(
+    //       text: '밑줄',
+    //       attribute:
+    //           SpanAttribute(fontSize: 20, decoration: TextDecoration.underline, color: Colors.red),
+    //     ),
+    //     const TextSpanModel(
+    //       text: '을 포함하는 리치 텍스트입니다.',
+    //       attribute: SpanAttribute(fontSize: 16),
+    //     ),
+    //   ],
+    // );
+
+    // // 컨트롤러에 샘플 데이터 설정
+    // _controller.setDocument(sampleDocument);
   }
 
   @override
