@@ -352,7 +352,7 @@ class RichTextEditorController extends ChangeNotifier {
       }
       currentPos = spanEnd;
     }
-    _document = DocumentModel(spans: newSpans);
+    _document = _document.copyWith(spans: _mergeSpans(newSpans));
     // 스타일을 적용한 후, 변경된 내용을 _currentStyle에 즉시 반영합니다.
     // 이렇게 해야 툴바의 UI(예: 슬라이더)가 현재 선택 영역의 상태와 동기화됩니다.
     _currentStyle = update(_document.getSpanAttributeAt(selection.start));
