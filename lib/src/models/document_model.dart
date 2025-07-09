@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rich_text_editor/src/models/span_attribute.dart';
+import '../models/span_attribute.dart';
 import 'text_span_model.dart';
 
 /// 전체 Rich Text 문서를 나타내는 모델 클래스입니다.

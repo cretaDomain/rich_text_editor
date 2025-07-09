@@ -1,95 +1,127 @@
 {
     "spans": [
         {
-            "text": "이것은",
+            "text": "This is",
             "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "color": 4294384668
+                "fontSize": 14,
+                "color": 4278190080
             }
         },
         {
-            "text": "",
+            "text": "sample",
+            "attribute": {
+                "fontSize": 28,
+                "color": 4278190080
+            }
+        },
+        {
+            "text": " text\nThis is ",
+            "attribute": {
+                "fontSize": 14,
+                "color": 4278190080
+            }
+        },
+        {
+            "text": "sample",
             "attribute": {
                 "fontSize": 14,
                 "fontWeight": "FontWeight.w700",
-                "color": 4294384668
+                "color": 4278190080
             }
         },
         {
-            "text": " 글씨와",
+            "text": " text\nThis is",
             "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "color": 4294384668
+                "fontSize": 14,
+                "color": 4278190080
             }
         },
         {
-            "text": "기",
+            "text": "sample",
             "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
+                "fontSize": 14,
                 "fontStyle": "FontStyle.italic",
-                "color": 4294384668
+                "color": 4278190080
             }
         },
         {
-            "text": "울임",
+            "text": " text\nThis is",
             "attribute": {
-                "fontSize": 16,
-                "fontStyle": "FontStyle.italic",
-                "color": 4280391411
+                "fontSize": 14,
+                "color": 4278190080
             }
         },
         {
-            "text": " 글씨, 그리고",
+            "text": "sample",
             "attribute": {
-                "fontSize": 16
+                "fontSize": 30,
+                "color": 4294057245
             }
         },
         {
-            "text": "기",
+            "text": " text\nThis is ",
             "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "fontStyle": "FontStyle.italic",
-                "color": 4294384668
+                "fontSize": 14,
+                "color": 4278190080
             }
         },
         {
-            "text": "울임",
+            "text": "sample",
             "attribute": {
-                "fontSize": 16,
-                "fontStyle": "FontStyle.italic",
-                "color": 4280391411
+                "fontSize": 35,
+                "color": 4278190080
             }
         },
         {
-            "text": " 글씨, 그리고",
+            "text": " text\nThis is ",
             "attribute": {
-                "fontSize": 16
+                "fontSize": 14,
+                "color": 4278190080
             }
         },
         {
-            "text": "밑줄",
+            "text": "sample",
             "attribute": {
-                "fontSize": 20,
-                "color": 4294901760,
-                "letterSpacing": 0,
+                "fontSize": 14,
+                "color": 4278190080,
                 "decoration": "TextDecoration.underline"
             }
         },
         {
-            "text": "을 포함하는 리치 텍스",
+            "text": " text\nThis is",
             "attribute": {
-                "fontSize": 16,
-                "letterSpacing": 0
+                "fontSize": 14,
+                "color": 4278190080
             }
         },
         {
-            "text": "트입니다.  가나다라 마바사아자차        카타파하.",
+            "text": "sample",
             "attribute": {
-                "fontSize": 16
+                "fontSize": 14,
+                "fontStyle": "FontStyle.italic",
+                "color": 4278190080
+            }
+        },
+        {
+            "text": " text\nThis is sample text\n",
+            "attribute": {
+                "fontSize": 14,
+                "color": 4278190080
+            }
+        },
+        {
+            "text": "This is sample text\nThis is sample text\nThis is sampletext",
+            "attribute": {
+                "fontSize": 14,
+                "color": 4278190080,
+                "height": 1.4
+            }
+        },
+        {
+            "text": "\n",
+            "attribute": {
+                "fontSize": 14,
+                "color": 4278190080
             }
         }
     ],

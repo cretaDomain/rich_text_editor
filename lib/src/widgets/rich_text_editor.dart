@@ -63,7 +63,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
   double? _currentEditorHeight;
   TextSelection _lastSelection = const TextSelection.collapsed(offset: -1);
   EdgeInsets _padding = const EdgeInsets.all(16.0);
-  List<Shadow>? _shadows;
+
+  //List<Shadow>? _shadows;
 
   @override
   void initState() {

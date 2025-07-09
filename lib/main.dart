@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:rich_text_editor/src/controllers/rich_text_editor_controller.dart';
-import 'package:rich_text_editor/src/widgets/rich_text_editor.dart';
+import 'src/controllers/rich_text_editor_controller.dart';
+import 'src/widgets/rich_text_editor.dart';
 
 void main() {
   runApp(const MyApp());
@@ -70,101 +70,127 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.microtask(() {
       const sampleJsonString = '''
       {
-    "spans": [
-        {
-            "text": "이것은 ",
-            "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "color": 4294384668
-            }
-        },
-        {
-            "text": "",
-            "attribute": {
-                "fontSize": 14,
-                "fontWeight": "FontWeight.w700",
-                "color": 4294384668
-            }
-        },
-        {
-            "text": " 글씨와 ",
-            "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "color": 4294384668
-            }
-        },
-        {
-            "text": "기",
-            "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "fontStyle": "FontStyle.italic",
-                "color": 4294384668
-            }
-        },
-        {
-            "text": "울임",
-            "attribute": {
-                "fontSize": 16,
-                "fontStyle": "FontStyle.italic",
-                "color": 4280391411
-            }
-        },
-        {
-            "text": " 글씨, 그리고 ",
-            "attribute": {
-                "fontSize": 16
-            }
-        },
-        {
-            "text": "기",
-            "attribute": {
-                "fontSize": 16,
-                "fontWeight": "FontWeight.w700",
-                "fontStyle": "FontStyle.italic",
-                "color": 4294384668
-            }
-        },
-        {
-            "text": "울임",
-            "attribute": {
-                "fontSize": 16,
-                "fontStyle": "FontStyle.italic",
-                "color": 4280391411
-            }
-        },
-        {
-            "text": " 글씨, 그리고 ",
-            "attribute": {
-                "fontSize": 16
-            }
-        },
-        {
-            "text": "밑줄",
-            "attribute": {
-                "fontSize": 20,
-                "color": 4294901760,
-                "letterSpacing": 0,
-                "decoration": "TextDecoration.underline"
-            }
-        },
-        {
-            "text": "을 포함하는 리치 텍스",
-            "attribute": {
-                "fontSize": 16,
-                "letterSpacing": 0
-            }
-        },
-        {
-            "text": "트입니다.  가나다라 마바사아자차 카타파하.",
-            "attribute": {
-                "fontSize": 16
-            }
-        }
-    ]
-}
+          "spans": [
+              {
+                  "text": "This is",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 28,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": " text This is ",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 14,
+                      "fontWeight": "FontWeight.w700",
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": " text This is",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 14,
+                      "fontStyle": "FontStyle.italic",
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": " text This is",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 30,
+                      "color": 4294057245
+                  }
+              },
+              {
+                  "text": " text This is ",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 35,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": " text This is ",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080,
+                      "decoration": "TextDecoration.underline"
+                  }
+              },
+              {
+                  "text": " text This is",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "sample",
+                  "attribute": {
+                      "fontSize": 14,
+                      "fontStyle": "FontStyle.italic",
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": " text This is sample text",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "This is sample text This is sample text This is sampletext",
+                  "attribute": {
+                      "fontSize": 14,
+                      "color": 4278190080,
+                      "height": 1.4
+                  }
+              }
+          ],
+          "textAlign": 4
+      }
       ''';
       _controller.setDocumentFromJsonString(sampleJsonString);
     });

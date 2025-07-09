@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 //import 'package:flutter/foundation.dart';
-import 'package:rich_text_editor/src/models/document_model.dart';
-import 'package:rich_text_editor/src/models/span_attribute.dart';
-import 'package:rich_text_editor/src/models/text_span_model.dart';
+import '../models/document_model.dart';
+import '../models/span_attribute.dart';
+import '../models/text_span_model.dart';
 
 /// 에디터의 모드를 정의합니다. (편집 모드 / 뷰 모드)
 enum EditorMode {
