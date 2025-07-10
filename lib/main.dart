@@ -76,6 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: RichTextEditor(
+            width: 400,
+            height: 300,
+            initialMode: EditorMode.view,
+            showTitleBar: false,
             controller: _controller,
             fontList: const ['Roboto', 'Arial', 'Courier'],
           ),
