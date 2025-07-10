@@ -294,6 +294,7 @@ class _RawEditorState extends State<RawEditor>
               widget.controller.updateSelection(
                 TextSelection.collapsed(offset: line.start),
               );
+              _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
             }
             if (event.logicalKey == LogicalKeyboardKey.end) {
@@ -304,6 +305,7 @@ class _RawEditorState extends State<RawEditor>
               widget.controller.updateSelection(
                 TextSelection.collapsed(offset: line.end),
               );
+              _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
             }
           }
