@@ -183,24 +183,23 @@ class _ToolbarState extends State<Toolbar> {
                 ),
                 SizedBox(
                   width: 40,
-                  // 임시로 주석 처리함.
-                  // child: TextFormField(
-                  //   controller: _fontSizeController,
-                  //   textAlign: TextAlign.center,
-                  //   keyboardType: TextInputType.number,
-                  //   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  //   decoration: const InputDecoration(
-                  //     isDense: true,
-                  //     border: OutlineInputBorder(),
-                  //     contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                  //   ),
-                  //   onFieldSubmitted: (value) {
-                  //     final size = double.tryParse(value);
-                  //     if (size != null) {
-                  //       _changeFontSize(size);
-                  //     }
-                  //   },
-                  // ),
+                  child: TextFormField(
+                    controller: _fontSizeController,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    ),
+                    onFieldSubmitted: (value) {
+                      final size = double.tryParse(value);
+                      if (size != null) {
+                        _changeFontSize(size);
+                      }
+                    },
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
