@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import '../models/document_model.dart';
+import '../models/text_span_model.dart';
 
 /// A raw text editor that displays rich text content and handles user input.
 ///
@@ -300,10 +301,20 @@ class _RawEditorState extends State<RawEditor>
             if (event.logicalKey == LogicalKeyboardKey.end) {
               // Move cursor to the end of the current line.
               final textPainter = _createTextPainter(context.size!);
+              final fullText = widget.controller.document.toPlainText();
               final currentPosition = widget.controller.selection.base;
               final line = textPainter.getLineBoundary(currentPosition);
+
+              var endPosition = line.end;
+              // If the line ends with a newline character, move the cursor before it.
+              if (endPosition > 0 &&
+                  endPosition <= fullText.length &&
+                  fullText[endPosition - 1] == '\n') {
+                endPosition--;
+              }
+
               widget.controller.updateSelection(
-                TextSelection.collapsed(offset: line.end),
+                TextSelection.collapsed(offset: endPosition),
               );
               _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
