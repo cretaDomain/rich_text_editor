@@ -24,13 +24,14 @@ class _RawEditorState extends State<RawEditor>
     with SingleTickerProviderStateMixin, TextInputClient {
   final FocusNode _focusNode = FocusNode();
   late final AnimationController _cursorBlink;
+  TextInputConnection? _connection;
 
   @override
   void initState() {
     super.initState();
     // 컨트롤러와 포커스 노드에 리스너를 추가하여 UI를 갱신합니다.
     widget.controller.addListener(() => setState(() {}));
-    _focusNode.addListener(() => setState(() {}));
+    _focusNode.addListener(_onFocusChanged);
 
     _cursorBlink = AnimationController(
       vsync: this,
@@ -39,16 +40,45 @@ class _RawEditorState extends State<RawEditor>
     // 애니메이션 컨트롤러가 값을 변경할 때마다 UI를 다시 그리도록 리스너를 추가합니다.
     _cursorBlink.addListener(() => setState(() {}));
     _cursorBlink.repeat();
+
+    if (_focusNode.hasFocus) {
+      _openConnection();
+    }
   }
 
   @override
   void dispose() {
     // 등록된 리스너들을 모두 제거합니다.
     widget.controller.removeListener(() => setState(() {}));
-    _focusNode.removeListener(() => setState(() {}));
+    _focusNode.removeListener(_onFocusChanged);
+    _closeConnection();
     _cursorBlink.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onFocusChanged() {
+    setState(() {
+      if (_focusNode.hasFocus) {
+        _openConnection();
+      } else {
+        _closeConnection();
+      }
+    });
+  }
+
+  void _openConnection() {
+    if (_connection?.attached != true) {
+      _connection = TextInput.attach(this, const TextInputConfiguration());
+      _connection!.setEditingState(currentTextEditingValue);
+    }
+  }
+
+  void _closeConnection() {
+    if (_connection?.attached == true) {
+      _connection!.close();
+      _connection = null;
+    }
   }
 
   // -- TextInputClient implementation --
