@@ -270,20 +270,42 @@ class _RawEditorState extends State<RawEditor>
       child: Focus(
         focusNode: _focusNode,
         onKeyEvent: (node, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
-            // Intercept the Tab key event to insert a tab character.
-            final oldValue = currentTextEditingValue;
-            final newText = oldValue.text.replaceRange(
-              oldValue.selection.start,
-              oldValue.selection.end,
-              '\t',
-            );
-            final newValue = TextEditingValue(
-              text: newText,
-              selection: TextSelection.collapsed(offset: oldValue.selection.start + 1),
-            );
-            updateEditingValue(newValue);
-            return KeyEventResult.handled; // Mark the event as handled.
+          if (event is KeyDownEvent) {
+            if (event.logicalKey == LogicalKeyboardKey.tab) {
+              // Intercept the Tab key event to insert a tab character.
+              final oldValue = currentTextEditingValue;
+              final newText = oldValue.text.replaceRange(
+                oldValue.selection.start,
+                oldValue.selection.end,
+                '\t',
+              );
+              final newValue = TextEditingValue(
+                text: newText,
+                selection: TextSelection.collapsed(offset: oldValue.selection.start + 1),
+              );
+              updateEditingValue(newValue);
+              return KeyEventResult.handled; // Mark the event as handled.
+            }
+            if (event.logicalKey == LogicalKeyboardKey.home) {
+              // Move cursor to the beginning of the current line.
+              final textPainter = _createTextPainter(context.size!);
+              final currentPosition = widget.controller.selection.base;
+              final line = textPainter.getLineBoundary(currentPosition);
+              widget.controller.updateSelection(
+                TextSelection.collapsed(offset: line.start),
+              );
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.end) {
+              // Move cursor to the end of the current line.
+              final textPainter = _createTextPainter(context.size!);
+              final currentPosition = widget.controller.selection.base;
+              final line = textPainter.getLineBoundary(currentPosition);
+              widget.controller.updateSelection(
+                TextSelection.collapsed(offset: line.end),
+              );
+              return KeyEventResult.handled;
+            }
           }
           // For all other keys, let the system and TextInputClient handle them.
           return KeyEventResult.ignored;
