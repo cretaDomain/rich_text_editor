@@ -1,3 +1,7 @@
+## 0.0.2
+
+* preview image
+
 ## 0.0.1
 
 * Initial release of the Creta Rich Text Editor.
