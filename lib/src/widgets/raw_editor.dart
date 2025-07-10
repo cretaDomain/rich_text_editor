@@ -271,7 +271,7 @@ class DocumentPainter extends CustomPainter {
 
     // 선택 영역 그리기 (텍스트보다 먼저)
     if (!selection.isCollapsed) {
-      final selectionColor = Colors.blue.withOpacity(0.3);
+      final selectionColor = Colors.blue.withValues(alpha: 0.3);
       final selectionBoxes = textPainter.getBoxesForSelection(selection);
       for (final box in selectionBoxes) {
         canvas.drawRect(box.toRect(), Paint()..color = selectionColor);
@@ -285,7 +285,7 @@ class DocumentPainter extends CustomPainter {
     if (isFocused && selection.isCollapsed && cursorOpacity > 0.5) {
       final textPosition = TextPosition(offset: selection.baseOffset);
       final cursorOffset = textPainter.getOffsetForCaret(textPosition, Rect.zero);
-      final cursorHeight = textPainter.getFullHeightForCaret(textPosition, Rect.zero) ?? 14.0;
+      final cursorHeight = textPainter.getFullHeightForCaret(textPosition, Rect.zero);
       final cursorRect = Rect.fromLTWH(cursorOffset.dx, cursorOffset.dy, 2, cursorHeight);
       canvas.drawRect(cursorRect, Paint()..color = Colors.black);
     }

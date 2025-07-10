@@ -12,8 +12,8 @@ class RichTextEditor extends StatefulWidget {
   const RichTextEditor({
     super.key,
     required this.controller,
-    this.width,
-    this.height,
+    required this.width,
+    required this.height,
     this.backgroundColor = Colors.transparent,
     this.title,
     this.showTitleBar = true,
@@ -27,10 +27,10 @@ class RichTextEditor extends StatefulWidget {
   final RichTextEditorController controller;
 
   /// 위젯의 가로 크기입니다.
-  final double? width;
+  final double width;
 
   /// 위젯의 세로 크기입니다.
-  final double? height;
+  final double height;
 
   /// 에디터의 배경색입니다. (기본값: 투명)
   final Color backgroundColor;
@@ -92,15 +92,15 @@ class _RichTextEditorState extends State<RichTextEditor> {
       setState(() {
         // 모드 변경에 따라 에디터 사이즈를 동적으로 조절하는 로직
         const double estimatedToolbarHeight = 160.0;
-        final double originalHeight = widget.height ?? 300.0;
+        final double originalHeight = widget.height;
 
         if (widget.controller.mode == EditorMode.edit) {
-          if (widget.width != null && widget.width! < 800) {
+          if (widget.width < 800) {
             _currentWidth = 800;
           } else {
             _currentWidth = widget.width;
           }
-          _currentHeight = originalHeight * 2 + estimatedToolbarHeight;
+          _currentHeight = originalHeight + estimatedToolbarHeight;
         } else {
           _currentWidth = widget.width;
           _currentHeight = originalHeight;
@@ -174,10 +174,28 @@ class _RichTextEditorState extends State<RichTextEditor> {
           onToggleMode: _toggleMode,
         ),
         Expanded(
-          child: Padding(
-            padding: _padding,
-            child: RawEditor(
-              controller: widget.controller,
+          child: Center(
+            child: Container(
+              width: widget.width,
+              height: widget.height,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400, width: 1.0),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: _padding,
+                child: RawEditor(
+                  controller: widget.controller,
+                ),
+              ),
             ),
           ),
         ),
