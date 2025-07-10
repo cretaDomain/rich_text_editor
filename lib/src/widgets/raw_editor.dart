@@ -49,16 +49,32 @@ class _RawEditorState extends State<RawEditor> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  void _requestFocus() {
+  void _handleTapDown(TapDownDetails details) {
     if (!_focusNode.hasFocus) {
       _focusNode.requestFocus();
     }
+
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final textPainter = TextPainter(
+      text: TextSpan(
+        children: widget.controller.document.spans.map((s) => s.toTextSpan()).toList(),
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: widget.controller.document.textAlign,
+    );
+    textPainter.layout(maxWidth: renderBox.size.width);
+
+    final position = textPainter.getPositionForOffset(details.localPosition);
+
+    widget.controller.updateSelection(
+      TextSelection.collapsed(offset: position.offset),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _requestFocus,
+      onTapDown: _handleTapDown,
       child: Focus(
         focusNode: _focusNode,
         child: RawKeyboardListener(
