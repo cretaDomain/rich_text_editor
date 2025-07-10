@@ -45,7 +45,63 @@ class _MyHomePageState extends State<MyHomePage> {
       {
           "spans": [
               {
-                  "text": "Hello, Rich Text Editor!",
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
+                  "attribute": {
+                      "fontSize": 24,
+                      "color": 4278190080
+                  }
+              },
+              {
+                  "text": "Hello, Rich Text Editor!\\n",
                   "attribute": {
                       "fontSize": 24,
                       "color": 4278190080
