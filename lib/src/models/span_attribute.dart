@@ -60,6 +60,24 @@ class SpanAttribute {
     );
   }
 
+  /// 특정 속성을 제거(null로 설정)한 새로운 인스턴스를 반환합니다.
+  SpanAttribute removeAttribute(String attributeName) {
+    return SpanAttribute(
+      fontSize: attributeName == 'fontSize' ? null : fontSize,
+      fontWeight: attributeName == 'fontWeight' ? null : fontWeight,
+      fontStyle: attributeName == 'fontStyle' ? null : fontStyle,
+      color: attributeName == 'color' ? null : color,
+      foreground: attributeName == 'foreground' ? null : foreground,
+      letterSpacing: attributeName == 'letterSpacing' ? null : letterSpacing,
+      height: attributeName == 'height' ? null : height,
+      fontFamily: attributeName == 'fontFamily' ? null : fontFamily,
+      decoration: attributeName == 'decoration' ? null : decoration,
+      shadows: attributeName == 'shadows' ? null : shadows,
+      strokeWidth: attributeName == 'strokeWidth' ? null : strokeWidth,
+      strokeColor: attributeName == 'strokeColor' ? null : strokeColor,
+    );
+  }
+
   /// 이 속성을 Flutter의 `TextStyle` 객체로 변환합니다.
   TextStyle toTextStyle() {
     return TextStyle(

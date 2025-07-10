@@ -155,6 +155,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
           onPaddingChanged: _onPaddingChanged,
           shadow: widget.controller.currentStyle.shadows?.firstOrNull,
           onShadowChanged: (shadow) {
+            // `shadow`가 null이면 null을, 아니면 리스트에 담아 전달합니다.
             widget.controller.changeShadows(shadow == null ? null : [shadow]);
           },
           onOutlineChanged: (outline, color) {

@@ -309,16 +309,21 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 특정 텍스트 선택 영역에 그림자 효과를 적용합니다.
+  /// 선택된 영역의 그림자 속성을 변경합니다.
   void changeShadows(List<Shadow>? shadows) {
-    _toggleStyle(_selection, (attr) => attr.copyWith(shadows: shadows));
+    if (shadows == null) {
+      // 그림자를 제거합니다.
+      _toggleStyle(_selection, (attr) => attr.removeAttribute('shadows'));
+    } else {
+      // 그림자를 적용합니다.
+      _toggleStyle(_selection, (attr) => attr.copyWith(shadows: shadows));
+    }
     notifyListeners();
   }
 
-  /// 특정 텍스트 선택 영역에 외곽선 효과를 적용합니다.
-  void changeOutline(double? strokeWidth, Color? strokeColor) {
-    _toggleStyle(
-        _selection, (attr) => attr.copyWith(strokeWidth: strokeWidth, strokeColor: strokeColor));
+  /// 선택된 영역의 외곽선 속성을 변경합니다.
+  void changeOutline(double? strokeWidth, Color? color) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(strokeWidth: strokeWidth, strokeColor: color));
     notifyListeners();
   }
 
