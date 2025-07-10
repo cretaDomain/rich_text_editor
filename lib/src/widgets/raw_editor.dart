@@ -26,11 +26,16 @@ class _RawEditorState extends State<RawEditor>
   late final AnimationController _cursorBlink;
   TextInputConnection? _connection;
 
+  // A listener function to trigger rebuilds when the controller changes.
+  void _rebuild() {
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    // 컨트롤러와 포커스 노드에 리스너를 추가하여 UI를 갱신합니다.
-    widget.controller.addListener(() => setState(() {}));
+    // Add the listener.
+    widget.controller.addListener(_rebuild);
     _focusNode.addListener(_onFocusChanged);
 
     _cursorBlink = AnimationController(
@@ -48,8 +53,8 @@ class _RawEditorState extends State<RawEditor>
 
   @override
   void dispose() {
-    // 등록된 리스너들을 모두 제거합니다.
-    widget.controller.removeListener(() => setState(() {}));
+    // Make sure to remove the listener using the exact same function object.
+    widget.controller.removeListener(_rebuild);
     _focusNode.removeListener(_onFocusChanged);
     _closeConnection();
     _cursorBlink.dispose();
