@@ -269,31 +269,37 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 현재 선택 영역의 모든 스팬이 주어진 조건을 만족하는지 확인합니다.
+  bool _isAttributeActive(bool Function(SpanAttribute) predicate) {
+    if (_selection.isCollapsed) {
+      return predicate(_currentStyle);
+    }
+    return _document.isAttributeAppliedToSelection(predicate, _selection);
+  }
+
   /// 선택된 영역의 Bold 스타일을 토글합니다.
   void toggleBold() {
-    _toggleStyle(
-        _selection,
-        (attr) =>
-            attr.copyWith(fontWeight: attr.fontWeight == FontWeight.bold ? null : FontWeight.bold));
+    final isBold = _isAttributeActive((attr) => attr.fontWeight == FontWeight.bold);
+    _toggleStyle(_selection,
+        (attr) => attr.copyWith(fontWeight: isBold ? FontWeight.normal : FontWeight.bold));
     notifyListeners();
   }
 
   /// 선택된 영역의 Italic 스타일을 토글합니다.
   void toggleItalic() {
-    _toggleStyle(
-        _selection,
-        (attr) =>
-            attr.copyWith(fontStyle: attr.fontStyle == FontStyle.italic ? null : FontStyle.italic));
+    final isItalic = _isAttributeActive((attr) => attr.fontStyle == FontStyle.italic);
+    _toggleStyle(_selection,
+        (attr) => attr.copyWith(fontStyle: isItalic ? FontStyle.normal : FontStyle.italic));
     notifyListeners();
   }
 
   /// 선택된 영역의 Underline 스타일을 토글합니다.
   void toggleUnderline() {
+    final isUnderlined = _isAttributeActive((attr) => attr.decoration == TextDecoration.underline);
     _toggleStyle(
         _selection,
         (attr) => attr.copyWith(
-            decoration:
-                attr.decoration == TextDecoration.underline ? null : TextDecoration.underline));
+            decoration: isUnderlined ? TextDecoration.none : TextDecoration.underline));
     notifyListeners();
   }
 

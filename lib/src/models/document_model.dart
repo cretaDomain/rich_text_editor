@@ -88,4 +88,31 @@ class DocumentModel {
     // 마지막 스팬의 속성을 반환합니다.
     return spans.last.attribute;
   }
+
+  /// 주어진 선택 영역에 특정 속성이 일관되게 적용되었는지 확인합니다.
+  bool isAttributeAppliedToSelection(
+      bool Function(SpanAttribute) predicate, TextSelection selection) {
+    if (selection.isCollapsed) return false;
+
+    int currentPos = 0;
+    bool applied = true;
+
+    for (final span in spans) {
+      final spanEnd = currentPos + span.text.length;
+      final selectionStart = selection.start;
+      final selectionEnd = selection.end;
+
+      // 현재 스팬이 선택 영역과 겹치는지 확인
+      if (spanEnd > selectionStart && currentPos < selectionEnd) {
+        // 겹치는 영역이 있으면, 해당 스팬의 속성이 조건을 만족하는지 확인
+        if (!predicate(span.attribute)) {
+          applied = false;
+          break; // 하나라도 만족하지 않으면 즉시 중단
+        }
+      }
+
+      currentPos = spanEnd;
+    }
+    return applied;
+  }
 }
