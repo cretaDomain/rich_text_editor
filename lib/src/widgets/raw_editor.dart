@@ -25,6 +25,8 @@ class _RawEditorState extends State<RawEditor>
   final FocusNode _focusNode = FocusNode();
   late final AnimationController _cursorBlink;
   TextInputConnection? _connection;
+  DateTime _lastTapTime = DateTime.now();
+  int _tapCount = 0;
 
   // A listener function to trigger rebuilds when the controller changes.
   void _rebuild() {
@@ -173,17 +175,71 @@ class _RawEditorState extends State<RawEditor>
     if (!_focusNode.hasFocus) {
       _focusNode.requestFocus();
     }
-    // _openConnection();  <-- This call is redundant and is removed.
-    // The connection should only be managed by the _onFocusChanged listener.
+
+    // --- Tap counting logic ---
+    final now = DateTime.now();
+    if (now.difference(_lastTapTime) < const Duration(milliseconds: 300)) {
+      _tapCount++;
+    } else {
+      _tapCount = 1;
+    }
+    _lastTapTime = now;
 
     final textPainter = _createTextPainter(context.size!);
     final position = textPainter.getPositionForOffset(details.localPosition);
-    widget.controller.updateSelection(
-      TextSelection.collapsed(offset: position.offset),
-    );
+
+    switch (_tapCount) {
+      case 1:
+        // Single tap: move cursor
+        widget.controller.updateSelection(
+          TextSelection.collapsed(offset: position.offset),
+        );
+        break;
+      case 2:
+        // Double tap: select word
+        _selectWordAt(position, textPainter);
+        break;
+      case 3:
+        // Triple tap: select paragraph and reset count
+        _selectParagraphAt(position, textPainter);
+        _tapCount = 0; // Reset after triple tap
+        break;
+    }
 
     // 중요: 변경된 선택 영역을 시스템 IME에 즉시 알려 상태를 동기화합니다.
     _connection?.setEditingState(currentTextEditingValue);
+  }
+
+  void _selectWordAt(TextPosition position, TextPainter textPainter) {
+    // Get the word boundary at the given position.
+    final TextRange word = textPainter.getWordBoundary(position);
+    // Update the selection to encompass the word.
+    widget.controller.updateSelection(
+      TextSelection(baseOffset: word.start, extentOffset: word.end),
+    );
+  }
+
+  void _selectParagraphAt(TextPosition position, TextPainter textPainter) {
+    final String plainText = widget.controller.document.toPlainText();
+    final int offset = position.offset;
+
+    // Find the start of the paragraph (previous newline).
+    int start = plainText.lastIndexOf('\n', offset - 1);
+    if (start == -1) {
+      start = 0; // Beginning of the document
+    } else {
+      start += 1; // Move after the newline character
+    }
+
+    // Find the end of the paragraph (next newline).
+    int end = plainText.indexOf('\n', offset);
+    if (end == -1) {
+      end = plainText.length; // End of the document
+    }
+
+    widget.controller.updateSelection(
+      TextSelection(baseOffset: start, extentOffset: end),
+    );
   }
 
   void _handlePanStart(DragStartDetails details) {
