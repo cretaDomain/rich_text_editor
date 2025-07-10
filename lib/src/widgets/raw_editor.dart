@@ -49,12 +49,7 @@ class _RawEditorState extends State<RawEditor> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  void _handleTapDown(TapDownDetails details) {
-    if (!_focusNode.hasFocus) {
-      _focusNode.requestFocus();
-    }
-
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+  TextPainter _createTextPainter(Size size) {
     final textPainter = TextPainter(
       text: TextSpan(
         children: widget.controller.document.spans.map((s) => s.toTextSpan()).toList(),
@@ -62,12 +57,37 @@ class _RawEditorState extends State<RawEditor> with SingleTickerProviderStateMix
       textDirection: TextDirection.ltr,
       textAlign: widget.controller.document.textAlign,
     );
-    textPainter.layout(maxWidth: renderBox.size.width);
+    textPainter.layout(maxWidth: size.width);
+    return textPainter;
+  }
 
+  void _handleTapDown(TapDownDetails details) {
+    if (!_focusNode.hasFocus) {
+      _focusNode.requestFocus();
+    }
+    final textPainter = _createTextPainter(context.size!);
     final position = textPainter.getPositionForOffset(details.localPosition);
-
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
+    );
+  }
+
+  void _handlePanStart(DragStartDetails details) {
+    // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
+    final textPainter = _createTextPainter(context.size!);
+    final position = textPainter.getPositionForOffset(details.localPosition);
+    widget.controller.updateSelection(
+      TextSelection.collapsed(offset: position.offset),
+    );
+  }
+
+  void _handlePanUpdate(DragUpdateDetails details) {
+    final textPainter = _createTextPainter(context.size!);
+    final position = textPainter.getPositionForOffset(details.localPosition);
+    widget.controller.updateSelection(
+      widget.controller.selection.copyWith(
+        extentOffset: position.offset,
+      ),
     );
   }
 
@@ -75,6 +95,8 @@ class _RawEditorState extends State<RawEditor> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: _handleTapDown,
+      onPanStart: _handlePanStart,
+      onPanUpdate: _handlePanUpdate,
       child: Focus(
         focusNode: _focusNode,
         child: RawKeyboardListener(
@@ -126,10 +148,19 @@ class DocumentPainter extends CustomPainter {
 
     textPainter.layout(maxWidth: size.width);
 
-    // 텍스트를 먼저 그립니다.
+    // 선택 영역 그리기 (텍스트보다 먼저)
+    if (!selection.isCollapsed) {
+      final selectionColor = Colors.blue.withOpacity(0.3);
+      final selectionBoxes = textPainter.getBoxesForSelection(selection);
+      for (final box in selectionBoxes) {
+        canvas.drawRect(box.toRect(), Paint()..color = selectionColor);
+      }
+    }
+
+    // 텍스트 그리기
     textPainter.paint(canvas, Offset.zero);
 
-    // 커서 그리기
+    // 커서 그리기 (텍스트보다 나중에)
     if (isFocused && selection.isCollapsed && cursorOpacity > 0.5) {
       final textPosition = TextPosition(offset: selection.baseOffset);
       final cursorOffset = textPainter.getOffsetForCaret(textPosition, Rect.zero);
