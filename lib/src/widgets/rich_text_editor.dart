@@ -59,10 +59,14 @@ class RichTextEditor extends StatefulWidget {
 
 class _RichTextEditorState extends State<RichTextEditor> {
   EdgeInsets _padding = const EdgeInsets.all(16.0);
+  double? _currentWidth;
+  double? _currentHeight;
 
   @override
   void initState() {
     super.initState();
+    _currentWidth = widget.width;
+    _currentHeight = widget.height;
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
     widget.controller.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
@@ -86,8 +90,21 @@ class _RichTextEditorState extends State<RichTextEditor> {
   void _update() {
     if (mounted) {
       setState(() {
-        // 이 메소드는 컨트롤러의 mode 변경 시 UI를 다시 그리도록 합니다.
-        // 더 이상 복잡한 로직이 필요 없습니다.
+        // 모드 변경에 따라 에디터 사이즈를 동적으로 조절하는 로직
+        const double estimatedToolbarHeight = 160.0;
+        final double originalHeight = widget.height ?? 300.0;
+
+        if (widget.controller.mode == EditorMode.edit) {
+          if (widget.width != null && widget.width! < 800) {
+            _currentWidth = 800;
+          } else {
+            _currentWidth = widget.width;
+          }
+          _currentHeight = originalHeight * 2 + estimatedToolbarHeight;
+        } else {
+          _currentWidth = widget.width;
+          _currentHeight = originalHeight;
+        }
       });
     }
   }
@@ -103,8 +120,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.width,
-      height: widget.height,
+      width: _currentWidth,
+      height: _currentHeight,
       child: Container(
         decoration: BoxDecoration(
           color: widget.backgroundColor,

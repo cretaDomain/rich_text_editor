@@ -179,21 +179,19 @@ class _RawEditorState extends State<RawEditor>
       onPanUpdate: _handlePanUpdate,
       child: Focus(
         focusNode: _focusNode,
-        child: RawKeyboardListener(
-          focusNode: _focusNode,
-          onKey: (RawKeyEvent event) {
-            // Key handling logic will be implemented in a later step.
-          },
-          child: CustomPaint(
-            painter: DocumentPainter(
-              document: widget.controller.document,
-              selection: widget.controller.selection,
-              isFocused: _focusNode.hasFocus,
-              // 애니메이션의 현재 값을 painter에게 전달합니다.
-              cursorOpacity: _cursorBlink.value,
-            ),
-            size: Size.infinite,
+        onKeyEvent: (FocusNode node, KeyEvent event) {
+          // 키보드 입력 처리 로직은 나중에 이 곳에서 구현됩니다.
+          // 지금은 모든 키 이벤트를 무시합니다.
+          return KeyEventResult.ignored;
+        },
+        child: CustomPaint(
+          painter: DocumentPainter(
+            document: widget.controller.document,
+            selection: widget.controller.selection,
+            isFocused: _focusNode.hasFocus,
+            cursorOpacity: _cursorBlink.value,
           ),
+          size: Size.infinite,
         ),
       ),
     );
