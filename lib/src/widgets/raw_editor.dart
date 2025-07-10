@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/rich_text_editor_controller.dart';
+import '../models/document_model.dart';
 
 /// A raw text editor that displays rich text content and handles user input.
 ///
@@ -22,13 +23,34 @@ class _RawEditorState extends State<RawEditor> {
   @override
   Widget build(BuildContext context) {
     // The CustomPaint widget is the canvas where the rich text will be drawn.
-    // For now, it's empty, but it will soon be powered by a CustomPainter.
     return CustomPaint(
-      // The painter will be implemented in the next step.
-      // painter: DocumentPainter(
-      //   document: widget.controller.document,
-      // ),
+      painter: DocumentPainter(
+        document: widget.controller.document,
+      ),
       size: Size.infinite,
     );
+  }
+}
+
+/// A custom painter that draws a `DocumentModel`.
+class DocumentPainter extends CustomPainter {
+  const DocumentPainter({
+    required this.document,
+  });
+
+  /// The document to be painted.
+  final DocumentModel document;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // In the next step, we will implement the logic to iterate through
+    // the document's spans and draw them using TextPainter.
+  }
+
+  @override
+  bool shouldRepaint(covariant DocumentPainter oldDelegate) {
+    // For now, we repaint whenever the document changes.
+    // This can be optimized later.
+    return oldDelegate.document != document;
   }
 }
