@@ -240,65 +240,57 @@ class RichTextEditorController extends ChangeNotifier {
   }
 
   /// 폰트 패밀리를 변경하고, 변경 사항을 알립니다.
-  void changeFontFamily(String currentText, TextSelection selection, String fontFamily) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(fontFamily: fontFamily));
+  void changeFontFamily(String fontFamily) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(fontFamily: fontFamily));
     notifyListeners();
   }
 
   /// 선택된 영역의 폰트 크기를 변경합니다.
-  void changeFontSize(String currentText, TextSelection selection, double fontSize) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(fontSize: fontSize));
+  void changeFontSize(double fontSize) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(fontSize: fontSize));
     notifyListeners();
   }
 
   /// 선택된 영역의 자간을 변경합니다.
-  void changeLetterSpacing(String currentText, TextSelection selection, double letterSpacing) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(letterSpacing: letterSpacing));
+  void changeLetterSpacing(double letterSpacing) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(letterSpacing: letterSpacing));
     notifyListeners();
   }
 
   /// 선택된 영역의 행간을 변경합니다.
-  void changeLineHeight(String currentText, TextSelection selection, double lineHeight) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(height: lineHeight));
+  void changeLineHeight(double lineHeight) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(height: lineHeight));
     notifyListeners();
   }
 
   /// 선택된 영역의 폰트 색상을 변경합니다.
-  void changeFontColor(String currentText, TextSelection selection, Color color) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(color: color));
+  void changeFontColor(Color color) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(color: color));
     notifyListeners();
   }
 
   /// 선택된 영역의 Bold 스타일을 토글합니다.
-  void toggleBold(String currentText, TextSelection selection) {
-    _applyTextUpdateInternal(currentText);
+  void toggleBold() {
     _toggleStyle(
-        selection,
+        _selection,
         (attr) =>
             attr.copyWith(fontWeight: attr.fontWeight == FontWeight.bold ? null : FontWeight.bold));
     notifyListeners();
   }
 
   /// 선택된 영역의 Italic 스타일을 토글합니다.
-  void toggleItalic(String currentText, TextSelection selection) {
-    _applyTextUpdateInternal(currentText);
+  void toggleItalic() {
     _toggleStyle(
-        selection,
+        _selection,
         (attr) =>
             attr.copyWith(fontStyle: attr.fontStyle == FontStyle.italic ? null : FontStyle.italic));
     notifyListeners();
   }
 
   /// 선택된 영역의 Underline 스타일을 토글합니다.
-  void toggleUnderline(String currentText, TextSelection selection) {
-    _applyTextUpdateInternal(currentText);
+  void toggleUnderline() {
     _toggleStyle(
-        selection,
+        _selection,
         (attr) => attr.copyWith(
             decoration:
                 attr.decoration == TextDecoration.underline ? null : TextDecoration.underline));
@@ -306,25 +298,21 @@ class RichTextEditorController extends ChangeNotifier {
   }
 
   /// 문서의 텍스트 정렬을 변경합니다.
-  void changeTextAlign(String currentText, TextAlign align) {
-    _applyTextUpdateInternal(currentText);
+  void changeTextAlign(TextAlign align) {
     _document = _document.copyWith(textAlign: align);
     notifyListeners();
   }
 
   /// 특정 텍스트 선택 영역에 그림자 효과를 적용합니다.
-  void changeShadows(String currentText, TextSelection selection, List<Shadow>? shadows) {
-    _applyTextUpdateInternal(currentText);
-    _toggleStyle(selection, (attr) => attr.copyWith(shadows: shadows));
+  void changeShadows(List<Shadow>? shadows) {
+    _toggleStyle(_selection, (attr) => attr.copyWith(shadows: shadows));
     notifyListeners();
   }
 
   /// 특정 텍스트 선택 영역에 외곽선 효과를 적용합니다.
-  void changeOutline(
-      String currentText, TextSelection selection, double? strokeWidth, Color? strokeColor) {
-    _applyTextUpdateInternal(currentText);
+  void changeOutline(double? strokeWidth, Color? strokeColor) {
     _toggleStyle(
-        selection, (attr) => attr.copyWith(strokeWidth: strokeWidth, strokeColor: strokeColor));
+        _selection, (attr) => attr.copyWith(strokeWidth: strokeWidth, strokeColor: strokeColor));
     notifyListeners();
   }
 

@@ -137,43 +137,23 @@ class _RichTextEditorState extends State<RichTextEditor> {
           padding: _padding,
           onPaddingChanged: _onPaddingChanged,
           shadow: widget.controller.currentStyle.shadows?.firstOrNull,
-          // TODO: 아래 콜백들은 Step 4-2에서 수정될 예정입니다.
-          // 현재는 이전 방식 그대로라 정상 동작하지 않습니다.
           onShadowChanged: (shadow) {
-            // widget.controller.changeShadows(shadow == null ? null : [shadow]);
+            widget.controller.changeShadows(shadow == null ? null : [shadow]);
           },
           onOutlineChanged: (outline, color) {
-            // widget.controller.changeOutline(outline, color);
+            widget.controller.changeOutline(outline, color);
           },
           strokeWidth: widget.controller.currentStyle.strokeWidth,
           strokeColor: widget.controller.currentStyle.strokeColor,
-          onBold: () {
-            // widget.controller.toggleBold();
-          },
-          onItalic: () {
-            // widget.controller.toggleItalic();
-          },
-          onUnderline: () {
-            // widget.controller.toggleUnderline();
-          },
-          onChangeLetterSpacing: (spacing) {
-            // widget.controller.changeLetterSpacing(spacing);
-          },
-          onChangeLineHeight: (height) {
-            // widget.controller.changeLineHeight(height);
-          },
-          onChangeAlign: (align) {
-            // widget.controller.changeTextAlign(align);
-          },
-          onFontFamilyChanged: (value) {
-            // widget.controller.changeFontFamily(value);
-          },
-          onFontSizeChanged: (value) {
-            // widget.controller.changeFontSize(value);
-          },
-          onFontColorChanged: (value) {
-            // widget.controller.changeFontColor(value);
-          },
+          onBold: widget.controller.toggleBold,
+          onItalic: widget.controller.toggleItalic,
+          onUnderline: widget.controller.toggleUnderline,
+          onChangeLetterSpacing: widget.controller.changeLetterSpacing,
+          onChangeLineHeight: widget.controller.changeLineHeight,
+          onChangeAlign: widget.controller.changeTextAlign,
+          onFontFamilyChanged: widget.controller.changeFontFamily,
+          onFontSizeChanged: widget.controller.changeFontSize,
+          onFontColorChanged: widget.controller.changeFontColor,
           onToggleMode: _toggleMode,
         ),
         Expanded(
