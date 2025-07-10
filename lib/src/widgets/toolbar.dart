@@ -288,7 +288,7 @@ class _ToolbarState extends State<Toolbar> {
             buildToolGroup(
               children: [
                 _buildSpacingSlider(
-                  label: '자간',
+                  label: 'letter spacing',
                   value: widget.controller.currentStyle.letterSpacing ?? 0.0,
                   onChanged: widget.onChangeLetterSpacing,
                   min: -5.0,
@@ -297,10 +297,10 @@ class _ToolbarState extends State<Toolbar> {
                 ),
                 const SizedBox(width: 16),
                 _buildSpacingSlider(
-                  label: '행간',
+                  label: 'line height',
                   value: widget.controller.currentStyle.height ?? 1.0,
                   onChanged: widget.onChangeLineHeight,
-                  min: 0.5,
+                  min: 0.1,
                   max: 3.0,
                   divisions: 25,
                 ),

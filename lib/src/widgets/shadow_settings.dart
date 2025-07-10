@@ -163,7 +163,7 @@ class _ShadowSettingsState extends State<ShadowSettings> {
           IconButton(
             icon: const Icon(Icons.clear, size: 18),
             onPressed: () => widget.onChanged(null),
-            tooltip: '그림자 제거',
+            tooltip: 'cancel',
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
