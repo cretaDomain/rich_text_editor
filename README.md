@@ -2,7 +2,8 @@
 
 A feature-rich and highly customizable rich text editor for Flutter that supports real-time preview, JSON import/export, and a wide range of text styling options.
 
-![Editor Preview](doc/preview.png)  <!-- TODO: Add a preview image to the doc folder -->
+![example](https://raw.githubusercontent.com/cretaDomain/rich_text_editor/refs/heads/main/preview.png)
+
 
 ## Features
 
