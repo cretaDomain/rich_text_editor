@@ -20,14 +20,40 @@ class RawEditor extends StatefulWidget {
 }
 
 class _RawEditorState extends State<RawEditor> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _requestFocus() {
+    // 이미 포커스가 있지 않은 경우에만 요청합니다.
+    if (!_focusNode.hasFocus) {
+      _focusNode.requestFocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // The CustomPaint widget is the canvas where the rich text will be drawn.
-    return CustomPaint(
-      painter: DocumentPainter(
-        document: widget.controller.document,
+    return GestureDetector(
+      onTap: _requestFocus, // 탭하면 포커스를 요청합니다.
+      child: Focus(
+        focusNode: _focusNode,
+        child: RawKeyboardListener(
+          focusNode: _focusNode,
+          onKey: (RawKeyEvent event) {
+            // Key handling logic will be implemented in a later step.
+          },
+          child: CustomPaint(
+            painter: DocumentPainter(
+              document: widget.controller.document,
+            ),
+            size: Size.infinite,
+          ),
+        ),
       ),
-      size: Size.infinite,
     );
   }
 }
