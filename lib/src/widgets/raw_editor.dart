@@ -71,7 +71,10 @@ class _RawEditorState extends State<RawEditor>
     if (_connection?.attached != true) {
       _connection = TextInput.attach(
         this,
-        const TextInputConfiguration(inputType: TextInputType.multiline),
+        const TextInputConfiguration(
+          inputType: TextInputType.multiline,
+          inputAction: TextInputAction.newline, // Explicitly set the action
+        ),
       );
       _connection!.setEditingState(currentTextEditingValue);
       _connection!.show();
@@ -116,7 +119,7 @@ class _RawEditorState extends State<RawEditor>
       final newText = oldValue.text.replaceRange(
         oldValue.selection.start,
         oldValue.selection.end,
-        '\\n',
+        '\n',
       );
       final newValue = TextEditingValue(
         text: newText,
@@ -212,7 +215,7 @@ class _RawEditorState extends State<RawEditor>
             final newText = oldValue.text.replaceRange(
               oldValue.selection.start,
               oldValue.selection.end,
-              '\\t', // Insert a tab character
+              '\t',
             );
             final newValue = TextEditingValue(
               text: newText,
