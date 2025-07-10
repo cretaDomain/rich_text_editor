@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import '../models/document_model.dart';
 
@@ -19,7 +20,8 @@ class RawEditor extends StatefulWidget {
   State<RawEditor> createState() => _RawEditorState();
 }
 
-class _RawEditorState extends State<RawEditor> with SingleTickerProviderStateMixin {
+class _RawEditorState extends State<RawEditor>
+    with SingleTickerProviderStateMixin, TextInputClient {
   final FocusNode _focusNode = FocusNode();
   late final AnimationController _cursorBlink;
 
@@ -48,6 +50,53 @@ class _RawEditorState extends State<RawEditor> with SingleTickerProviderStateMix
     _focusNode.dispose();
     super.dispose();
   }
+
+  // -- TextInputClient implementation --
+
+  @override
+  TextEditingValue get currentTextEditingValue => TextEditingValue(
+        text: widget.controller.document.toPlainText(),
+        selection: widget.controller.selection,
+      );
+
+  @override
+  void updateEditingValue(TextEditingValue value) {
+    // 실제 텍스트 업데이트 로직은 Step 3-3에서 구현됩니다.
+    // 지금은 키보드를 통한 커서 이동을 처리하기 위해 selection만 업데이트합니다.
+    widget.controller.updateSelection(value.selection);
+  }
+
+  @override
+  void performAction(TextInputAction action) {
+    // 키보드의 '완료' 또는 '다음' 버튼 등을 눌렀을 때의 동작입니다.
+    // 지금은 포커스를 해제하도록 합니다.
+    _focusNode.unfocus();
+  }
+
+  @override
+  void connectionClosed() {
+    // 연결이 닫혔을 때의 처리 (필요시 구현)
+  }
+
+  @override
+  void performPrivateCommand(String action, Map<String, dynamic> data) {
+    // 개인적인 명령 처리 (필요시 구현)
+  }
+
+  @override
+  void showAutocorrectionPromptRect(int start, int end) {
+    // 자동 수정 프롬프트 표시 (필요시 구현)
+  }
+
+  @override
+  void updateFloatingCursor(RawFloatingCursorPoint point) {
+    // 플로팅 커서 업데이트 (필요시 구현)
+  }
+
+  @override
+  AutofillScope? get currentAutofillScope => null;
+
+  // -- End of TextInputClient implementation --
 
   TextPainter _createTextPainter(Size size) {
     final textPainter = TextPainter(
