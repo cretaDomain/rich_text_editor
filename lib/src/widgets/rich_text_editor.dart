@@ -125,7 +125,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
       if (_lastSelection != currentSelection) {
         _lastSelection = currentSelection;
         // 선택 영역이 변경될 때마다 컨트롤러에 알려 스타일을 업데이트합니다.
-        widget.controller.updateStyleAtSelection(currentSelection);
+        widget.controller.updateSelection(currentSelection);
       }
     }
   }

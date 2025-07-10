@@ -24,6 +24,9 @@ class RichTextEditorController extends ChangeNotifier {
   /// 현재 툴바 또는 다음 입력에 적용될 스타일 속성입니다.
   SpanAttribute _currentStyle = const SpanAttribute();
 
+  /// 현재 커서 위치 또는 선택된 텍스트 영역입니다.
+  TextSelection _selection = const TextSelection.collapsed(offset: 0);
+
   /// 현재 모드를 반환합니다.
   EditorMode get mode => _mode;
 
@@ -33,14 +36,28 @@ class RichTextEditorController extends ChangeNotifier {
   /// 현재 스타일 속성을 반환합니다.
   SpanAttribute get currentStyle => _currentStyle;
 
+  /// 현재 선택 영역을 반환합니다.
+  TextSelection get selection => _selection;
+
   /// 현재 커서 위치 또는 선택 영역의 스타일을 감지하여 `currentStyle`을 업데이트합니다.
-  void updateStyleAtSelection(TextSelection selection) {
+  ///
+  /// 이 메소드는 더 이상 리스너에게 변경을 통지하지 않습니다.
+  /// `updateSelection`을 통해 호출되어야 합니다.
+  void _updateCurrentStyle(TextSelection selection) {
     // 선택 영역이든 커서든 시작점을 기준으로 스타일을 결정합니다.
     final attr = _document.getSpanAttributeAt(selection.start);
     if (_currentStyle != attr) {
       _currentStyle = attr;
-      notifyListeners();
     }
+  }
+
+  /// 에디터의 선택 영역을 업데이트하고 UI에 변경을 알립니다.
+  void updateSelection(TextSelection newSelection) {
+    if (_selection == newSelection) return;
+
+    _selection = newSelection;
+    _updateCurrentStyle(newSelection);
+    notifyListeners();
   }
 
   /// 에디터 모드를 변경하고, 변경 사항을 구독자에게 알립니다.
