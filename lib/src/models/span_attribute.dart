@@ -60,31 +60,28 @@ class SpanAttribute {
     );
   }
 
+  /// 이 속성을 Flutter의 `TextStyle` 객체로 변환합니다.
   TextStyle toTextStyle() {
-    Paint? foregroundPaint;
-    if ((strokeWidth ?? 0) > 0 && strokeColor != null) {
-      foregroundPaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth!
-        ..color = strokeColor!;
-    } else {
-      foregroundPaint = foreground;
-    }
-
     return TextStyle(
+      color: color,
+      fontFamily: fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
-      color: foregroundPaint == null ? color : null,
-      foreground: foregroundPaint,
-      letterSpacing: letterSpacing, // 이 줄이 추가되었습니다.
-      height: height, // 이 줄이 추가되었습니다.
-      fontFamily: fontFamily,
       decoration: decoration,
+      letterSpacing: letterSpacing,
+      height: height,
       shadows: shadows,
+      foreground: strokeWidth != null && strokeColor != null
+          ? (Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = strokeWidth!
+            ..color = strokeColor!)
+          : null,
     );
   }
 
+  /// `SpanAttribute` 인스턴스를 JSON 맵으로 변환합니다.
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     if (fontSize != null) json['fontSize'] = fontSize;

@@ -45,6 +45,18 @@ class DocumentPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // In the next step, we will implement the logic to iterate through
     // the document's spans and draw them using TextPainter.
+    final text = TextSpan(
+      children: document.spans.map((s) => s.toTextSpan()).toList(),
+    );
+
+    final textPainter = TextPainter(
+      text: text,
+      textDirection: TextDirection.ltr,
+      textAlign: document.textAlign,
+    );
+
+    textPainter.layout(maxWidth: size.width);
+    textPainter.paint(canvas, Offset.zero);
   }
 
   @override

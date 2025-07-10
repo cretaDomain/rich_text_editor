@@ -38,10 +38,22 @@ class TextSpanModel {
   }
 
   /// `TextSpanModel` 인스턴스를 JSON 맵으로 변환합니다.
-  Map<String, dynamic> toJson() => {
-        'text': text,
-        'attribute': attribute.toJson(),
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'text': text,
+      'attribute': attribute.toJson(),
+    };
+  }
+
+  /// 이 모델을 Flutter의 `TextSpan` 위젯으로 변환합니다.
+  ///
+  /// `TextPainter`가 텍스트를 렌더링하는 데 사용됩니다.
+  TextSpan toTextSpan() {
+    return TextSpan(
+      text: text,
+      style: attribute.toTextStyle(),
+    );
+  }
 
   /// 현재 인스턴스를 복사하여 새로운 인스턴스를 생성합니다.
   TextSpanModel copyWith({
