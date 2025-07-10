@@ -69,9 +69,18 @@ class _RawEditorState extends State<RawEditor>
 
   void _openConnection() {
     if (_connection?.attached != true) {
-      _connection = TextInput.attach(this, const TextInputConfiguration());
+      _connection = TextInput.attach(
+        this,
+        const TextInputConfiguration(inputType: TextInputType.multiline),
+      );
       _connection!.setEditingState(currentTextEditingValue);
+      _connection!.show();
     }
+  }
+
+  @override
+  void connectionClosed() {
+    // 연결이 닫혔을 때의 처리 (필요시 구현)
   }
 
   void _closeConnection() {
@@ -84,10 +93,12 @@ class _RawEditorState extends State<RawEditor>
   // -- TextInputClient implementation --
 
   @override
-  TextEditingValue get currentTextEditingValue => TextEditingValue(
-        text: widget.controller.document.toPlainText(),
-        selection: widget.controller.selection,
-      );
+  TextEditingValue get currentTextEditingValue {
+    return TextEditingValue(
+      text: widget.controller.document.toPlainText(),
+      selection: widget.controller.selection,
+    );
+  }
 
   @override
   void updateEditingValue(TextEditingValue value) {
@@ -99,14 +110,23 @@ class _RawEditorState extends State<RawEditor>
 
   @override
   void performAction(TextInputAction action) {
-    // 키보드의 '완료' 또는 '다음' 버튼 등을 눌렀을 때의 동작입니다.
-    // 지금은 포커스를 해제하도록 합니다.
-    _focusNode.unfocus();
-  }
-
-  @override
-  void connectionClosed() {
-    // 연결이 닫혔을 때의 처리 (필요시 구현)
+    if (action == TextInputAction.newline) {
+      // When the 'newline' action is received, insert a newline character.
+      final oldValue = currentTextEditingValue;
+      final newText = oldValue.text.replaceRange(
+        oldValue.selection.start,
+        oldValue.selection.end,
+        '\\n',
+      );
+      final newValue = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: oldValue.selection.start + 1),
+      );
+      updateEditingValue(newValue);
+    } else {
+      // For other actions like 'done', unfocus the editor.
+      _focusNode.unfocus();
+    }
   }
 
   @override
@@ -145,11 +165,17 @@ class _RawEditorState extends State<RawEditor>
     if (!_focusNode.hasFocus) {
       _focusNode.requestFocus();
     }
+    // _openConnection();  <-- This call is redundant and is removed.
+    // The connection should only be managed by the _onFocusChanged listener.
+
     final textPainter = _createTextPainter(context.size!);
     final position = textPainter.getPositionForOffset(details.localPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
     );
+
+    // 중요: 변경된 선택 영역을 시스템 IME에 즉시 알려 상태를 동기화합니다.
+    _connection?.setEditingState(currentTextEditingValue);
   }
 
   void _handlePanStart(DragStartDetails details) {
@@ -179,9 +205,23 @@ class _RawEditorState extends State<RawEditor>
       onPanUpdate: _handlePanUpdate,
       child: Focus(
         focusNode: _focusNode,
-        onKeyEvent: (FocusNode node, KeyEvent event) {
-          // 키보드 입력 처리 로직은 나중에 이 곳에서 구현됩니다.
-          // 지금은 모든 키 이벤트를 무시합니다.
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+            // Intercept the Tab key event to insert a tab character.
+            final oldValue = currentTextEditingValue;
+            final newText = oldValue.text.replaceRange(
+              oldValue.selection.start,
+              oldValue.selection.end,
+              '\\t', // Insert a tab character
+            );
+            final newValue = TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(offset: oldValue.selection.start + 1),
+            );
+            updateEditingValue(newValue);
+            return KeyEventResult.handled; // Mark the event as handled.
+          }
+          // For all other keys, let the system and TextInputClient handle them.
           return KeyEventResult.ignored;
         },
         child: CustomPaint(
