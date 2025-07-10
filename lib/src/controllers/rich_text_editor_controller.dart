@@ -328,6 +328,17 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// `TextInputClient`로부터 받은 변경사항을 처리합니다.
+  ///
+  /// 이 메소드는 텍스트와 선택 영역 변경을 모두 처리하고,
+  /// 문서 모델을 업데이트한 후 UI에 변경을 알립니다.
+  void updateFromTextInput(TextEditingValue value) {
+    _applyTextUpdateInternal(value.text);
+    _selection = value.selection;
+    _updateCurrentStyle(_selection);
+    notifyListeners();
+  }
+
   /// 선택 영역에 특정 스타일 변경을 적용하는 비공개 헬퍼 메서드입니다.
   void _toggleStyle(TextSelection selection, SpanAttribute Function(SpanAttribute) update) {
     if (selection.isCollapsed) {

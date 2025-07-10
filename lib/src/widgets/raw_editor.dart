@@ -91,9 +91,10 @@ class _RawEditorState extends State<RawEditor>
 
   @override
   void updateEditingValue(TextEditingValue value) {
-    // 실제 텍스트 업데이트 로직은 Step 3-3에서 구현됩니다.
-    // 지금은 키보드를 통한 커서 이동을 처리하기 위해 selection만 업데이트합니다.
-    widget.controller.updateSelection(value.selection);
+    // 컨트롤러에 모든 변경사항을 위임합니다.
+    // 컨트롤러는 텍스트 변경(diffing), 선택 영역 변경, 스타일 업데이트,
+    // 그리고 UI 갱신까지 모두 처리합니다.
+    widget.controller.updateFromTextInput(value);
   }
 
   @override
