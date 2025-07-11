@@ -145,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 300,
           controller: _controller,
           onEditCompleted: (json) {
+            print('-----------------------------------------------------------');
             // ignore: avoid_print
             print('onEditCompleted: $json');
           },
