@@ -373,7 +373,8 @@ class _RawEditorState extends State<RawEditor>
         key: _editorKey,
         // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
         child: Align(
-          alignment: _textAlignToAlignment(widget.controller.document.textAlign),
+          alignment: _calculateAlignment(
+              widget.controller.document.textAlign, widget.controller.document.textAlignVertical),
           child: gestureHandler,
         ),
       ),
@@ -381,18 +382,41 @@ class _RawEditorState extends State<RawEditor>
   }
 }
 
-Alignment _textAlignToAlignment(TextAlign textAlign) {
-  switch (textAlign) {
-    case TextAlign.center:
-      return Alignment.center;
-    case TextAlign.right:
-      return Alignment.centerRight;
-    case TextAlign.justify:
+Alignment _calculateAlignment(TextAlign horizontal, TextAlignVertical vertical) {
+  final double x;
+  switch (horizontal) {
     case TextAlign.left:
     case TextAlign.start:
+      x = -1.0;
+      break;
+    case TextAlign.right:
+    case TextAlign.end:
+      x = 1.0;
+      break;
+    case TextAlign.center:
+    case TextAlign.justify: // Justify는 가로로 꽉 채우지만, Align에서는 중앙으로 처리
     default:
-      return Alignment.centerLeft;
+      x = 0.0;
+      break;
   }
+
+  final double y;
+  switch (vertical) {
+    case TextAlignVertical.top:
+      y = -1.0;
+      break;
+    case TextAlignVertical.center:
+      y = 0.0;
+      break;
+    case TextAlignVertical.bottom:
+      y = 1.0;
+      break;
+    default:
+      y = -1.0;
+      break;
+  }
+
+  return Alignment(x, y);
 }
 
 // DocumentPainter 클래스를 아래 코드로 교체해주세요.

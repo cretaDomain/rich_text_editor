@@ -336,6 +336,12 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 문서의 수직 텍스트 정렬을 변경합니다.
+  void changeVerticalAlign(TextAlignVertical align) {
+    _document = _document.copyWith(textAlignVertical: align);
+    notifyListeners();
+  }
+
   /// 선택된 영역의 그림자 속성을 변경합니다.
   void changeShadows(List<Shadow>? shadows) {
     if (shadows == null) {

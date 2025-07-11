@@ -22,6 +22,7 @@ class Toolbar extends StatefulWidget {
     required this.onFontColorChanged,
     required this.padding,
     required this.onPaddingChanged,
+    required this.onVerticalAlignChanged,
     this.shadow,
     required this.onShadowChanged,
     this.strokeWidth,
@@ -53,6 +54,9 @@ class Toolbar extends StatefulWidget {
 
   /// Text Align 변경이 요청되었을 때 호출될 콜백 함수입니다.
   final ValueChanged<TextAlign> onChangeAlign;
+
+  /// Vertical Text Align 변경이 요청되었을 때 호출될 콜백 함수입니다.
+  final ValueChanged<TextAlignVertical> onVerticalAlignChanged;
 
   /// Font Family가 변경되었을 때 호출될 콜백 함수입니다.
   final ValueChanged<String> onFontFamilyChanged;
@@ -248,7 +252,7 @@ class _ToolbarState extends State<Toolbar> {
               ],
             ),
 
-            // 정렬
+            // 텍스트 정렬
             buildToolGroup(
               children: [
                 IconButton(
@@ -267,6 +271,31 @@ class _ToolbarState extends State<Toolbar> {
                   style: _getButtonStyle(
                       doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
                   onPressed: () => widget.onChangeAlign(TextAlign.right),
+                ),
+              ],
+            ),
+            // 수직 정렬
+            buildToolGroup(
+              children: [
+                ToggleButtons(
+                  isSelected: [
+                    doc.textAlignVertical == TextAlignVertical.top,
+                    doc.textAlignVertical == TextAlignVertical.center,
+                    doc.textAlignVertical == TextAlignVertical.bottom,
+                  ],
+                  onPressed: (index) {
+                    final aligns = [
+                      TextAlignVertical.top,
+                      TextAlignVertical.center,
+                      TextAlignVertical.bottom,
+                    ];
+                    widget.onVerticalAlignChanged(aligns[index]);
+                  },
+                  children: const [
+                    Icon(Icons.vertical_align_top),
+                    Icon(Icons.vertical_align_center),
+                    Icon(Icons.vertical_align_bottom),
+                  ],
                 ),
               ],
             ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
+
 import '../models/span_attribute.dart';
 import 'text_span_model.dart';
 
@@ -11,6 +13,7 @@ class DocumentModel {
   const DocumentModel({
     this.spans = const [],
     this.textAlign = TextAlign.start,
+    this.textAlignVertical = TextAlignVertical.top,
   });
 
   /// 문서를 구성하는 텍스트 조각(span)들의 리스트
@@ -18,6 +21,9 @@ class DocumentModel {
 
   /// 문서 전체의 텍스트 정렬 상태
   final TextAlign textAlign;
+
+  /// 문서 전체의 수직 텍스트 정렬 상태
+  final TextAlignVertical textAlignVertical;
 
   /// JSON 맵으로부터 `DocumentModel` 인스턴스를 생성합니다.
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +39,7 @@ class DocumentModel {
           (e) => e.name == (json['textAlign'] as String? ?? TextAlign.start.name),
           orElse: () => TextAlign.start,
         ),
+        textAlignVertical: _textAlignVerticalFromString(json['textAlignVertical'] as String?),
       );
     } catch (e) {
       debugPrint('Failed to parse DocumentModel from JSON: $e. Source: $json');
@@ -46,6 +53,7 @@ class DocumentModel {
     return {
       'spans': spans.map((span) => span.toJson()).toList(),
       'textAlign': textAlign.name,
+      'textAlignVertical': _textAlignVerticalToString(textAlignVertical),
     };
   }
 
@@ -58,10 +66,12 @@ class DocumentModel {
   DocumentModel copyWith({
     List<TextSpanModel>? spans,
     TextAlign? textAlign,
+    TextAlignVertical? textAlignVertical,
   }) {
     return DocumentModel(
       spans: spans ?? this.spans,
       textAlign: textAlign ?? this.textAlign,
+      textAlignVertical: textAlignVertical ?? this.textAlignVertical,
     );
   }
 
@@ -117,5 +127,29 @@ class DocumentModel {
       currentPos = spanEnd;
     }
     return applied;
+  }
+}
+
+TextAlignVertical _textAlignVerticalFromString(String? value) {
+  switch (value) {
+    case 'center':
+      return TextAlignVertical.center;
+    case 'bottom':
+      return TextAlignVertical.bottom;
+    case 'top':
+    default:
+      return TextAlignVertical.top;
+  }
+}
+
+String _textAlignVerticalToString(TextAlignVertical value) {
+  switch (value) {
+    case TextAlignVertical.center:
+      return 'center';
+    case TextAlignVertical.bottom:
+      return 'bottom';
+    case TextAlignVertical.top:
+    default:
+      return 'top';
   }
 }

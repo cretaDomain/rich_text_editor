@@ -207,6 +207,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
           onChangeLetterSpacing: widget.controller.changeLetterSpacing,
           onChangeLineHeight: widget.controller.changeLineHeight,
           onChangeAlign: widget.controller.changeTextAlign,
+          onVerticalAlignChanged: widget.controller.changeVerticalAlign,
           onFontFamilyChanged: widget.controller.changeFontFamily,
           onFontSizeChanged: widget.controller.changeFontSize,
           onFontColorChanged: widget.controller.changeFontColor,
