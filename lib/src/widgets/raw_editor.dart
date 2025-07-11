@@ -346,7 +346,7 @@ class _RawEditorState extends State<RawEditor>
               }
 
               if (currentLineNumber < 0) {
-                print('currentLineNumber: $currentLineNumber');
+                //print('currentLineNumber: $currentLineNumber');
                 return KeyEventResult.handled;
               }
 
@@ -358,8 +358,8 @@ class _RawEditorState extends State<RawEditor>
               // [수정] 첫 번째 줄로 이동할 때만 경계 값 조정을 제외합니다.
               final bool isMovingToFirstLine = (currentLineNumber == 0);
 
-              print(
-                  'isMovingToFirstLine: $isMovingToFirstLine, currentLineNumber: $currentLineNumber, currentOffset: $currentOffset, distance: $distance');
+              // print(
+              //     'isMovingToFirstLine: $isMovingToFirstLine, currentLineNumber: $currentLineNumber, currentOffset: $currentOffset, distance: $distance');
 
               final targetY = isMovingToFirstLine
                   ? currentOffset.dy - distance
