@@ -1,4 +1,4 @@
-import 'dart:convert';
+//import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'src/controllers/rich_text_editor_controller.dart';
 import 'src/widgets/rich_text_editor.dart';
@@ -145,24 +145,24 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 300,
           controller: _controller,
           onEditCompleted: (json) {
-            print('-----------------------------------------------------------');
+            //print('-----------------------------------------------------------');
             // ignore: avoid_print
             print('onEditCompleted: $json');
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // 컨트롤러에서 문서의 JSON 표현을 가져옵니다.
-          final jsonMap = _controller.document.toJson();
-          // jsonEncode를 사용하여 Dart 맵을 사람이 읽기 좋은 형식의 JSON 문자열로 변환합니다.
-          final jsonString = jsonEncode(jsonMap, toEncodable: (e) => e.toString());
-          // ignore: avoid_print
-          print(jsonString);
-        },
-        tooltip: 'Print JSON',
-        child: const Icon(Icons.data_object),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // 컨트롤러에서 문서의 JSON 표현을 가져옵니다.
+      //     final jsonMap = _controller.document.toJson();
+      //     // jsonEncode를 사용하여 Dart 맵을 사람이 읽기 좋은 형식의 JSON 문자열로 변환합니다.
+      //     final jsonString = jsonEncode(jsonMap, toEncodable: (e) => e.toString());
+      //     // ignore: avoid_print
+      //     print(jsonString);
+      //   },
+      //   tooltip: 'Print JSON',
+      //   child: const Icon(Icons.data_object),
+      // ),
     );
   }
 }

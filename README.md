@@ -7,6 +7,7 @@ A feature-rich and highly customizable rich text editor for Flutter that support
 
 ## Features
 
+- **100% Flutter code!** : It's native flutter, not using java script.
 - **Real-time WYSIWYG-like Preview**: See your changes instantly in a live preview pane while editing.
 - **Dynamic Toolbar**: Responsive toolbar that adapts its layout to the available width.
 - **Extensive Styling**:

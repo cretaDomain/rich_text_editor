@@ -78,16 +78,16 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _onFocusChanged() {
-    setState(() {
-      //debugPrint(
-      //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
-      if (_focusNode.hasFocus) {
-        _openConnection();
-      } else {
-        _closeConnection();
-        widget.onFocusLost?.call();
-      }
-    });
+    //setState(() {
+    //debugPrint(
+    //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
+    if (_focusNode.hasFocus) {
+      _openConnection();
+    } else {
+      _closeConnection();
+      widget.onFocusLost?.call();
+    }
+    //});
   }
 
   void _openConnection() {
@@ -383,7 +383,7 @@ class DocumentPainter extends CustomPainter {
 
     // 선택 영역 그리기 (텍스트보다 먼저)
     if (!selection.isCollapsed) {
-      final selectionColor = Colors.blue.withOpacity(0.3);
+      final selectionColor = Colors.blue.withValues(alpha: 0.3);
       final selectionBoxes = textPainter.getBoxesForSelection(selection);
       for (final box in selectionBoxes) {
         canvas.drawRect(box.toRect(), Paint()..color = selectionColor);
