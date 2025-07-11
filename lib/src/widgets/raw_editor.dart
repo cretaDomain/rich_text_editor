@@ -67,8 +67,8 @@ class _RawEditorState extends State<RawEditor>
 
   void _onFocusChanged() {
     setState(() {
-      debugPrint(
-          '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
+      //debugPrint(
+      //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
       if (_focusNode.hasFocus) {
         _openConnection();
       } else {
@@ -86,8 +86,8 @@ class _RawEditorState extends State<RawEditor>
           inputAction: TextInputAction.newline, // Explicitly set the action
         ),
       );
-      debugPrint(
-          '[RawEditor] _openConnection: setEditingState with ${currentTextEditingValue.selection}');
+      //debugPrint(
+      //    '[RawEditor] _openConnection: setEditingState with ${currentTextEditingValue.selection}');
       _connection!.setEditingState(currentTextEditingValue);
       _connection!.show();
     }
@@ -177,7 +177,7 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _handleTapDown(TapDownDetails details) {
-    debugPrint('[RawEditor] _handleTapDown START: selection=${widget.controller.selection}');
+    //debugPrint('[RawEditor] _handleTapDown START: selection=${widget.controller.selection}');
     // 1. 먼저 탭 위치를 계산하고 컨트롤러의 selection을 업데이트합니다.
     final textPainter = _createTextPainter(context.size!);
     final position = textPainter.getPositionForOffset(details.localPosition);
@@ -208,7 +208,7 @@ class _RawEditorState extends State<RawEditor>
         _tapCount = 0; // Reset after triple tap
         break;
     }
-    debugPrint('[RawEditor] _handleTapDown END: selection=${widget.controller.selection}');
+    //debugPrint('[RawEditor] _handleTapDown END: selection=${widget.controller.selection}');
 
     // 2. selection 업데이트 후 포커스 및 IME 상태를 처리합니다.
     if (_focusNode.hasFocus) {
@@ -334,21 +334,44 @@ class _RawEditorState extends State<RawEditor>
               final currentPosition = widget.controller.selection.base;
               final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
 
-              // Use the height of the current line for more precise movement.
-              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero);
-
-              // If we are already at the top or very close to it, do nothing.
-              if (currentOffset.dy < lineHeight) {
-                widget.controller.updateSelection(
-                  const TextSelection.collapsed(offset: 0),
-                );
-              } else {
-                final targetOffset = Offset(currentOffset.dx, currentOffset.dy - lineHeight);
-                final newPosition = textPainter.getPositionForOffset(targetOffset);
-                widget.controller.updateSelection(
-                  TextSelection.collapsed(offset: newPosition.offset),
-                );
+              final allLineMetrics = textPainter.computeLineMetrics();
+              int currentLineNumber = -1;
+              for (var i = 0; i < allLineMetrics.length; i++) {
+                final line = allLineMetrics[i];
+                if (currentOffset.dy >= line.baseline - line.ascent &&
+                    currentOffset.dy <= line.baseline + line.descent) {
+                  currentLineNumber = i;
+                  break;
+                }
               }
+
+              if (currentLineNumber < 0) {
+                print('currentLineNumber: $currentLineNumber');
+                return KeyEventResult.handled;
+              }
+
+              final currentLineMetrics = allLineMetrics[currentLineNumber];
+              final previousLineMetrics =
+                  allLineMetrics[currentLineNumber == 0 ? 0 : currentLineNumber - 1];
+              final distance = currentLineMetrics.baseline - previousLineMetrics.baseline;
+
+              // [수정] 첫 번째 줄로 이동할 때만 경계 값 조정을 제외합니다.
+              final bool isMovingToFirstLine = (currentLineNumber == 0);
+
+              print(
+                  'isMovingToFirstLine: $isMovingToFirstLine, currentLineNumber: $currentLineNumber, currentOffset: $currentOffset, distance: $distance');
+
+              final targetY = isMovingToFirstLine
+                  ? currentOffset.dy - distance
+                  : currentOffset.dy - (distance - 1.0);
+
+              final targetOffset = Offset(currentOffset.dx, targetY);
+              final newPosition = textPainter.getPositionForOffset(targetOffset);
+
+              widget.controller.updateSelection(
+                TextSelection.collapsed(offset: newPosition.offset),
+              );
+
               _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
             }
@@ -357,22 +380,32 @@ class _RawEditorState extends State<RawEditor>
               final currentPosition = widget.controller.selection.base;
               final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
 
-              // Use the height of the current line.
-              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero);
-
-              // If we are on the last line, move to the end of the document.
-              if (currentOffset.dy >= textPainter.height - lineHeight) {
-                final endOfDoc = widget.controller.document.toPlainText().length;
-                widget.controller.updateSelection(
-                  TextSelection.collapsed(offset: endOfDoc),
-                );
-              } else {
-                final targetOffset = Offset(currentOffset.dx, currentOffset.dy + lineHeight);
-                final newPosition = textPainter.getPositionForOffset(targetOffset);
-                widget.controller.updateSelection(
-                  TextSelection.collapsed(offset: newPosition.offset),
-                );
+              final allLineMetrics = textPainter.computeLineMetrics();
+              int currentLineNumber = 0;
+              for (var i = 0; i < allLineMetrics.length; i++) {
+                final line = allLineMetrics[i];
+                if (currentOffset.dy >= line.baseline - line.ascent &&
+                    currentOffset.dy <= line.baseline + line.descent) {
+                  currentLineNumber = i;
+                  break;
+                }
               }
+
+              if (currentLineNumber >= allLineMetrics.length - 1) return KeyEventResult.handled;
+
+              final metrics = allLineMetrics[currentLineNumber];
+              final descent = metrics.descent;
+              final targetOffset = Offset(currentOffset.dx, currentOffset.dy + descent + 1.0);
+
+              final newPosition = textPainter.getPositionForOffset(targetOffset);
+
+              print(
+                  'newPosition: $newPosition, currentLineNumber: $currentLineNumber, currentOffset: $currentOffset, targetOffset: $targetOffset');
+
+              widget.controller.updateSelection(
+                TextSelection.collapsed(offset: newPosition.offset),
+              );
+
               _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
             }
