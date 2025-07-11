@@ -381,7 +381,7 @@ class _RawEditorState extends State<RawEditor>
               final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
 
               final allLineMetrics = textPainter.computeLineMetrics();
-              int currentLineNumber = 0;
+              int currentLineNumber = -1;
               for (var i = 0; i < allLineMetrics.length; i++) {
                 final line = allLineMetrics[i];
                 if (currentOffset.dy >= line.baseline - line.ascent &&
@@ -391,17 +391,22 @@ class _RawEditorState extends State<RawEditor>
                 }
               }
 
-              if (currentLineNumber >= allLineMetrics.length - 1) return KeyEventResult.handled;
+              if (currentLineNumber < 0 || currentLineNumber >= allLineMetrics.length - 1) {
+                return KeyEventResult.handled;
+              }
 
-              final metrics = allLineMetrics[currentLineNumber];
-              final descent = metrics.descent;
-              final targetOffset = Offset(currentOffset.dx, currentOffset.dy + descent + 1.0);
+              final currentLineMetrics = allLineMetrics[currentLineNumber];
+              final nextLineMetrics = allLineMetrics[currentLineNumber + 1];
+              final distance = nextLineMetrics.baseline - currentLineMetrics.baseline;
+
+              final bool isMovingToLastLine = (currentLineNumber + 1 == allLineMetrics.length - 1);
+              final targetY = isMovingToLastLine
+                  ? currentOffset.dy + distance
+                  : currentOffset.dy + (distance + 1.0);
+
+              final targetOffset = Offset(currentOffset.dx, targetY);
 
               final newPosition = textPainter.getPositionForOffset(targetOffset);
-
-              print(
-                  'newPosition: $newPosition, currentLineNumber: $currentLineNumber, currentOffset: $currentOffset, targetOffset: $targetOffset');
-
               widget.controller.updateSelection(
                 TextSelection.collapsed(offset: newPosition.offset),
               );
