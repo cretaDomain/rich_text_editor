@@ -290,6 +290,12 @@ class _RawEditorState extends State<RawEditor>
   void _handlePanStart(DragStartDetails details) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+
+    final textPainter = _createTextPainter(renderBox.size);
+    if (textPainter.computeLineMetrics().length > 1) {
+      return; // 2줄 이상이면 드래그 비활성화
+    }
+
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
     /*
     final Offset correctedPosition = Offset(
@@ -297,7 +303,6 @@ class _RawEditorState extends State<RawEditor>
       localPosition.dy + widget.scrollController.offset,
     );
     */
-    final textPainter = _createTextPainter(context.size!);
     final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
@@ -306,6 +311,12 @@ class _RawEditorState extends State<RawEditor>
 
   void _handlePanUpdate(DragUpdateDetails details) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+
+    final textPainter = _createTextPainter(renderBox.size);
+    if (textPainter.computeLineMetrics().length > 1) {
+      return; // 2줄 이상이면 드래그 비활성화
+    }
+
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
     /*
     final Offset correctedPosition = Offset(
@@ -313,7 +324,6 @@ class _RawEditorState extends State<RawEditor>
       localPosition.dy + widget.scrollController.offset,
     );
     */
-    final textPainter = _createTextPainter(context.size!);
     final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
       widget.controller.selection.copyWith(
