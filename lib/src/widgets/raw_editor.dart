@@ -12,11 +12,15 @@ class RawEditor extends StatefulWidget {
   const RawEditor({
     super.key,
     required this.controller,
+    required this.scrollController,
     this.onFocusLost,
   });
 
   /// The controller that manages the document and selection.
   final RichTextEditorController controller;
+
+  /// The scroll controller for the editor.
+  final ScrollController scrollController;
 
   final VoidCallback? onFocusLost;
 
@@ -199,10 +203,17 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _handleTapDown(TapDownDetails details) {
-    //debugPrint('[RawEditor] _handleTapDown START: selection=${widget.controller.selection}');
-    // 1. 먼저 탭 위치를 계산하고 컨트롤러의 selection을 업데이트합니다.
+    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+
+    // 스크롤 오프셋을 더하여 실제 문서 내의 위치를 계산합니다.
+    final Offset correctedPosition = Offset(
+      localPosition.dx,
+      localPosition.dy + widget.scrollController.offset,
+    );
+
     final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(details.localPosition);
+    final position = textPainter.getPositionForOffset(correctedPosition);
 
     // --- Tap counting logic ---
     final now = DateTime.now();
@@ -230,7 +241,6 @@ class _RawEditorState extends State<RawEditor>
         _tapCount = 0; // Reset after triple tap
         break;
     }
-    //debugPrint('[RawEditor] _handleTapDown END: selection=${widget.controller.selection}');
 
     // 2. selection 업데이트 후 포커스 및 IME 상태를 처리합니다.
     if (_focusNode.hasFocus) {
@@ -277,16 +287,28 @@ class _RawEditorState extends State<RawEditor>
 
   void _handlePanStart(DragStartDetails details) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
+    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    final Offset correctedPosition = Offset(
+      localPosition.dx,
+      localPosition.dy + widget.scrollController.offset,
+    );
     final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(details.localPosition);
+    final position = textPainter.getPositionForOffset(correctedPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
     );
   }
 
   void _handlePanUpdate(DragUpdateDetails details) {
+    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    final Offset correctedPosition = Offset(
+      localPosition.dx,
+      localPosition.dy + widget.scrollController.offset,
+    );
     final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(details.localPosition);
+    final position = textPainter.getPositionForOffset(correctedPosition);
     widget.controller.updateSelection(
       widget.controller.selection.copyWith(
         extentOffset: position.offset,
@@ -361,7 +383,7 @@ class DocumentPainter extends CustomPainter {
 
     // 선택 영역 그리기 (텍스트보다 먼저)
     if (!selection.isCollapsed) {
-      final selectionColor = Colors.blue.withValues(alpha: 0.3);
+      final selectionColor = Colors.blue.withOpacity(0.3);
       final selectionBoxes = textPainter.getBoxesForSelection(selection);
       for (final box in selectionBoxes) {
         canvas.drawRect(box.toRect(), Paint()..color = selectionColor);
