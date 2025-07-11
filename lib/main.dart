@@ -129,16 +129,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: RichTextEditor(
-            width: 400,
-            height: 300,
-            initialMode: EditorMode.view,
-            showTitleBar: false,
-            controller: _controller,
-            fontList: const ['Roboto', 'Arial', 'Courier'],
-          ),
+        child: RichTextEditor(
+          width: 800,
+          height: 400,
+          controller: _controller,
+          onEditCompleted: (json) {
+            // ignore: avoid_print
+            print('onEditCompleted: $json');
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(

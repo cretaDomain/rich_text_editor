@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import '../views/document_view.dart';
@@ -14,6 +16,7 @@ class RichTextEditor extends StatefulWidget {
     required this.controller,
     required this.width,
     required this.height,
+    required this.onEditCompleted,
     this.backgroundColor = Colors.transparent,
     this.title,
     this.showTitleBar = true,
@@ -52,6 +55,7 @@ class RichTextEditor extends StatefulWidget {
 
   /// 폰트 드롭다운에 표시될 폰트 리스트입니다.
   final List<String> fontList;
+  final ValueChanged<String>? onEditCompleted;
 
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
@@ -109,9 +113,19 @@ class _RichTextEditorState extends State<RichTextEditor> {
     }
   }
 
+  void _onEditCompleted() {
+    if (widget.onEditCompleted != null) {
+      final jsonString = jsonEncode(widget.controller.document.toJson());
+      widget.onEditCompleted!(jsonString);
+    }
+  }
+
   /// 에디터의 모드를 토글하는 내부 메서드입니다.
   void _toggleMode() {
     final currentMode = widget.controller.mode;
+    if (currentMode == EditorMode.edit) {
+      _onEditCompleted();
+    }
     widget.controller.setMode(
       currentMode == EditorMode.edit ? EditorMode.view : EditorMode.edit,
     );
@@ -195,6 +209,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
                 padding: _padding,
                 child: RawEditor(
                   controller: widget.controller,
+                  onFocusLost: _onEditCompleted,
                 ),
               ),
             ),

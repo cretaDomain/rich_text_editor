@@ -12,10 +12,13 @@ class RawEditor extends StatefulWidget {
   const RawEditor({
     super.key,
     required this.controller,
+    this.onFocusLost,
   });
 
   /// The controller that manages the document and selection.
   final RichTextEditorController controller;
+
+  final VoidCallback? onFocusLost;
 
   @override
   State<RawEditor> createState() => _RawEditorState();
@@ -78,6 +81,7 @@ class _RawEditorState extends State<RawEditor>
         _openConnection();
       } else {
         _closeConnection();
+        widget.onFocusLost?.call();
       }
     });
   }
