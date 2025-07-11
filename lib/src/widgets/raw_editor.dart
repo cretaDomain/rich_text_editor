@@ -12,7 +12,7 @@ class RawEditor extends StatefulWidget {
   const RawEditor({
     super.key,
     required this.controller,
-    required this.scrollController,
+    //required this.scrollController,
     this.onFocusLost,
   });
 
@@ -20,7 +20,7 @@ class RawEditor extends StatefulWidget {
   final RichTextEditorController controller;
 
   /// The scroll controller for the editor.
-  final ScrollController scrollController;
+  //final ScrollController scrollController;
 
   final VoidCallback? onFocusLost;
 
@@ -207,13 +207,15 @@ class _RawEditorState extends State<RawEditor>
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
 
     // 스크롤 오프셋을 더하여 실제 문서 내의 위치를 계산합니다.
+    /*
     final Offset correctedPosition = Offset(
       localPosition.dx,
       localPosition.dy + widget.scrollController.offset,
     );
+    */
 
     final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(correctedPosition);
+    final position = textPainter.getPositionForOffset(localPosition);
 
     // --- Tap counting logic ---
     final now = DateTime.now();
@@ -289,12 +291,14 @@ class _RawEditorState extends State<RawEditor>
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    /*
     final Offset correctedPosition = Offset(
       localPosition.dx,
       localPosition.dy + widget.scrollController.offset,
     );
+    */
     final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(correctedPosition);
+    final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
     );
@@ -303,12 +307,14 @@ class _RawEditorState extends State<RawEditor>
   void _handlePanUpdate(DragUpdateDetails details) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    /*
     final Offset correctedPosition = Offset(
       localPosition.dx,
       localPosition.dy + widget.scrollController.offset,
     );
+    */
     final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(correctedPosition);
+    final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
       widget.controller.selection.copyWith(
         extentOffset: position.offset,

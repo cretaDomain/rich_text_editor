@@ -65,12 +65,14 @@ class _RichTextEditorState extends State<RichTextEditor> {
   EdgeInsets _padding = const EdgeInsets.all(16.0);
   double? _currentWidth;
   double? _currentHeight;
-  late final ScrollController _scrollController;
+  // late final ScrollController _scrollController;
+  // late final FocusNode _scrollFocusNode;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    // _scrollController = ScrollController();
+    // _scrollFocusNode = FocusNode(debugLabel: 'RichTextEditorScrollView');
     _currentWidth = widget.width;
     _currentHeight = widget.height;
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
@@ -86,7 +88,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
     // 컨트롤러 리스너를 정리합니다.
     widget.controller.removeListener(_update);
     widget.controller.paddingNotifier.removeListener(_onPaddingNotified);
-    _scrollController.dispose();
+    // _scrollController.dispose();
+    // _scrollFocusNode.dispose();
     super.dispose();
   }
 
@@ -219,7 +222,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.2),
+                    color: Colors.grey.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -228,13 +231,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
               ),
               child: Padding(
                 padding: _padding,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: RawEditor(
-                    scrollController: _scrollController,
-                    controller: widget.controller,
-                    onFocusLost: _onEditCompleted,
-                  ),
+                child: RawEditor(
+                  // scrollController: _scrollController,
+                  controller: widget.controller,
+                  onFocusLost: _onEditCompleted,
                 ),
               ),
             ),
