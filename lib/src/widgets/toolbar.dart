@@ -380,56 +380,84 @@ class _ToolbarState extends State<Toolbar> {
   }
 
   Widget _buildPaddingControls() {
-    final currentPadding = widget.padding;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildPaddingInput('좌', currentPadding.left, (v) {
-          widget.onPaddingChanged(currentPadding.copyWith(left: v));
+        // Top
+        _buildTextField(widget.padding.top, (v) {
+          widget.onPaddingChanged(widget.padding.copyWith(top: v));
         }),
-        const SizedBox(width: 4),
-        Column(
+        //const SizedBox(height: 2),
+        // Middle Row
+        Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildPaddingInput('상', currentPadding.top, (v) {
-              widget.onPaddingChanged(currentPadding.copyWith(top: v));
+            // Left
+            _buildTextField(widget.padding.left, (v) {
+              widget.onPaddingChanged(widget.padding.copyWith(left: v));
             }),
-            const SizedBox(height: 2),
-            _buildPaddingInput('하', currentPadding.bottom, (v) {
-              widget.onPaddingChanged(currentPadding.copyWith(bottom: v));
+            const SizedBox(width: 4),
+            // +/- Buttons
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildIconButton(Icons.add, () {
+                  final newValue = (widget.padding.left + 1).clamp(0, double.infinity);
+                  widget.onPaddingChanged(EdgeInsets.all(newValue.toDouble()));
+                }),
+                _buildIconButton(Icons.remove, () {
+                  final newValue = (widget.padding.left - 1).clamp(0, double.infinity);
+                  widget.onPaddingChanged(EdgeInsets.all(newValue.toDouble()));
+                }),
+              ],
+            ),
+            const SizedBox(width: 4),
+            // Right
+            _buildTextField(widget.padding.right, (v) {
+              widget.onPaddingChanged(widget.padding.copyWith(right: v));
             }),
           ],
         ),
-        const SizedBox(width: 4),
-        _buildPaddingInput('우', currentPadding.right, (v) {
-          widget.onPaddingChanged(currentPadding.copyWith(right: v));
+        //const SizedBox(height: 2),
+        // Bottom
+        _buildTextField(widget.padding.bottom, (v) {
+          widget.onPaddingChanged(widget.padding.copyWith(bottom: v));
         }),
       ],
     );
   }
 
-  Widget _buildPaddingInput(String hint, double value, ValueChanged<double> onChanged) {
-    final controller = TextEditingController(text: value.toInt().toString());
-    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+  Widget _buildIconButton(IconData icon, VoidCallback onPressed) {
     return SizedBox(
-      width: 25,
-      height: 25,
-      child: TextField(
-        controller: controller,
+      width: 20,
+      height: 20,
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(icon, size: 16),
+        onPressed: onPressed,
+        visualDensity: VisualDensity.compact,
+      ),
+    );
+  }
+
+  Widget _buildTextField(double value, ValueChanged<double> onFieldChanged) {
+    return SizedBox(
+      width: 30,
+      height: 21,
+      child: TextFormField(
+        controller: TextEditingController(text: value.toInt().toString()),
         textAlign: TextAlign.center,
         style: const TextStyle(fontSize: 12),
-        decoration: InputDecoration(
-          hintText: hint,
+        decoration: const InputDecoration(
           isDense: true,
-          border: const OutlineInputBorder(),
-          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         ),
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         onChanged: (text) {
           final newValue = double.tryParse(text) ?? 0.0;
-          onChanged(newValue);
+          onFieldChanged(newValue);
         },
       ),
     );
