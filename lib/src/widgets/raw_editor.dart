@@ -335,8 +335,7 @@ class _RawEditorState extends State<RawEditor>
               final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
 
               // Use the height of the current line for more precise movement.
-              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero) ??
-                  textPainter.preferredLineHeight;
+              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero);
 
               // If we are already at the top or very close to it, do nothing.
               if (currentOffset.dy < lineHeight) {
@@ -359,8 +358,7 @@ class _RawEditorState extends State<RawEditor>
               final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
 
               // Use the height of the current line.
-              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero) ??
-                  textPainter.preferredLineHeight;
+              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero);
 
               // If we are on the last line, move to the end of the document.
               if (currentOffset.dy >= textPainter.height - lineHeight) {
