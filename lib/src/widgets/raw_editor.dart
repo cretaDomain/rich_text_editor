@@ -29,6 +29,10 @@ class _RawEditorState extends State<RawEditor>
   DateTime _lastTapTime = DateTime.now();
   int _tapCount = 0;
 
+  // final int _previousLineNumber = -1;
+  // final double _upVias = 1.0;
+  // final double _downVias = 1.0;
+
   // A listener function to trigger rebuilds when the controller changes.
   void _rebuild() {
     setState(() {});
@@ -83,7 +87,9 @@ class _RawEditorState extends State<RawEditor>
         this,
         const TextInputConfiguration(
           inputType: TextInputType.multiline,
-          inputAction: TextInputAction.newline, // Explicitly set the action
+          inputAction: TextInputAction.newline,
+          autocorrect: false,
+          enableSuggestions: false,
         ),
       );
       //debugPrint(
@@ -297,6 +303,7 @@ class _RawEditorState extends State<RawEditor>
               updateEditingValue(newValue);
               return KeyEventResult.handled; // Mark the event as handled.
             }
+            /*
             if (event.logicalKey == LogicalKeyboardKey.home) {
               // Move cursor to the beginning of the current line.
               final textPainter = _createTextPainter(context.size!);
@@ -329,6 +336,8 @@ class _RawEditorState extends State<RawEditor>
               _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
             }
+            */
+            /*
             if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
               final textPainter = _createTextPainter(context.size!);
               final currentPosition = widget.controller.selection.base;
@@ -350,6 +359,14 @@ class _RawEditorState extends State<RawEditor>
                 return KeyEventResult.handled;
               }
 
+              print(
+                  '------ currentLineNumber: $currentLineNumber, _previousLineNumber: $_previousLineNumber, _upVias: $_upVias');
+
+              if (currentLineNumber == _previousLineNumber) {
+                _upVias++;
+              } else {
+                _upVias = 1.0;
+              }
               final currentLineMetrics = allLineMetrics[currentLineNumber];
               final previousLineMetrics =
                   allLineMetrics[currentLineNumber == 0 ? 0 : currentLineNumber - 1];
@@ -363,7 +380,7 @@ class _RawEditorState extends State<RawEditor>
 
               final targetY = isMovingToFirstLine
                   ? currentOffset.dy - distance
-                  : currentOffset.dy - (distance - 1.0);
+                  : currentOffset.dy - (distance - _upVias);
 
               final targetOffset = Offset(currentOffset.dx, targetY);
               final newPosition = textPainter.getPositionForOffset(targetOffset);
@@ -373,6 +390,7 @@ class _RawEditorState extends State<RawEditor>
               );
 
               _connection?.setEditingState(currentTextEditingValue);
+              _previousLineNumber = currentLineNumber;
               return KeyEventResult.handled;
             }
             if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -395,6 +413,15 @@ class _RawEditorState extends State<RawEditor>
                 return KeyEventResult.handled;
               }
 
+              print(
+                  '+++++++ currentLineNumber: $currentLineNumber, _previousLineNumber: $_previousLineNumber, _downVias: $_downVias');
+
+              if (currentLineNumber == _previousLineNumber) {
+                _downVias++;
+              } else {
+                _downVias = 1.0;
+              }
+
               final currentLineMetrics = allLineMetrics[currentLineNumber];
               final nextLineMetrics = allLineMetrics[currentLineNumber + 1];
               final distance = nextLineMetrics.baseline - currentLineMetrics.baseline;
@@ -402,7 +429,7 @@ class _RawEditorState extends State<RawEditor>
               final bool isMovingToLastLine = (currentLineNumber + 1 == allLineMetrics.length - 1);
               final targetY = isMovingToLastLine
                   ? currentOffset.dy + distance
-                  : currentOffset.dy + (distance + 1.0);
+                  : currentOffset.dy + (distance + _downVias);
 
               final targetOffset = Offset(currentOffset.dx, targetY);
 
@@ -412,20 +439,28 @@ class _RawEditorState extends State<RawEditor>
               );
 
               _connection?.setEditingState(currentTextEditingValue);
+              _previousLineNumber = currentLineNumber;
               return KeyEventResult.handled;
             }
+            */
           }
+
           // For all other keys, let the system and TextInputClient handle them.
           return KeyEventResult.ignored;
         },
-        child: CustomPaint(
-          painter: DocumentPainter(
-            document: widget.controller.document,
-            selection: widget.controller.selection,
-            isFocused: _focusNode.hasFocus,
-            cursorOpacity: _cursorBlink.value,
+        child: Container(
+          color: Colors.red,
+          width: 400,
+          height: 300,
+          child: CustomPaint(
+            painter: DocumentPainter(
+              document: widget.controller.document,
+              selection: widget.controller.selection,
+              isFocused: _focusNode.hasFocus,
+              cursorOpacity: _cursorBlink.value,
+            ),
+            size: Size(400, 300), //Size.infinite,
           ),
-          size: Size.infinite,
         ),
       ),
     );
@@ -448,6 +483,7 @@ class DocumentPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    //print('DocumentPainter: paint $size');
     final text = TextSpan(
       children: document.spans.map((s) => s.toTextSpan()).toList(),
     );
