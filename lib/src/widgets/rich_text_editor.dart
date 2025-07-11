@@ -134,17 +134,6 @@ class _RichTextEditorState extends State<RichTextEditor> {
         },
       };
       final jsonString = jsonEncode(data);
-
-      // --- 디버깅 코드 시작 ---
-      if (jsonString.contains(r'\n')) {
-        debugPrint('jsonEncode 결과에 \\n 이 포함되어 있습니다.');
-      } else if (jsonString.contains('\n')) {
-        debugPrint('jsonEncode 결과에 \\n 이 없고, \n 이 있습니다. (비정상)');
-      } else {
-        debugPrint('jsonEncode 결과에 줄바꿈 문자가 없습니다.');
-      }
-      // --- 디버깅 코드 끝 ---
-
       widget.onEditCompleted!(jsonString);
     }
   }
