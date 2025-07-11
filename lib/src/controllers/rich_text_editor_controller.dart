@@ -123,7 +123,7 @@ class RichTextEditorController extends ChangeNotifier {
   void updateDocumentFromText(String text) {
     _document = DocumentModel(
       spans: [
-        TextSpanModel.defaultSpan(text),
+        TextSpanModel.defaultSpan(text, initialSize: _currentStyle.fontSize ?? 30.0),
       ],
     );
     // 이 메서드는 주로 내부 텍스트 필드에서 호출되므로,
@@ -146,7 +146,9 @@ class RichTextEditorController extends ChangeNotifier {
 
     if (_document.spans.isEmpty) {
       if (newText.isNotEmpty) {
-        _document = DocumentModel(spans: [TextSpanModel.defaultSpan(newText)]);
+        _document = DocumentModel(spans: [
+          TextSpanModel.defaultSpan(newText, initialSize: _currentStyle.fontSize ?? 30.0)
+        ]);
       }
       return;
     }
@@ -259,7 +261,7 @@ class RichTextEditorController extends ChangeNotifier {
     // 이것이 버그의 근본 원인임을 인지하고 있어야 합니다.
     _document = DocumentModel(
       spans: [
-        TextSpanModel.defaultSpan(newText),
+        TextSpanModel.defaultSpan(newText, initialSize: _currentStyle.fontSize ?? 30.0),
       ],
       textAlign: _document.textAlign, // 정렬 상태는 유지합니다.
     );

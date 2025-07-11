@@ -395,6 +395,7 @@ Alignment _calculateAlignment(TextAlign horizontal, TextAlignVertical vertical) 
       break;
     case TextAlign.center:
     case TextAlign.justify: // Justify는 가로로 꽉 채우지만, Align에서는 중앙으로 처리
+    // ignore: unreachable_switch_default
     default:
       x = 0.0;
       break;

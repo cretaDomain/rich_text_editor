@@ -67,11 +67,11 @@ class TextSpanModel {
   }
 
   /// 주어진 텍스트에 대한 기본 스타일을 가진 `TextSpanModel`을 생성합니다.
-  factory TextSpanModel.defaultSpan(String text) {
+  factory TextSpanModel.defaultSpan(String text, {double initialSize = 30.0}) {
     return TextSpanModel(
       text: text,
-      attribute: const SpanAttribute(
-        fontSize: 14.0,
+      attribute: SpanAttribute(
+        fontSize: initialSize,
         color: Colors.black,
       ),
     );

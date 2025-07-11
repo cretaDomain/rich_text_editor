@@ -90,8 +90,26 @@ class _ToolbarState extends State<Toolbar> {
   @override
   void initState() {
     super.initState();
-    // 초기 폰트 크기는 14로 설정합니다. 이 값은 외부 상태와 동기화되지 않습니다.
-    _fontSizeController = TextEditingController(text: '14');
+    // 초기 폰트 크기를 설정합니다.
+    // 문서에 내용이 있으면 첫 번째 스팬의 폰트 크기를 사용하고, 없으면 30으로 설정합니다.
+    double initialSize = 30.0;
+    final doc = widget.controller.document;
+    if (doc.spans.isNotEmpty) {
+      initialSize = doc.spans.first.attribute.fontSize ?? 30.0;
+    }
+    _fontSizeController = TextEditingController(text: initialSize.toInt().toString());
+  }
+
+  @override
+  void didUpdateWidget(Toolbar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 컨트롤러의 스타일이 변경되었을 때 폰트 크기 필드를 업데이트합니다.
+    if (widget.controller.currentStyle != oldWidget.controller.currentStyle) {
+      final newSize = widget.controller.currentStyle.fontSize ?? 30.0;
+      if (_fontSizeController.text != newSize.toInt().toString()) {
+        _fontSizeController.text = newSize.toInt().toString();
+      }
+    }
   }
 
   @override
@@ -181,7 +199,7 @@ class _ToolbarState extends State<Toolbar> {
                 IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
-                    final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                    final currentSize = double.tryParse(_fontSizeController.text) ?? 30.0;
                     _changeFontSize(currentSize - 1);
                   },
                 ),
@@ -208,7 +226,7 @@ class _ToolbarState extends State<Toolbar> {
                 IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () {
-                    final currentSize = double.tryParse(_fontSizeController.text) ?? 14.0;
+                    final currentSize = double.tryParse(_fontSizeController.text) ?? 30.0;
                     _changeFontSize(currentSize + 1);
                   },
                 ),
@@ -257,7 +275,7 @@ class _ToolbarState extends State<Toolbar> {
               children: [
                 ToggleButtons(
                   renderBorder: false,
-                  fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                  fillColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   constraints: const BoxConstraints.tightFor(width: 40, height: 40),
@@ -290,7 +308,7 @@ class _ToolbarState extends State<Toolbar> {
               children: [
                 ToggleButtons(
                   renderBorder: false,
-                  fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                  fillColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   constraints: const BoxConstraints.tightFor(width: 40, height: 40),
@@ -418,7 +436,8 @@ class _ToolbarState extends State<Toolbar> {
     final theme = Theme.of(context);
     return IconButton.styleFrom(
       foregroundColor: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-      backgroundColor: isActive ? theme.colorScheme.primary.withOpacity(0.12) : Colors.transparent,
+      backgroundColor:
+          isActive ? theme.colorScheme.primary.withValues(alpha: 0.12) : Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
     );
   }
