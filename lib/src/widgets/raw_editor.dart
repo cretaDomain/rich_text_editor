@@ -78,16 +78,16 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _onFocusChanged() {
-    //setState(() {
-    //debugPrint(
-    //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
-    if (_focusNode.hasFocus) {
-      _openConnection();
-    } else {
-      _closeConnection();
-      widget.onFocusLost?.call();
-    }
-    //});
+    setState(() {
+      //debugPrint(
+      //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
+      if (_focusNode.hasFocus) {
+        _openConnection();
+      } else {
+        _closeConnection();
+        widget.onFocusLost?.call();
+      }
+    });
   }
 
   void _openConnection() {
