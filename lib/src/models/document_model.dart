@@ -29,7 +29,10 @@ class DocumentModel {
       }
       return DocumentModel(
         spans: spansList.map((spanJson) => TextSpanModel.fromJson(spanJson)).toList(),
-        textAlign: TextAlign.values[json['textAlign'] ?? TextAlign.start.index],
+        textAlign: TextAlign.values.firstWhere(
+          (e) => e.name == (json['textAlign'] as String? ?? TextAlign.start.name),
+          orElse: () => TextAlign.start,
+        ),
       );
     } catch (e) {
       debugPrint('Failed to parse DocumentModel from JSON: $e. Source: $json');
@@ -42,7 +45,7 @@ class DocumentModel {
   Map<String, dynamic> toJson() {
     return {
       'spans': spans.map((span) => span.toJson()).toList(),
-      'textAlign': textAlign.index,
+      'textAlign': textAlign.name,
     };
   }
 

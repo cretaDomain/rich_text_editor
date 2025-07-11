@@ -27,6 +27,15 @@ class RichTextEditorController extends ChangeNotifier {
   /// 현재 커서 위치 또는 선택된 텍스트 영역입니다.
   TextSelection _selection = const TextSelection.collapsed(offset: 0);
 
+  /// 에디터의 여백 값을 관리하고, 변경 시 UI에 알립니다.
+  final ValueNotifier<EdgeInsets> paddingNotifier = ValueNotifier(const EdgeInsets.all(16.0));
+
+  @override
+  void dispose() {
+    paddingNotifier.dispose();
+    super.dispose();
+  }
+
   /// 현재 모드를 반환합니다.
   EditorMode get mode => _mode;
 
@@ -79,8 +88,26 @@ class RichTextEditorController extends ChangeNotifier {
   /// 잘못된 형식의 JSON이 입력될 경우 에러를 로깅하고 현재 문서를 비웁니다.
   void setDocumentFromJsonString(String jsonString) {
     try {
-      final json = jsonDecode(jsonString);
-      _document = DocumentModel.fromJson(json);
+      final json = jsonDecode(jsonString) as Map<String, dynamic>;
+
+      // document 파싱
+      if (json.containsKey('document')) {
+        _document = DocumentModel.fromJson(json['document']);
+      } else {
+        // 이전 버전과의 호환성을 위해 document 키가 없는 경우도 처리
+        _document = DocumentModel.fromJson(json);
+      }
+
+      // padding 파싱
+      if (json.containsKey('padding')) {
+        final paddingJson = json['padding'] as Map<String, dynamic>;
+        paddingNotifier.value = EdgeInsets.fromLTRB(
+          (paddingJson['left'] as num).toDouble(),
+          (paddingJson['top'] as num).toDouble(),
+          (paddingJson['right'] as num).toDouble(),
+          (paddingJson['bottom'] as num).toDouble(),
+        );
+      }
     } catch (e) {
       // JSON 파싱 또는 모델 변환 중 에러 발생 시 처리
       debugPrint('Error parsing JSON string: $e');

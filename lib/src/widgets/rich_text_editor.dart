@@ -75,13 +75,21 @@ class _RichTextEditorState extends State<RichTextEditor> {
     widget.controller.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
     widget.controller.addListener(_update);
+    // 컨트롤러의 패딩 값 변경을 구독합니다.
+    widget.controller.paddingNotifier.addListener(_onPaddingNotified);
   }
 
   @override
   void dispose() {
     // 컨트롤러 리스너를 정리합니다.
     widget.controller.removeListener(_update);
+    widget.controller.paddingNotifier.removeListener(_onPaddingNotified);
     super.dispose();
+  }
+
+  /// 컨트롤러의 paddingNotifier로부터 변경 알림을 받았을 때 호출됩니다.
+  void _onPaddingNotified() {
+    _onPaddingChanged(widget.controller.paddingNotifier.value);
   }
 
   /// 여백이 변경될 때 호출됩니다.
@@ -115,7 +123,28 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   void _onEditCompleted() {
     if (widget.onEditCompleted != null) {
-      final jsonString = jsonEncode(widget.controller.document.toJson());
+      // Create a new map to hold both document and padding data
+      final data = {
+        'document': widget.controller.document.toJson(),
+        'padding': {
+          'left': _padding.left,
+          'top': _padding.top,
+          'right': _padding.right,
+          'bottom': _padding.bottom,
+        },
+      };
+      final jsonString = jsonEncode(data);
+
+      // --- 디버깅 코드 시작 ---
+      if (jsonString.contains(r'\n')) {
+        debugPrint('jsonEncode 결과에 \\n 이 포함되어 있습니다.');
+      } else if (jsonString.contains('\n')) {
+        debugPrint('jsonEncode 결과에 \\n 이 없고, \n 이 있습니다. (비정상)');
+      } else {
+        debugPrint('jsonEncode 결과에 줄바꿈 문자가 없습니다.');
+      }
+      // --- 디버깅 코드 끝 ---
+
       widget.onEditCompleted!(jsonString);
     }
   }

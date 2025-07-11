@@ -1,129 +1,76 @@
 {
-    "spans": [
-        {
-            "text": "This is",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
+    "document": {
+        "spans": [
+            {
+                "text": "Hello, Rich Text Editor! 12345 678901234\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
+            },
+            {
+                "text": "Hello, Rich TextEditor!\n",
+                "attribute": {
+                    "fontSize": 24,
+                    "color": 4278190080
+                }
             }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 28,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": " text\nThis is ",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 14,
-                "fontWeight": "FontWeight.w700",
-                "color": 4278190080
-            }
-        },
-        {
-            "text": " text\nThis is",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 14,
-                "fontStyle": "FontStyle.italic",
-                "color": 4278190080
-            }
-        },
-        {
-            "text": " text\nThis is",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 30,
-                "color": 4294057245
-            }
-        },
-        {
-            "text": " text\nThis is ",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 35,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": " text\nThis is ",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080,
-                "decoration": "TextDecoration.underline"
-            }
-        },
-        {
-            "text": " text\nThis is",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "sample",
-            "attribute": {
-                "fontSize": 14,
-                "fontStyle": "FontStyle.italic",
-                "color": 4278190080
-            }
-        },
-        {
-            "text": " text\nThis is sample text\n",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        },
-        {
-            "text": "This is sample text\nThis is sample text\nThis is sampletext",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080,
-                "height": 1.4
-            }
-        },
-        {
-            "text": "\n",
-            "attribute": {
-                "fontSize": 14,
-                "color": 4278190080
-            }
-        }
-    ],
-    "textAlign": 4
+        ],
+        "textAlign": "center"
+    },
+    "padding": {
+        "left": 16,
+        "top": 16,
+        "right": 16,
+        "bottom": 16
+    }
 }

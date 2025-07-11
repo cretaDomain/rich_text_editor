@@ -43,72 +43,80 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.microtask(() {
       const sampleJsonString = '''
       {
-          "spans": [
-              {
-                  "text": "Hello, Rich Text Editor! 12345 67890 1234\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
+          "document": {
+              "spans": [
+                  {
+                      "text": "Hello, Rich Text Editor! 12345 678901234\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
                   }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              },
-              {
-                  "text": "Hello, Rich Text Editor!\\n",
-                  "attribute": {
-                      "fontSize": 24,
-                      "color": 4278190080
-                  }
-              }
-          ],
-          "textAlign": 0
+              ],
+              "textAlign": "center"
+          },
+          "padding": {
+              "left": 16,
+              "top": 16,
+              "right": 16,
+              "bottom": 16
+          }
       }
       ''';
       _controller.setDocumentFromJsonString(sampleJsonString);
@@ -130,8 +138,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: RichTextEditor(
-          width: 800,
-          height: 400,
+          initialMode: EditorMode.view,
+          fontList: const ['Roboto', 'Arial', 'Courier'],
+          showTitleBar: false,
+          width: 400,
+          height: 300,
           controller: _controller,
           onEditCompleted: (json) {
             // ignore: avoid_print
