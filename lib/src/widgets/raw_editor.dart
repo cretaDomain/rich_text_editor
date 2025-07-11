@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import '../models/document_model.dart';
-import '../models/text_span_model.dart';
+//import '../models/text_span_model.dart';
 
 /// A raw text editor that displays rich text content and handles user input.
 ///
@@ -67,6 +67,8 @@ class _RawEditorState extends State<RawEditor>
 
   void _onFocusChanged() {
     setState(() {
+      debugPrint(
+          '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
       if (_focusNode.hasFocus) {
         _openConnection();
       } else {
@@ -84,6 +86,8 @@ class _RawEditorState extends State<RawEditor>
           inputAction: TextInputAction.newline, // Explicitly set the action
         ),
       );
+      debugPrint(
+          '[RawEditor] _openConnection: setEditingState with ${currentTextEditingValue.selection}');
       _connection!.setEditingState(currentTextEditingValue);
       _connection!.show();
     }
@@ -173,9 +177,10 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _handleTapDown(TapDownDetails details) {
-    if (!_focusNode.hasFocus) {
-      _focusNode.requestFocus();
-    }
+    debugPrint('[RawEditor] _handleTapDown START: selection=${widget.controller.selection}');
+    // 1. 먼저 탭 위치를 계산하고 컨트롤러의 selection을 업데이트합니다.
+    final textPainter = _createTextPainter(context.size!);
+    final position = textPainter.getPositionForOffset(details.localPosition);
 
     // --- Tap counting logic ---
     final now = DateTime.now();
@@ -185,9 +190,6 @@ class _RawEditorState extends State<RawEditor>
       _tapCount = 1;
     }
     _lastTapTime = now;
-
-    final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(details.localPosition);
 
     switch (_tapCount) {
       case 1:
@@ -206,9 +208,17 @@ class _RawEditorState extends State<RawEditor>
         _tapCount = 0; // Reset after triple tap
         break;
     }
+    debugPrint('[RawEditor] _handleTapDown END: selection=${widget.controller.selection}');
 
-    // 중요: 변경된 선택 영역을 시스템 IME에 즉시 알려 상태를 동기화합니다.
-    _connection?.setEditingState(currentTextEditingValue);
+    // 2. selection 업데이트 후 포커스 및 IME 상태를 처리합니다.
+    if (_focusNode.hasFocus) {
+      // 이미 포커스가 있다면, 변경된 selection을 즉시 IME에 알립니다.
+      _connection?.setEditingState(currentTextEditingValue);
+    } else {
+      // 포커스가 없다면, 요청만 합니다.
+      // _onFocusChanged 리스너가 (이미 업데이트된) selection으로 IME 상태를 설정할 것입니다.
+      _focusNode.requestFocus();
+    }
   }
 
   void _selectWordAt(TextPosition position, TextPainter textPainter) {
@@ -316,6 +326,55 @@ class _RawEditorState extends State<RawEditor>
               widget.controller.updateSelection(
                 TextSelection.collapsed(offset: endPosition),
               );
+              _connection?.setEditingState(currentTextEditingValue);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              final textPainter = _createTextPainter(context.size!);
+              final currentPosition = widget.controller.selection.base;
+              final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
+
+              // Use the height of the current line for more precise movement.
+              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero) ??
+                  textPainter.preferredLineHeight;
+
+              // If we are already at the top or very close to it, do nothing.
+              if (currentOffset.dy < lineHeight) {
+                widget.controller.updateSelection(
+                  const TextSelection.collapsed(offset: 0),
+                );
+              } else {
+                final targetOffset = Offset(currentOffset.dx, currentOffset.dy - lineHeight);
+                final newPosition = textPainter.getPositionForOffset(targetOffset);
+                widget.controller.updateSelection(
+                  TextSelection.collapsed(offset: newPosition.offset),
+                );
+              }
+              _connection?.setEditingState(currentTextEditingValue);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              final textPainter = _createTextPainter(context.size!);
+              final currentPosition = widget.controller.selection.base;
+              final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
+
+              // Use the height of the current line.
+              final lineHeight = textPainter.getFullHeightForCaret(currentPosition, Rect.zero) ??
+                  textPainter.preferredLineHeight;
+
+              // If we are on the last line, move to the end of the document.
+              if (currentOffset.dy >= textPainter.height - lineHeight) {
+                final endOfDoc = widget.controller.document.toPlainText().length;
+                widget.controller.updateSelection(
+                  TextSelection.collapsed(offset: endOfDoc),
+                );
+              } else {
+                final targetOffset = Offset(currentOffset.dx, currentOffset.dy + lineHeight);
+                final newPosition = textPainter.getPositionForOffset(targetOffset);
+                widget.controller.updateSelection(
+                  TextSelection.collapsed(offset: newPosition.offset),
+                );
+              }
               _connection?.setEditingState(currentTextEditingValue);
               return KeyEventResult.handled;
             }
