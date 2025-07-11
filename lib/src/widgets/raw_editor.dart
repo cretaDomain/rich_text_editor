@@ -28,6 +28,7 @@ class _RawEditorState extends State<RawEditor>
   TextInputConnection? _connection;
   DateTime _lastTapTime = DateTime.now();
   int _tapCount = 0;
+  final GlobalKey _editorKey = GlobalKey();
 
   // final int _previousLineNumber = -1;
   // final double _upVias = 1.0;
@@ -87,15 +88,14 @@ class _RawEditorState extends State<RawEditor>
         this,
         const TextInputConfiguration(
           inputType: TextInputType.multiline,
-          inputAction: TextInputAction.newline,
-          autocorrect: false,
-          enableSuggestions: false,
+          inputAction: TextInputAction.newline, // Explicitly set the action
         ),
       );
       //debugPrint(
       //    '[RawEditor] _openConnection: setEditingState with ${currentTextEditingValue.selection}');
       _connection!.setEditingState(currentTextEditingValue);
       _connection!.show();
+      _updateSizeAndTransform();
     }
   }
 
@@ -147,6 +147,18 @@ class _RawEditorState extends State<RawEditor>
     } else {
       // For other actions like 'done', unfocus the editor.
       _focusNode.unfocus();
+    }
+  }
+
+  void _updateSizeAndTransform() {
+    if (_connection == null || _editorKey.currentContext == null) {
+      return;
+    }
+    final RenderBox? renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final size = renderBox.size;
+      final transform = renderBox.getTransformTo(null);
+      _connection!.setEditableSizeAndTransform(size, transform);
     }
   }
 
@@ -280,6 +292,13 @@ class _RawEditorState extends State<RawEditor>
 
   @override
   Widget build(BuildContext context) {
+    // build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _updateSizeAndTransform();
+      }
+    });
+
     return GestureDetector(
       onTapDown: _handleTapDown,
       onPanStart: _handlePanStart,
@@ -287,171 +306,11 @@ class _RawEditorState extends State<RawEditor>
       child: Focus(
         focusNode: _focusNode,
         onKeyEvent: (node, event) {
-          if (event is KeyDownEvent) {
-            if (event.logicalKey == LogicalKeyboardKey.tab) {
-              // Intercept the Tab key event to insert a tab character.
-              final oldValue = currentTextEditingValue;
-              final newText = oldValue.text.replaceRange(
-                oldValue.selection.start,
-                oldValue.selection.end,
-                '\t',
-              );
-              final newValue = TextEditingValue(
-                text: newText,
-                selection: TextSelection.collapsed(offset: oldValue.selection.start + 1),
-              );
-              updateEditingValue(newValue);
-              return KeyEventResult.handled; // Mark the event as handled.
-            }
-            /*
-            if (event.logicalKey == LogicalKeyboardKey.home) {
-              // Move cursor to the beginning of the current line.
-              final textPainter = _createTextPainter(context.size!);
-              final currentPosition = widget.controller.selection.base;
-              final line = textPainter.getLineBoundary(currentPosition);
-              widget.controller.updateSelection(
-                TextSelection.collapsed(offset: line.start),
-              );
-              _connection?.setEditingState(currentTextEditingValue);
-              return KeyEventResult.handled;
-            }
-            if (event.logicalKey == LogicalKeyboardKey.end) {
-              // Move cursor to the end of the current line.
-              final textPainter = _createTextPainter(context.size!);
-              final fullText = widget.controller.document.toPlainText();
-              final currentPosition = widget.controller.selection.base;
-              final line = textPainter.getLineBoundary(currentPosition);
-
-              var endPosition = line.end;
-              // If the line ends with a newline character, move the cursor before it.
-              if (endPosition > 0 &&
-                  endPosition <= fullText.length &&
-                  fullText[endPosition - 1] == '\n') {
-                endPosition--;
-              }
-
-              widget.controller.updateSelection(
-                TextSelection.collapsed(offset: endPosition),
-              );
-              _connection?.setEditingState(currentTextEditingValue);
-              return KeyEventResult.handled;
-            }
-            */
-            /*
-            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              final textPainter = _createTextPainter(context.size!);
-              final currentPosition = widget.controller.selection.base;
-              final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
-
-              final allLineMetrics = textPainter.computeLineMetrics();
-              int currentLineNumber = -1;
-              for (var i = 0; i < allLineMetrics.length; i++) {
-                final line = allLineMetrics[i];
-                if (currentOffset.dy >= line.baseline - line.ascent &&
-                    currentOffset.dy <= line.baseline + line.descent) {
-                  currentLineNumber = i;
-                  break;
-                }
-              }
-
-              if (currentLineNumber < 0) {
-                //print('currentLineNumber: $currentLineNumber');
-                return KeyEventResult.handled;
-              }
-
-              print(
-                  '------ currentLineNumber: $currentLineNumber, _previousLineNumber: $_previousLineNumber, _upVias: $_upVias');
-
-              if (currentLineNumber == _previousLineNumber) {
-                _upVias++;
-              } else {
-                _upVias = 1.0;
-              }
-              final currentLineMetrics = allLineMetrics[currentLineNumber];
-              final previousLineMetrics =
-                  allLineMetrics[currentLineNumber == 0 ? 0 : currentLineNumber - 1];
-              final distance = currentLineMetrics.baseline - previousLineMetrics.baseline;
-
-              // [수정] 첫 번째 줄로 이동할 때만 경계 값 조정을 제외합니다.
-              final bool isMovingToFirstLine = (currentLineNumber == 0);
-
-              // print(
-              //     'isMovingToFirstLine: $isMovingToFirstLine, currentLineNumber: $currentLineNumber, currentOffset: $currentOffset, distance: $distance');
-
-              final targetY = isMovingToFirstLine
-                  ? currentOffset.dy - distance
-                  : currentOffset.dy - (distance - _upVias);
-
-              final targetOffset = Offset(currentOffset.dx, targetY);
-              final newPosition = textPainter.getPositionForOffset(targetOffset);
-
-              widget.controller.updateSelection(
-                TextSelection.collapsed(offset: newPosition.offset),
-              );
-
-              _connection?.setEditingState(currentTextEditingValue);
-              _previousLineNumber = currentLineNumber;
-              return KeyEventResult.handled;
-            }
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              final textPainter = _createTextPainter(context.size!);
-              final currentPosition = widget.controller.selection.base;
-              final currentOffset = textPainter.getOffsetForCaret(currentPosition, Rect.zero);
-
-              final allLineMetrics = textPainter.computeLineMetrics();
-              int currentLineNumber = -1;
-              for (var i = 0; i < allLineMetrics.length; i++) {
-                final line = allLineMetrics[i];
-                if (currentOffset.dy >= line.baseline - line.ascent &&
-                    currentOffset.dy <= line.baseline + line.descent) {
-                  currentLineNumber = i;
-                  break;
-                }
-              }
-
-              if (currentLineNumber < 0 || currentLineNumber >= allLineMetrics.length - 1) {
-                return KeyEventResult.handled;
-              }
-
-              print(
-                  '+++++++ currentLineNumber: $currentLineNumber, _previousLineNumber: $_previousLineNumber, _downVias: $_downVias');
-
-              if (currentLineNumber == _previousLineNumber) {
-                _downVias++;
-              } else {
-                _downVias = 1.0;
-              }
-
-              final currentLineMetrics = allLineMetrics[currentLineNumber];
-              final nextLineMetrics = allLineMetrics[currentLineNumber + 1];
-              final distance = nextLineMetrics.baseline - currentLineMetrics.baseline;
-
-              final bool isMovingToLastLine = (currentLineNumber + 1 == allLineMetrics.length - 1);
-              final targetY = isMovingToLastLine
-                  ? currentOffset.dy + distance
-                  : currentOffset.dy + (distance + _downVias);
-
-              final targetOffset = Offset(currentOffset.dx, targetY);
-
-              final newPosition = textPainter.getPositionForOffset(targetOffset);
-              widget.controller.updateSelection(
-                TextSelection.collapsed(offset: newPosition.offset),
-              );
-
-              _connection?.setEditingState(currentTextEditingValue);
-              _previousLineNumber = currentLineNumber;
-              return KeyEventResult.handled;
-            }
-            */
-          }
-
           // For all other keys, let the system and TextInputClient handle them.
           return KeyEventResult.ignored;
         },
         child: Container(
-          color: Colors.red,
-          width: 400,
-          height: 300,
+          key: _editorKey,
           child: CustomPaint(
             painter: DocumentPainter(
               document: widget.controller.document,
@@ -459,7 +318,7 @@ class _RawEditorState extends State<RawEditor>
               isFocused: _focusNode.hasFocus,
               cursorOpacity: _cursorBlink.value,
             ),
-            size: Size(400, 300), //Size.infinite,
+            size: Size.infinite,
           ),
         ),
       ),
