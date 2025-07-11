@@ -232,7 +232,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
               child: Padding(
                 padding: _padding,
                 child: RawEditor(
-                  // scrollController: _scrollController,
+                  width: widget.width - _padding.horizontal,
+                  height: widget.height - _padding.vertical,
                   controller: widget.controller,
                   onFocusLost: _onEditCompleted,
                 ),

@@ -12,17 +12,17 @@ class RawEditor extends StatefulWidget {
   const RawEditor({
     super.key,
     required this.controller,
-    //required this.scrollController,
     this.onFocusLost,
+    required this.width,
+    required this.height,
   });
 
   /// The controller that manages the document and selection.
   final RichTextEditorController controller;
 
-  /// The scroll controller for the editor.
-  //final ScrollController scrollController;
-
   final VoidCallback? onFocusLost;
+  final double width;
+  final double height;
 
   @override
   State<RawEditor> createState() => _RawEditorState();
@@ -341,30 +341,57 @@ class _RawEditorState extends State<RawEditor>
       }
     });
 
-    return GestureDetector(
+    final editorSize = Size(widget.width, widget.height);
+    final textPainter = _createTextPainter(editorSize);
+
+    final painter = CustomPaint(
+      painter: DocumentPainter(
+        document: widget.controller.document,
+        selection: widget.controller.selection,
+        isFocused: _focusNode.hasFocus,
+        cursorOpacity: _cursorBlink.value,
+      ),
+      size: textPainter.size, // CustomPaint의 크기를 텍스트 크기에 맞춥니다.
+    );
+
+    final gestureHandler = GestureDetector(
       onTapDown: _handleTapDown,
       onPanStart: _handlePanStart,
       onPanUpdate: _handlePanUpdate,
-      child: Focus(
-        focusNode: _focusNode,
-        onKeyEvent: (node, event) {
-          // For all other keys, let the system and TextInputClient handle them.
-          return KeyEventResult.ignored;
-        },
-        child: Container(
-          key: _editorKey,
-          child: CustomPaint(
-            painter: DocumentPainter(
-              document: widget.controller.document,
-              selection: widget.controller.selection,
-              isFocused: _focusNode.hasFocus,
-              cursorOpacity: _cursorBlink.value,
-            ),
-            size: Size.infinite,
-          ),
+      child: painter,
+    );
+
+    return Focus(
+      focusNode: _focusNode,
+      onKeyEvent: (node, event) {
+        // For all other keys, let the system and TextInputClient handle them.
+        return KeyEventResult.ignored;
+      },
+      child: SizedBox(
+        width: editorSize.width,
+        height: editorSize.height,
+        key: _editorKey,
+        // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
+        child: Align(
+          alignment: _textAlignToAlignment(widget.controller.document.textAlign),
+          child: gestureHandler,
         ),
       ),
     );
+  }
+}
+
+Alignment _textAlignToAlignment(TextAlign textAlign) {
+  switch (textAlign) {
+    case TextAlign.center:
+      return Alignment.center;
+    case TextAlign.right:
+      return Alignment.centerRight;
+    case TextAlign.justify:
+    case TextAlign.left:
+    case TextAlign.start:
+    default:
+      return Alignment.centerLeft;
   }
 }
 
