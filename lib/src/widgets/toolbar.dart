@@ -255,22 +255,33 @@ class _ToolbarState extends State<Toolbar> {
             // 텍스트 정렬
             buildToolGroup(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.format_align_left),
-                  style: _getButtonStyle(
-                      doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start),
-                  onPressed: () => widget.onChangeAlign(TextAlign.left),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.format_align_center),
-                  style: _getButtonStyle(doc.textAlign == TextAlign.center),
-                  onPressed: () => widget.onChangeAlign(TextAlign.center),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.format_align_right),
-                  style: _getButtonStyle(
-                      doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end),
-                  onPressed: () => widget.onChangeAlign(TextAlign.right),
+                ToggleButtons(
+                  renderBorder: false,
+                  fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+                  isSelected: [
+                    doc.textAlign == TextAlign.left || doc.textAlign == TextAlign.start,
+                    doc.textAlign == TextAlign.center,
+                    doc.textAlign == TextAlign.right || doc.textAlign == TextAlign.end,
+                    doc.textAlign == TextAlign.justify,
+                  ],
+                  onPressed: (index) {
+                    final aligns = [
+                      TextAlign.left,
+                      TextAlign.center,
+                      TextAlign.right,
+                      TextAlign.justify
+                    ];
+                    widget.onChangeAlign(aligns[index]);
+                  },
+                  children: const [
+                    Icon(Icons.format_align_left),
+                    Icon(Icons.format_align_center),
+                    Icon(Icons.format_align_right),
+                    Icon(Icons.format_align_justify),
+                  ],
                 ),
               ],
             ),
@@ -278,6 +289,11 @@ class _ToolbarState extends State<Toolbar> {
             buildToolGroup(
               children: [
                 ToggleButtons(
+                  renderBorder: false,
+                  fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  constraints: const BoxConstraints.tightFor(width: 40, height: 40),
                   isSelected: [
                     doc.textAlignVertical == TextAlignVertical.top,
                     doc.textAlignVertical == TextAlignVertical.center,
@@ -402,8 +418,7 @@ class _ToolbarState extends State<Toolbar> {
     final theme = Theme.of(context);
     return IconButton.styleFrom(
       foregroundColor: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-      backgroundColor:
-          isActive ? theme.colorScheme.primary.withValues(alpha: 0.12) : Colors.transparent,
+      backgroundColor: isActive ? theme.colorScheme.primary.withOpacity(0.12) : Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
     );
   }

@@ -113,8 +113,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
         final double originalHeight = widget.height;
 
         if (widget.controller.mode == EditorMode.edit) {
-          if (widget.width < 800) {
-            _currentWidth = 800;
+          if (widget.width < 900) {
+            _currentWidth = 900;
           } else {
             _currentWidth = widget.width;
           }

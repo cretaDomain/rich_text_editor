@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: RichTextEditor(
           initialMode: EditorMode.view,
-          fontList: const ['Roboto', 'Arial', 'Courier'],
+          fontList: const ['Roboto', 'Arial', 'Courier', 'Long name font...'],
           showTitleBar: false,
           width: 400,
           height: 300,
