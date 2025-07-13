@@ -128,6 +128,44 @@ class DocumentModel {
     }
     return applied;
   }
+
+  Alignment calculateAlignment() {
+    final double x;
+    switch (textAlign) {
+      case TextAlign.left:
+      case TextAlign.start:
+        x = -1.0;
+        break;
+      case TextAlign.right:
+      case TextAlign.end:
+        x = 1.0;
+        break;
+      case TextAlign.center:
+      case TextAlign.justify: // Justify는 가로로 꽉 채우지만, Align에서는 중앙으로 처리
+      // ignore: unreachable_switch_default
+      default:
+        x = 0.0;
+        break;
+    }
+
+    final double y;
+    switch (textAlignVertical) {
+      case TextAlignVertical.top:
+        y = -1.0;
+        break;
+      case TextAlignVertical.center:
+        y = 0.0;
+        break;
+      case TextAlignVertical.bottom:
+        y = 1.0;
+        break;
+      default:
+        y = -1.0;
+        break;
+    }
+
+    return Alignment(x, y);
+  }
 }
 
 TextAlignVertical _textAlignVerticalFromString(String? value) {

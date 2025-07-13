@@ -292,13 +292,12 @@ class _RawEditorState extends State<RawEditor>
       _focusNode.requestFocus();
     }
   }
-
 /*
   void _handlePanStart(DragStartDetails details) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
 
-    final textPainter = _createTextPainter(renderBox.size);
+    final textPainter = _createTextPainter(context.size!);
     // if (textPainter.computeLineMetrics().length > 1) {
     //   return; // 2줄 이상이면 드래그 비활성화
     // }
@@ -315,12 +314,11 @@ class _RawEditorState extends State<RawEditor>
       TextSelection.collapsed(offset: position.offset),
     );
   }
-*/
-/*
+
   void _handlePanUpdate(DragUpdateDetails details) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
 
-    final textPainter = _createTextPainter(renderBox.size);
+    final textPainter = _createTextPainter(context.size!);
     // if (textPainter.computeLineMetrics().length > 1) {
     //   return; // 2줄 이상이면 드래그 비활성화
     // }
@@ -334,11 +332,12 @@ class _RawEditorState extends State<RawEditor>
       ),
     );
   }
-*/
+  */
+
   void _handlePanEnd(DragEndDetails details) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
 
-    final textPainter = _createTextPainter(renderBox.size);
+    final textPainter = _createTextPainter(context.size!);
     // if (textPainter.computeLineMetrics().length > 1) {
     //   return; // 2줄 이상이면 드래그 비활성화
     // }
@@ -358,12 +357,12 @@ class _RawEditorState extends State<RawEditor>
     // build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        final textPainter = _createTextPainter(context.size!);
+
+        print('******** textPainter.size: ${textPainter.size}');
         _updateSizeAndTransform();
       }
     });
-
-    final editorSize = Size(widget.width, widget.height);
-    //final textPainter = _createTextPainter(editorSize);
 
     final painter = CustomPaint(
       painter: DocumentPainter(
@@ -377,8 +376,8 @@ class _RawEditorState extends State<RawEditor>
 
     final gestureHandler = GestureDetector(
       onTapDown: _handleTapDown,
-      //onPanStart: _handlePanStart,  //<-- 절대로 하면 안됨됨
-      //onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
+      // onPanStart: _handlePanStart, //<-- 절대로 하면 안됨됨
+      // onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
       onPanEnd: _handlePanEnd,
       child: painter,
     );
@@ -391,10 +390,9 @@ class _RawEditorState extends State<RawEditor>
       },
       child: SingleChildScrollView(
         controller: widget.scrollController,
-        child: Container(
-          color: Colors.red,
-          width: editorSize.width,
-          height: editorSize.height,
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height,
           key: _editorKey,
           // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
           child: Align(
