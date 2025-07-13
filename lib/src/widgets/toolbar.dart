@@ -505,7 +505,7 @@ class _ToolbarState extends State<Toolbar> {
 
   Widget _buildTextField(double value, ValueChanged<double> onFieldChanged) {
     return SizedBox(
-      width: 30,
+      width: 40,
       height: 21,
       child: TextFormField(
         controller: TextEditingController(text: value.toInt().toString()),
@@ -514,7 +514,7 @@ class _ToolbarState extends State<Toolbar> {
         decoration: const InputDecoration(
           isDense: true,
           border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          contentPadding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
         ),
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
