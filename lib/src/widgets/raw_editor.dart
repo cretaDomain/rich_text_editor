@@ -52,11 +52,55 @@ class _RawEditorState extends State<RawEditor>
     setState(() {});
   }
 
+  void _scrollToShowCaret() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !widget.scrollController.hasClients || !_focusNode.hasFocus) {
+        return;
+      }
+
+      final textPainter = _createTextPainter(Size(widget.width, double.infinity));
+      final selection = widget.controller.selection;
+      if (!selection.isCollapsed) {
+        return;
+      }
+
+      final position = TextPosition(offset: selection.baseOffset);
+      final caretRect = textPainter.getOffsetForCaret(position, Rect.zero) &
+          Size(2.0, textPainter.getFullHeightForCaret(position, Rect.zero));
+
+      final scrollOffset = widget.scrollController.offset;
+      final editorHeight = widget.height;
+      final visibleArea = Rect.fromLTWH(0, scrollOffset, widget.width, editorHeight);
+
+      const scrollPadding = 20.0;
+      double? targetScrollOffset;
+
+      if (caretRect.top < visibleArea.top) {
+        targetScrollOffset = caretRect.top - scrollPadding;
+      } else if (caretRect.bottom > visibleArea.bottom - scrollPadding) {
+        targetScrollOffset = caretRect.bottom - editorHeight + scrollPadding;
+      }
+
+      if (targetScrollOffset != null) {
+        targetScrollOffset = targetScrollOffset.clamp(
+          widget.scrollController.position.minScrollExtent,
+          widget.scrollController.position.maxScrollExtent,
+        );
+        widget.scrollController.animateTo(
+          targetScrollOffset,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.ease,
+        );
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     // Add the listener.
     widget.controller.addListener(_rebuild);
+    widget.controller.addListener(_scrollToShowCaret);
     _focusNode.addListener(_onFocusChanged);
 
     _cursorBlink = AnimationController(
@@ -76,6 +120,7 @@ class _RawEditorState extends State<RawEditor>
   void dispose() {
     // Make sure to remove the listener using the exact same function object.
     widget.controller.removeListener(_rebuild);
+    widget.controller.removeListener(_scrollToShowCaret);
     _focusNode.removeListener(_onFocusChanged);
     _closeConnection();
     _cursorBlink.dispose();
