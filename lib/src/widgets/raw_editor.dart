@@ -301,7 +301,7 @@ class _RawEditorState extends State<RawEditor>
     final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
     final parentSize = renderBox.size;
-    final childSize = textPainter.size;
+    final childSize = textPainter.size + const Offset(20, 20);
     final alignment = _calculateAlignment(
         widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
     final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
@@ -359,7 +359,7 @@ class _RawEditorState extends State<RawEditor>
     final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
     final parentSize = renderBox.size;
-    final childSize = textPainter.size;
+    final childSize = textPainter.size + const Offset(20, 20);
     final alignment = _calculateAlignment(
         widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
     final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
@@ -380,7 +380,7 @@ class _RawEditorState extends State<RawEditor>
     final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
     final parentSize = renderBox.size;
-    final childSize = textPainter.size;
+    final childSize = textPainter.size + const Offset(20, 20);
     final alignment = _calculateAlignment(
         widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
     final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
@@ -402,7 +402,7 @@ class _RawEditorState extends State<RawEditor>
     final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
     final parentSize = renderBox.size;
-    final childSize = textPainter.size;
+    final childSize = textPainter.size + const Offset(20, 20);
     final alignment = _calculateAlignment(
         widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
     final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
