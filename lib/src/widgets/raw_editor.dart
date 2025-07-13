@@ -78,7 +78,7 @@ class _RawEditorState extends State<RawEditor>
       if (caretRect.top < visibleArea.top) {
         targetScrollOffset = caretRect.top - scrollPadding;
       } else if (caretRect.bottom > visibleArea.bottom - scrollPadding) {
-        targetScrollOffset = caretRect.bottom - editorHeight + scrollPadding;
+        targetScrollOffset = widget.scrollController.offset + caretRect.height;
       }
 
       if (targetScrollOffset != null) {
