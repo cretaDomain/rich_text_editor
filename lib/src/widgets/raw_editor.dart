@@ -353,10 +353,9 @@ class _RawEditorState extends State<RawEditor>
   }
 
   // ignore: unused_element
-  void _handlePanStart(DragStartDetails details) {
+  void _handlePanStart(DragStartDetails details, TextPainter textPainter) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final textPainter = _createTextPainter(context.size!);
     final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
     final parentSize = renderBox.size;
@@ -376,9 +375,8 @@ class _RawEditorState extends State<RawEditor>
   }
 
   // ignore: unused_element
-  void _handlePanUpdate(DragUpdateDetails details) {
+  void _handlePanUpdate(DragUpdateDetails details, TextPainter textPainter) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final textPainter = _createTextPainter(context.size!);
     final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
     final parentSize = renderBox.size;
@@ -454,8 +452,8 @@ class _RawEditorState extends State<RawEditor>
 
             final gestureHandler = GestureDetector(
               onTapDown: (details) => _handleTapDown(details, textPainter),
-              //onPanStart: _handlePanStart, //<-- 절대로 하면 안됨됨
-              //onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
+              onPanStart: (details) => _handlePanStart(details, textPainter),
+              onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
               onPanEnd: (details) => _handlePanEnd(details, textPainter),
               child: painter,
             );
