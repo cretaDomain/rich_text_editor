@@ -297,20 +297,22 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _handleTapDown(TapDownDetails details, TextPainter textPainter) {
-    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
+    // final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    // final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final parentSize = renderBox.size;
-    final childSize = textPainter.size + const Offset(20, 20);
-    final alignment = _calculateAlignment(
-        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
-    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
-    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
-    final offset = Offset(dx, dy);
+    // final parentSize = renderBox.size;
+    // final childSize = textPainter.size + const Offset(20, 20);
+    // final alignment = _calculateAlignment(
+    //     widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    // final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    // final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    // final offset = Offset(dx, dy);
 
-    final localPosition = localPositionInSizedBox - offset;
+    // final localPosition = localPositionInSizedBox - offset;
 
-    final position = textPainter.getPositionForOffset(localPosition);
+    // final position = textPainter.getPositionForOffset(localPosition);
+
+    final position = textPainter.getPositionForOffset(details.localPosition);
 
     // --- Tap counting logic ---
     final now = DateTime.now();
@@ -355,20 +357,21 @@ class _RawEditorState extends State<RawEditor>
   // ignore: unused_element
   void _handlePanStart(DragStartDetails details, TextPainter textPainter) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
-    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
+    // final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    // final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final parentSize = renderBox.size;
-    final childSize = textPainter.size + const Offset(20, 20);
-    final alignment = _calculateAlignment(
-        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
-    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
-    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
-    final offset = Offset(dx, dy);
+    // final parentSize = renderBox.size;
+    // final childSize = textPainter.size + const Offset(20, 20);
+    // final alignment = _calculateAlignment(
+    //     widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    // final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    // final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    // final offset = Offset(dx, dy);
 
-    final localPosition = localPositionInSizedBox - offset;
+    // final localPosition = localPositionInSizedBox - offset;
 
-    final position = textPainter.getPositionForOffset(localPosition);
+    // final position = textPainter.getPositionForOffset(localPosition);
+    final position = textPainter.getPositionForOffset(details.localPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
     );
@@ -376,20 +379,21 @@ class _RawEditorState extends State<RawEditor>
 
   // ignore: unused_element
   void _handlePanUpdate(DragUpdateDetails details, TextPainter textPainter) {
-    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
+    // final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    // final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final parentSize = renderBox.size;
-    final childSize = textPainter.size + const Offset(20, 20);
-    final alignment = _calculateAlignment(
-        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
-    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
-    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
-    final offset = Offset(dx, dy);
+    // final parentSize = renderBox.size;
+    // final childSize = textPainter.size + const Offset(20, 20);
+    // final alignment = _calculateAlignment(
+    //     widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    // final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    // final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    // final offset = Offset(dx, dy);
 
-    final localPosition = localPositionInSizedBox - offset;
+    // final localPosition = localPositionInSizedBox - offset;
 
-    final position = textPainter.getPositionForOffset(localPosition);
+    // final position = textPainter.getPositionForOffset(localPosition);
+    final position = textPainter.getPositionForOffset(details.localPosition);
     widget.controller.updateSelection(
       widget.controller.selection.copyWith(
         extentOffset: position.offset,
@@ -398,20 +402,21 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _handlePanEnd(DragEndDetails details, TextPainter textPainter) {
-    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
+    // final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    // final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final parentSize = renderBox.size;
-    final childSize = textPainter.size + const Offset(20, 20);
-    final alignment = _calculateAlignment(
-        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
-    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
-    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
-    final offset = Offset(dx, dy);
+    // final parentSize = renderBox.size;
+    // final childSize = textPainter.size + const Offset(20, 20);
+    // final alignment = _calculateAlignment(
+    //     widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    // final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    // final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    // final offset = Offset(dx, dy);
 
-    final localPosition = localPositionInSizedBox - offset;
+    // final localPosition = localPositionInSizedBox - offset;
 
-    final position = textPainter.getPositionForOffset(localPosition);
+    //final position = textPainter.getPositionForOffset(localPosition);
+    final position = textPainter.getPositionForOffset(details.localPosition);
     widget.controller.updateSelection(
       widget.controller.selection.copyWith(
         extentOffset: position.offset,
@@ -452,8 +457,8 @@ class _RawEditorState extends State<RawEditor>
 
             final gestureHandler = GestureDetector(
               onTapDown: (details) => _handleTapDown(details, textPainter),
-              onPanStart: (details) => _handlePanStart(details, textPainter),
-              onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
+              //onPanStart: (details) => _handlePanStart(details, textPainter),
+              //onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
               onPanEnd: (details) => _handlePanEnd(details, textPainter),
               child: painter,
             );
