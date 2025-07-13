@@ -39,6 +39,8 @@ class _RawEditorState extends State<RawEditor>
   int _tapCount = 0;
   final GlobalKey _editorKey = GlobalKey();
 
+  //TextPainter? _textPainter;
+
   //int? _scrollOffset;
 
   // final int _previousLineNumber = -1;
@@ -78,6 +80,8 @@ class _RawEditorState extends State<RawEditor>
     _closeConnection();
     _cursorBlink.dispose();
     _focusNode.dispose();
+    //_textPainter?.dispose();
+    // _textPainter = null;
     super.dispose();
   }
 
@@ -201,6 +205,9 @@ class _RawEditorState extends State<RawEditor>
   // -- End of TextInputClient implementation --
 
   TextPainter _createTextPainter(Size size) {
+    // if (_textPainter != null) {
+    //   return _textPainter!;
+    // }
     final textPainter = TextPainter(
       text: TextSpan(
         children: widget.controller.document.spans.map((s) => s.toTextSpan()).toList(),
@@ -299,38 +306,45 @@ class _RawEditorState extends State<RawEditor>
       _focusNode.requestFocus();
     }
   }
-/*
+
+  // ignore: unused_element
   void _handlePanStart(DragStartDetails details) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-
     final textPainter = _createTextPainter(context.size!);
-    // if (textPainter.computeLineMetrics().length > 1) {
-    //   return; // 2줄 이상이면 드래그 비활성화
-    // }
+    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    final parentSize = renderBox.size;
+    final childSize = textPainter.size;
+    final alignment = _calculateAlignment(
+        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    final offset = Offset(dx, dy);
 
-    final Offset correctedPosition = Offset(
-      localPosition.dx,
-      localPosition.dy + 0, //_scrollOffset, //widget.scrollController.offset,
-    );
+    final localPosition = localPositionInSizedBox - offset;
 
-    final position = textPainter.getPositionForOffset(correctedPosition);
+    final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
     );
   }
 
+  // ignore: unused_element
   void _handlePanUpdate(DragUpdateDetails details) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-
     final textPainter = _createTextPainter(context.size!);
-    // if (textPainter.computeLineMetrics().length > 1) {
-    //   return; // 2줄 이상이면 드래그 비활성화
-    // }
+    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    final parentSize = renderBox.size;
+    final childSize = textPainter.size;
+    final alignment = _calculateAlignment(
+        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    final offset = Offset(dx, dy);
+
+    final localPosition = localPositionInSizedBox - offset;
 
     final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
@@ -339,7 +353,6 @@ class _RawEditorState extends State<RawEditor>
       ),
     );
   }
-  */
 
   void _handlePanEnd(DragEndDetails details, TextPainter textPainter) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
@@ -397,13 +410,13 @@ class _RawEditorState extends State<RawEditor>
                 cursorOpacity: _cursorBlink.value,
                 textPainter: textPainter,
               ),
-              size: textPainter.size,
+              size: textPainter.size + Offset(20, 20), //외부에 여백을 조금 두어야 함.
             );
 
             final gestureHandler = GestureDetector(
               onTapDown: (details) => _handleTapDown(details, textPainter),
-              // onPanStart: _handlePanStart, //<-- 절대로 하면 안됨됨
-              // onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
+              //onPanStart: _handlePanStart, //<-- 절대로 하면 안됨됨
+              //onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
               onPanEnd: (details) => _handlePanEnd(details, textPainter),
               child: painter,
             );
