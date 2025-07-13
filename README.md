@@ -29,7 +29,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  creta_rich_text_editor: ^1.0.3
+  creta_rich_text_editor: ^1.0.4
 ```
 
 Then, import the library in your Dart code:
@@ -43,36 +43,131 @@ import 'package:creta_rich_text_editor/creta_rich_text_editor.dart';
 Here's a basic example of how to use the `RichTextEditor`:
 
 ```dart
+//import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:creta_rich_text_editor/creta_rich_text_editor.dart';
+import 'src/controllers/rich_text_editor_controller.dart';
+import 'src/widgets/rich_text_editor.dart';
 
-class MyEditorPage extends StatefulWidget {
-  @override
-  _MyEditorPageState createState() => _MyEditorPageState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _MyEditorPageState extends State<MyEditorPage> {
-  late final RichTextEditorController _controller;
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Rich Text Editor Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Rich Text Editor Demo'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late RichTextEditorController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = RichTextEditorController();
-    
-    // Set initial content from a JSON string
+
     Future.microtask(() {
-      const sampleJson = '''
+      const sampleJsonString = '''
       {
-        "spans": [
-          {"text": "Hello, ", "attribute": {"fontSize": 18.0}},
-          {"text": "World!", "attribute": {"fontSize": 24.0, "fontWeight": "FontWeight.bold"}}
-        ]
+          "document": {
+              "spans": [
+                  {
+                      "text": "Hello, Rich Text Editor! 12345 678901234\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!1\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!2\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!3\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!4\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!5\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!6\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!7\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  },
+                  {
+                      "text": "Hello, Rich TextEditor!8\\n",
+                      "attribute": {
+                          "fontSize": 24,
+                          "color": 4278190080
+                      }
+                  }
+              ],
+              "textAlign": "center"
+          },
+          "padding": {
+              "left": 16,
+              "top": 16,
+              "right": 16,
+              "bottom": 16
+          }
       }
       ''';
-      _controller.setDocumentFromJsonString(sampleJson);
+      _controller.setDocumentFromJsonString(sampleJsonString);
     });
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
@@ -82,26 +177,41 @@ class _MyEditorPageState extends State<MyEditorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Creta Editor')),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
       body: Center(
         child: RichTextEditor(
+          initialMode: EditorMode.view,
+          fontList: const ['Roboto', 'Arial', 'Courier', 'Long name font...'],
+          showTitleBar: false,
+          width: 900,
+          height: 200,
           controller: _controller,
-          width: 400,
-          height: 300,
-          fontList: const ['Roboto', 'Arial', 'Courier'],
+          onEditCompleted: (json) {
+            //print('-----------------------------------------------------------');
+            // ignore: avoid_print
+            print('onEditCompleted: $json');
+          },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Get content as a JSON map
-          final jsonMap = _controller.document.toJson();
-          print(jsonMap);
-        },
-        child: Icon(Icons.data_object),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // 컨트롤러에서 문서의 JSON 표현을 가져옵니다.
+      //     final jsonMap = _controller.document.toJson();
+      //     // jsonEncode를 사용하여 Dart 맵을 사람이 읽기 좋은 형식의 JSON 문자열로 변환합니다.
+      //     final jsonString = jsonEncode(jsonMap, toEncodable: (e) => e.toString());
+      //     // ignore: avoid_print
+      //     print(jsonString);
+      //   },
+      //   tooltip: 'Print JSON',
+      //   child: const Icon(Icons.data_object),
+      // ),
     );
   }
 }
+
 ```
 
 ## Additional Information

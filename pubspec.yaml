@@ -16,7 +16,7 @@ description: "A feature-rich and highly customizable rich text editor for Flutte
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/your_username/creta_rich_text_editor # TODO: Replace with your actual repository URL
 
 environment:
