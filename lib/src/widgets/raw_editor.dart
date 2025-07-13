@@ -381,23 +381,17 @@ class _RawEditorState extends State<RawEditor>
     // build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        // final textPainter = _createTextPainter(context.size!);
-        // print('******** textPainter.size: ${textPainter.size}');
         _updateSizeAndTransform();
       }
     });
 
     return Focus(
       focusNode: _focusNode,
-      onKeyEvent: (node, event) {
-        // For all other keys, let the system and TextInputClient handle them.
-        return KeyEventResult.ignored;
-      },
       child: SingleChildScrollView(
         controller: widget.scrollController,
         child: SizedBox(
           width: widget.width,
-          height: widget.height,
+          //height: widget.height,
           key: _editorKey,
           child: LayoutBuilder(builder: (context, constraints) {
             final textPainter = _createTextPainter(constraints.biggest);
@@ -410,7 +404,7 @@ class _RawEditorState extends State<RawEditor>
                 cursorOpacity: _cursorBlink.value,
                 textPainter: textPainter,
               ),
-              size: textPainter.size + Offset(20, 20), //외부에 여백을 조금 두어야 함.
+              size: textPainter.size + const Offset(20, 20), //외부에 여백을 조금 두어야 함.
             );
 
             final gestureHandler = GestureDetector(
@@ -422,10 +416,15 @@ class _RawEditorState extends State<RawEditor>
             );
 
             // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
-            return Align(
-              alignment: _calculateAlignment(widget.controller.document.textAlign,
-                  widget.controller.document.textAlignVertical),
-              child: gestureHandler,
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: widget.height,
+              ),
+              child: Align(
+                alignment: _calculateAlignment(widget.controller.document.textAlign,
+                    widget.controller.document.textAlignVertical),
+                child: gestureHandler,
+              ),
             );
           }),
         ),

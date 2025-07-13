@@ -53,56 +53,56 @@ class _MyHomePageState extends State<MyHomePage> {
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!1\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!2\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!3\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!4\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!5\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!6\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!7\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
                       }
                   },
                   {
-                      "text": "Hello, Rich TextEditor!\\n",
+                      "text": "Hello, Rich TextEditor!8\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
