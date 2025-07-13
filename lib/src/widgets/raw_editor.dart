@@ -12,6 +12,7 @@ class RawEditor extends StatefulWidget {
   const RawEditor({
     super.key,
     required this.controller,
+    required this.scrollController,
     this.onFocusLost,
     required this.width,
     required this.height,
@@ -19,6 +20,7 @@ class RawEditor extends StatefulWidget {
 
   /// The controller that manages the document and selection.
   final RichTextEditorController controller;
+  final ScrollController scrollController;
 
   final VoidCallback? onFocusLost;
   final double width;
@@ -36,6 +38,8 @@ class _RawEditorState extends State<RawEditor>
   DateTime _lastTapTime = DateTime.now();
   int _tapCount = 0;
   final GlobalKey _editorKey = GlobalKey();
+
+  //int? _scrollOffset;
 
   // final int _previousLineNumber = -1;
   // final double _upVias = 1.0;
@@ -78,16 +82,16 @@ class _RawEditorState extends State<RawEditor>
   }
 
   void _onFocusChanged() {
-    setState(() {
-      //debugPrint(
-      //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
-      if (_focusNode.hasFocus) {
-        _openConnection();
-      } else {
-        _closeConnection();
-        widget.onFocusLost?.call();
-      }
-    });
+    //setState(() {
+    //debugPrint(
+    //    '[RawEditor] _onFocusChanged: hasFocus=${_focusNode.hasFocus}, selection=${widget.controller.selection}');
+    if (_focusNode.hasFocus) {
+      _openConnection();
+    } else {
+      _closeConnection();
+      widget.onFocusLost?.call();
+    }
+    //});
   }
 
   void _openConnection() {
@@ -165,8 +169,14 @@ class _RawEditorState extends State<RawEditor>
     final RenderBox? renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final size = renderBox.size;
+
+      //print('******** size: $size');
       final transform = renderBox.getTransformTo(null);
-      _connection!.setEditableSizeAndTransform(size, transform);
+      _connection!.setEditableSizeAndTransform(
+        size,
+        //Size(widget.width, widget.height),
+        transform,
+      );
     }
   }
 
@@ -202,59 +212,6 @@ class _RawEditorState extends State<RawEditor>
     return textPainter;
   }
 
-  void _handleTapDown(TapDownDetails details) {
-    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
-
-    // 스크롤 오프셋을 더하여 실제 문서 내의 위치를 계산합니다.
-    /*
-    final Offset correctedPosition = Offset(
-      localPosition.dx,
-      localPosition.dy + widget.scrollController.offset,
-    );
-    */
-
-    final textPainter = _createTextPainter(context.size!);
-    final position = textPainter.getPositionForOffset(localPosition);
-
-    // --- Tap counting logic ---
-    final now = DateTime.now();
-    if (now.difference(_lastTapTime) < const Duration(milliseconds: 300)) {
-      _tapCount++;
-    } else {
-      _tapCount = 1;
-    }
-    _lastTapTime = now;
-
-    switch (_tapCount) {
-      case 1:
-        // Single tap: move cursor
-        widget.controller.updateSelection(
-          TextSelection.collapsed(offset: position.offset),
-        );
-        break;
-      case 2:
-        // Double tap: select word
-        _selectWordAt(position, textPainter);
-        break;
-      case 3:
-        // Triple tap: select paragraph and reset count
-        _selectParagraphAt(position, textPainter);
-        _tapCount = 0; // Reset after triple tap
-        break;
-    }
-
-    // 2. selection 업데이트 후 포커스 및 IME 상태를 처리합니다.
-    if (_focusNode.hasFocus) {
-      // 이미 포커스가 있다면, 변경된 selection을 즉시 IME에 알립니다.
-      _connection?.setEditingState(currentTextEditingValue);
-    } else {
-      // 포커스가 없다면, 요청만 합니다.
-      // _onFocusChanged 리스너가 (이미 업데이트된) selection으로 IME 상태를 설정할 것입니다.
-      _focusNode.requestFocus();
-    }
-  }
-
   void _selectWordAt(TextPosition position, TextPainter textPainter) {
     // Get the word boundary at the given position.
     final TextRange word = textPainter.getWordBoundary(position);
@@ -287,43 +244,107 @@ class _RawEditorState extends State<RawEditor>
     );
   }
 
+  void _handleTapDown(TapDownDetails details) {
+    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+
+    // 스크롤 오프셋을 더하여 실제 문서 내의 위치를 계산합니다.
+
+    final textPainter = _createTextPainter(context.size!);
+    final position = textPainter.getPositionForOffset(localPosition);
+
+    // --- Tap counting logic ---
+    final now = DateTime.now();
+    if (now.difference(_lastTapTime) < const Duration(milliseconds: 300)) {
+      _tapCount++;
+    } else {
+      _tapCount = 1;
+    }
+    _lastTapTime = now;
+
+    switch (_tapCount) {
+      case 1:
+        // Single tap: move cursor
+        //print('******** position: $position, ${position.offset}');
+        //_scrollOffset = position.offset;
+        widget.controller.updateSelection(
+          TextSelection.collapsed(offset: position.offset),
+        );
+        break;
+      case 2:
+        // Double tap: select word
+        _selectWordAt(position, textPainter);
+        break;
+      case 3:
+        // Triple tap: select paragraph and reset count
+        _selectParagraphAt(position, textPainter);
+        _tapCount = 0; // Reset after triple tap
+        break;
+    }
+
+    // 2. selection 업데이트 후 포커스 및 IME 상태를 처리합니다.
+    if (_focusNode.hasFocus) {
+      // 이미 포커스가 있다면, 변경된 selection을 즉시 IME에 알립니다.
+      _connection?.setEditingState(currentTextEditingValue);
+    } else {
+      // 포커스가 없다면, 요청만 합니다.
+      // _onFocusChanged 리스너가 (이미 업데이트된) selection으로 IME 상태를 설정할 것입니다.
+      _focusNode.requestFocus();
+    }
+  }
+
+/*
   void _handlePanStart(DragStartDetails details) {
     // 탭으로 시작하므로, 커서 위치를 먼저 잡습니다.
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
 
     final textPainter = _createTextPainter(renderBox.size);
-    if (textPainter.computeLineMetrics().length > 1) {
-      return; // 2줄 이상이면 드래그 비활성화
-    }
+    // if (textPainter.computeLineMetrics().length > 1) {
+    //   return; // 2줄 이상이면 드래그 비활성화
+    // }
 
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
-    /*
+
     final Offset correctedPosition = Offset(
       localPosition.dx,
-      localPosition.dy + widget.scrollController.offset,
+      localPosition.dy + 0, //_scrollOffset, //widget.scrollController.offset,
     );
-    */
-    final position = textPainter.getPositionForOffset(localPosition);
+
+    final position = textPainter.getPositionForOffset(correctedPosition);
     widget.controller.updateSelection(
       TextSelection.collapsed(offset: position.offset),
     );
   }
-
+*/
+/*
   void _handlePanUpdate(DragUpdateDetails details) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
 
     final textPainter = _createTextPainter(renderBox.size);
-    if (textPainter.computeLineMetrics().length > 1) {
-      return; // 2줄 이상이면 드래그 비활성화
-    }
+    // if (textPainter.computeLineMetrics().length > 1) {
+    //   return; // 2줄 이상이면 드래그 비활성화
+    // }
 
     final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
-    /*
-    final Offset correctedPosition = Offset(
-      localPosition.dx,
-      localPosition.dy + widget.scrollController.offset,
+
+    final position = textPainter.getPositionForOffset(localPosition);
+    widget.controller.updateSelection(
+      widget.controller.selection.copyWith(
+        extentOffset: position.offset,
+      ),
     );
-    */
+  }
+*/
+  void _handlePanEnd(DragEndDetails details) {
+    final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+
+    final textPainter = _createTextPainter(renderBox.size);
+    // if (textPainter.computeLineMetrics().length > 1) {
+    //   return; // 2줄 이상이면 드래그 비활성화
+    // }
+
+    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+
     final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
       widget.controller.selection.copyWith(
@@ -342,7 +363,7 @@ class _RawEditorState extends State<RawEditor>
     });
 
     final editorSize = Size(widget.width, widget.height);
-    final textPainter = _createTextPainter(editorSize);
+    //final textPainter = _createTextPainter(editorSize);
 
     final painter = CustomPaint(
       painter: DocumentPainter(
@@ -351,13 +372,14 @@ class _RawEditorState extends State<RawEditor>
         isFocused: _focusNode.hasFocus,
         cursorOpacity: _cursorBlink.value,
       ),
-      size: textPainter.size, // CustomPaint의 크기를 텍스트 크기에 맞춥니다.
+      size: Size.infinite, //textPainter.size, // CustomPaint의 크기를 텍스트 크기에 맞춥니다.
     );
 
     final gestureHandler = GestureDetector(
       onTapDown: _handleTapDown,
-      onPanStart: _handlePanStart,
-      onPanUpdate: _handlePanUpdate,
+      //onPanStart: _handlePanStart,  //<-- 절대로 하면 안됨됨
+      //onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
+      onPanEnd: _handlePanEnd,
       child: painter,
     );
 
@@ -367,15 +389,19 @@ class _RawEditorState extends State<RawEditor>
         // For all other keys, let the system and TextInputClient handle them.
         return KeyEventResult.ignored;
       },
-      child: SizedBox(
-        width: editorSize.width,
-        height: editorSize.height,
-        key: _editorKey,
-        // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
-        child: Align(
-          alignment: _calculateAlignment(
-              widget.controller.document.textAlign, widget.controller.document.textAlignVertical),
-          child: gestureHandler,
+      child: SingleChildScrollView(
+        controller: widget.scrollController,
+        child: Container(
+          color: Colors.red,
+          width: editorSize.width,
+          height: editorSize.height,
+          key: _editorKey,
+          // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
+          child: Align(
+            alignment: _calculateAlignment(
+                widget.controller.document.textAlign, widget.controller.document.textAlignVertical),
+            child: gestureHandler,
+          ),
         ),
       ),
     );

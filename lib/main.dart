@@ -141,8 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
           initialMode: EditorMode.view,
           fontList: const ['Roboto', 'Arial', 'Courier', 'Long name font...'],
           showTitleBar: false,
-          width: 400,
-          height: 300,
+          width: 900,
+          height: 200,
           controller: _controller,
           onEditCompleted: (json) {
             //print('-----------------------------------------------------------');

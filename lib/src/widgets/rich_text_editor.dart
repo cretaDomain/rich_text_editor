@@ -65,13 +65,13 @@ class _RichTextEditorState extends State<RichTextEditor> {
   EdgeInsets _padding = const EdgeInsets.all(16.0);
   double? _currentWidth;
   double? _currentHeight;
-  // late final ScrollController _scrollController;
+  late final ScrollController _scrollController;
   // late final FocusNode _scrollFocusNode;
 
   @override
   void initState() {
     super.initState();
-    // _scrollController = ScrollController();
+    _scrollController = ScrollController();
     // _scrollFocusNode = FocusNode(debugLabel: 'RichTextEditorScrollView');
     _currentWidth = widget.width;
     _currentHeight = widget.height;
@@ -88,7 +88,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
     // 컨트롤러 리스너를 정리합니다.
     widget.controller.removeListener(_update);
     widget.controller.paddingNotifier.removeListener(_onPaddingNotified);
-    // _scrollController.dispose();
+    _scrollController.dispose();
     // _scrollFocusNode.dispose();
     super.dispose();
   }
@@ -232,11 +232,17 @@ class _RichTextEditorState extends State<RichTextEditor> {
               ),
               child: Padding(
                 padding: _padding,
-                child: RawEditor(
-                  width: widget.width - _padding.horizontal,
-                  height: widget.height - _padding.vertical,
-                  controller: widget.controller,
-                  onFocusLost: _onEditCompleted,
+                child: Scrollbar(
+                  controller: _scrollController,
+                  child: RawEditor(
+                    scrollController: _scrollController,
+                    width: widget.width,
+                    height: widget.height,
+                    // width: widget.width - _padding.horizontal,
+                    // height: widget.height - _padding.vertical,
+                    controller: widget.controller,
+                    onFocusLost: _onEditCompleted,
+                  ),
                 ),
               ),
             ),
