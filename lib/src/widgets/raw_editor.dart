@@ -244,13 +244,20 @@ class _RawEditorState extends State<RawEditor>
     );
   }
 
-  void _handleTapDown(TapDownDetails details) {
+  void _handleTapDown(TapDownDetails details, TextPainter textPainter) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    // 스크롤 오프셋을 더하여 실제 문서 내의 위치를 계산합니다.
+    final parentSize = renderBox.size;
+    final childSize = textPainter.size;
+    final alignment = _calculateAlignment(
+        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    final offset = Offset(dx, dy);
 
-    final textPainter = _createTextPainter(context.size!);
+    final localPosition = localPositionInSizedBox - offset;
+
     final position = textPainter.getPositionForOffset(localPosition);
 
     // --- Tap counting logic ---
@@ -334,15 +341,19 @@ class _RawEditorState extends State<RawEditor>
   }
   */
 
-  void _handlePanEnd(DragEndDetails details) {
+  void _handlePanEnd(DragEndDetails details, TextPainter textPainter) {
     final RenderBox renderBox = _editorKey.currentContext!.findRenderObject() as RenderBox;
+    final Offset localPositionInSizedBox = renderBox.globalToLocal(details.globalPosition);
 
-    final textPainter = _createTextPainter(context.size!);
-    // if (textPainter.computeLineMetrics().length > 1) {
-    //   return; // 2줄 이상이면 드래그 비활성화
-    // }
+    final parentSize = renderBox.size;
+    final childSize = textPainter.size;
+    final alignment = _calculateAlignment(
+        widget.controller.document.textAlign, widget.controller.document.textAlignVertical);
+    final double dx = (parentSize.width - childSize.width) * (alignment.x + 1) / 2;
+    final double dy = (parentSize.height - childSize.height) * (alignment.y + 1) / 2;
+    final offset = Offset(dx, dy);
 
-    final Offset localPosition = renderBox.globalToLocal(details.globalPosition);
+    final localPosition = localPositionInSizedBox - offset;
 
     final position = textPainter.getPositionForOffset(localPosition);
     widget.controller.updateSelection(
@@ -357,30 +368,11 @@ class _RawEditorState extends State<RawEditor>
     // build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        final textPainter = _createTextPainter(context.size!);
-
-        print('******** textPainter.size: ${textPainter.size}');
+        // final textPainter = _createTextPainter(context.size!);
+        // print('******** textPainter.size: ${textPainter.size}');
         _updateSizeAndTransform();
       }
     });
-
-    final painter = CustomPaint(
-      painter: DocumentPainter(
-        document: widget.controller.document,
-        selection: widget.controller.selection,
-        isFocused: _focusNode.hasFocus,
-        cursorOpacity: _cursorBlink.value,
-      ),
-      size: Size.infinite, //textPainter.size, // CustomPaint의 크기를 텍스트 크기에 맞춥니다.
-    );
-
-    final gestureHandler = GestureDetector(
-      onTapDown: _handleTapDown,
-      // onPanStart: _handlePanStart, //<-- 절대로 하면 안됨됨
-      // onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
-      onPanEnd: _handlePanEnd,
-      child: painter,
-    );
 
     return Focus(
       focusNode: _focusNode,
@@ -394,12 +386,35 @@ class _RawEditorState extends State<RawEditor>
           width: widget.width,
           height: widget.height,
           key: _editorKey,
-          // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
-          child: Align(
-            alignment: _calculateAlignment(
-                widget.controller.document.textAlign, widget.controller.document.textAlignVertical),
-            child: gestureHandler,
-          ),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final textPainter = _createTextPainter(constraints.biggest);
+
+            final painter = CustomPaint(
+              painter: DocumentPainter(
+                document: widget.controller.document,
+                selection: widget.controller.selection,
+                isFocused: _focusNode.hasFocus,
+                cursorOpacity: _cursorBlink.value,
+                textPainter: textPainter,
+              ),
+              size: textPainter.size,
+            );
+
+            final gestureHandler = GestureDetector(
+              onTapDown: (details) => _handleTapDown(details, textPainter),
+              // onPanStart: _handlePanStart, //<-- 절대로 하면 안됨됨
+              // onPanUpdate: _handlePanUpdate, //<-- 절대로 하면 안됨
+              onPanEnd: (details) => _handlePanEnd(details, textPainter),
+              child: painter,
+            );
+
+            // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
+            return Align(
+              alignment: _calculateAlignment(widget.controller.document.textAlign,
+                  widget.controller.document.textAlignVertical),
+              child: gestureHandler,
+            );
+          }),
         ),
       ),
     );
@@ -451,48 +466,54 @@ class DocumentPainter extends CustomPainter {
     required this.selection,
     required this.isFocused,
     required this.cursorOpacity,
+    this.textPainter,
   });
 
   final DocumentModel document;
   final TextSelection selection;
   final bool isFocused;
   final double cursorOpacity;
+  final TextPainter? textPainter;
 
   @override
   void paint(Canvas canvas, Size size) {
-    //print('DocumentPainter: paint $size');
-    final text = TextSpan(
-      children: document.spans.map((s) => s.toTextSpan()).toList(),
-    );
-
-    final textPainter = TextPainter(
-      text: text,
-      textDirection: TextDirection.ltr,
-      textAlign: document.textAlign,
-    );
-
-    textPainter.layout(maxWidth: size.width);
+    final effectivePainter = textPainter ?? _createLocalTextPainter(size);
 
     // 선택 영역 그리기 (텍스트보다 먼저)
     if (!selection.isCollapsed) {
       final selectionColor = Colors.blue.withValues(alpha: 0.3);
-      final selectionBoxes = textPainter.getBoxesForSelection(selection);
+      final selectionBoxes = effectivePainter.getBoxesForSelection(selection);
       for (final box in selectionBoxes) {
         canvas.drawRect(box.toRect(), Paint()..color = selectionColor);
       }
     }
 
     // 텍스트 그리기
-    textPainter.paint(canvas, Offset.zero);
+    effectivePainter.paint(canvas, Offset.zero);
 
     // 커서 그리기 (텍스트보다 나중에)
     if (isFocused && selection.isCollapsed && cursorOpacity > 0.5) {
       final textPosition = TextPosition(offset: selection.baseOffset);
-      final cursorOffset = textPainter.getOffsetForCaret(textPosition, Rect.zero);
-      final cursorHeight = textPainter.getFullHeightForCaret(textPosition, Rect.zero);
+      final cursorOffset = effectivePainter.getOffsetForCaret(textPosition, Rect.zero);
+      final cursorHeight = effectivePainter.getFullHeightForCaret(textPosition, Rect.zero);
       final cursorRect = Rect.fromLTWH(cursorOffset.dx, cursorOffset.dy, 2, cursorHeight);
       canvas.drawRect(cursorRect, Paint()..color = Colors.black);
     }
+  }
+
+  TextPainter _createLocalTextPainter(Size size) {
+    final text = TextSpan(
+      children: document.spans.map((s) => s.toTextSpan()).toList(),
+    );
+
+    final painter = TextPainter(
+      text: text,
+      textDirection: TextDirection.ltr,
+      textAlign: document.textAlign,
+    );
+
+    painter.layout(maxWidth: size.width);
+    return painter;
   }
 
   @override
@@ -501,6 +522,7 @@ class DocumentPainter extends CustomPainter {
     return oldDelegate.document != document ||
         oldDelegate.selection != selection ||
         oldDelegate.isFocused != isFocused ||
-        oldDelegate.cursorOpacity != cursorOpacity;
+        oldDelegate.cursorOpacity != cursorOpacity ||
+        oldDelegate.textPainter != textPainter;
   }
 }
