@@ -139,7 +139,7 @@ class _ToolbarState extends State<Toolbar> {
     // 각 도구 그룹을 생성하는 헬퍼 메서드
     Widget buildToolGroup({required List<Widget> children}) {
       return Container(
-        height: 66.0, // 모든 그룹에 동일한 높이를 적용합니다.
+        height: 76.0, // 모든 그룹에 동일한 높이를 적용합니다.
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
