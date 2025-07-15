@@ -1,3 +1,7 @@
+## 1.0.6
+* _update, 
+## 1.0.5
+* showtoolbar option
 ## 1.0.4
 * Readme.md
 ## 1.0.3

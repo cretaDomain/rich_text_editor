@@ -13,7 +13,8 @@ import 'toolbar.dart';
 class RichTextEditor extends StatefulWidget {
   const RichTextEditor({
     super.key,
-    required this.controller,
+    this.controller,
+    this.initialText,
     required this.width,
     required this.height,
     required this.onEditCompleted,
@@ -24,10 +25,13 @@ class RichTextEditor extends StatefulWidget {
     this.titleBarHeight = 48.0,
     this.initialMode = EditorMode.edit,
     this.fontList = const [],
+    this.showToolbar = true,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
-  final RichTextEditorController controller;
+  final RichTextEditorController? controller;
+
+  final String? initialText;
 
   /// 위젯의 가로 크기입니다.
   final double width;
@@ -57,6 +61,8 @@ class RichTextEditor extends StatefulWidget {
   final List<String> fontList;
   final ValueChanged<String>? onEditCompleted;
 
+  final bool showToolbar;
+
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
 }
@@ -67,6 +73,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   double? _currentHeight;
   late final ScrollController _scrollController;
   // late final FocusNode _scrollFocusNode;
+  RichTextEditorController? _controller;
 
   @override
   void initState() {
@@ -75,19 +82,33 @@ class _RichTextEditorState extends State<RichTextEditor> {
     // _scrollFocusNode = FocusNode(debugLabel: 'RichTextEditorScrollView');
     _currentWidth = widget.width;
     _currentHeight = widget.height;
+
+    _controller = widget.controller;
+
+    _controller ??= RichTextEditorController();
+    if (widget.initialText != null) {
+      _controller?.setDocumentFromJsonString(widget.initialText!);
+    }
+
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
-    widget.controller.setMode(widget.initialMode);
+    _controller?.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
-    widget.controller.addListener(_update);
+    if (widget.showToolbar) {
+      _controller?.addListener(_update);
+    }
     // 컨트롤러의 패딩 값 변경을 구독합니다.
-    widget.controller.paddingNotifier.addListener(_onPaddingNotified);
+    _controller?.paddingNotifier.addListener(_onPaddingNotified);
   }
 
   @override
   void dispose() {
     // 컨트롤러 리스너를 정리합니다.
-    widget.controller.removeListener(_update);
-    widget.controller.paddingNotifier.removeListener(_onPaddingNotified);
+    if (widget.showToolbar) {
+      _controller?.removeListener(_update);
+    }
+    _controller?.paddingNotifier.removeListener(_onPaddingNotified);
+    _controller?.dispose();
+
     _scrollController.dispose();
     // _scrollFocusNode.dispose();
     super.dispose();
@@ -95,7 +116,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   /// 컨트롤러의 paddingNotifier로부터 변경 알림을 받았을 때 호출됩니다.
   void _onPaddingNotified() {
-    _onPaddingChanged(widget.controller.paddingNotifier.value);
+    _onPaddingChanged(_controller!.paddingNotifier.value);
   }
 
   /// 여백이 변경될 때 호출됩니다.
@@ -105,6 +126,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
     });
   }
 
+  // ignore: unused_element
   void _update() {
     if (mounted) {
       setState(() {
@@ -112,7 +134,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
         const double estimatedToolbarHeight = 160.0;
         final double originalHeight = widget.height;
 
-        if (widget.controller.mode == EditorMode.edit) {
+        if (_controller!.mode == EditorMode.edit) {
           if (widget.width < 900) {
             _currentWidth = 900;
           } else {
@@ -131,7 +153,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
     if (widget.onEditCompleted != null) {
       // Create a new map to hold both document and padding data
       final data = {
-        'document': widget.controller.document.toJson(),
+        'document': _controller!.document.toJson(),
         'padding': {
           'left': _padding.left,
           'top': _padding.top,
@@ -146,11 +168,11 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   /// 에디터의 모드를 토글하는 내부 메서드입니다.
   void _toggleMode() {
-    final currentMode = widget.controller.mode;
+    final currentMode = _controller!.mode;
     if (currentMode == EditorMode.edit) {
       _onEditCompleted();
     }
-    widget.controller.setMode(
+    _controller?.setMode(
       currentMode == EditorMode.edit ? EditorMode.view : EditorMode.edit,
     );
   }
@@ -171,84 +193,95 @@ class _RichTextEditorState extends State<RichTextEditor> {
   }
 
   Widget _buildContent() {
-    if (widget.controller.mode == EditorMode.view) {
+    if (_controller!.mode == EditorMode.view) {
       // 보기 모드: DocumentView만 표시
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onDoubleTap: _toggleMode,
+        onTap: () {
+          //_onEditCompleted();
+          //print('****** RichTextEditor onTap');
+          _controller?.setMode(EditorMode.edit);
+        },
         child: Padding(
           padding: _padding,
-          child: DocumentView(document: widget.controller.document),
+          child: DocumentView(document: _controller!.document),
         ),
       );
     }
 
-    // 편집 모드: 툴바와 RawEditor 표시
-    return Column(
-      children: [
-        Toolbar(
-          controller: widget.controller,
-          fontList: widget.fontList,
-          padding: _padding,
-          onPaddingChanged: _onPaddingChanged,
-          shadow: widget.controller.currentStyle.shadows?.firstOrNull,
-          onShadowChanged: (shadow) {
-            // `shadow`가 null이면 null을, 아니면 리스트에 담아 전달합니다.
-            widget.controller.changeShadows(shadow == null ? null : [shadow]);
-          },
-          onOutlineChanged: (outline, color) {
-            widget.controller.changeOutline(outline, color);
-          },
-          strokeWidth: widget.controller.currentStyle.strokeWidth,
-          strokeColor: widget.controller.currentStyle.strokeColor,
-          onBold: widget.controller.toggleBold,
-          onItalic: widget.controller.toggleItalic,
-          onUnderline: widget.controller.toggleUnderline,
-          onChangeLetterSpacing: widget.controller.changeLetterSpacing,
-          onChangeLineHeight: widget.controller.changeLineHeight,
-          onChangeAlign: widget.controller.changeTextAlign,
-          onVerticalAlignChanged: widget.controller.changeVerticalAlign,
-          onFontFamilyChanged: widget.controller.changeFontFamily,
-          onFontSizeChanged: widget.controller.changeFontSize,
-          onFontColorChanged: widget.controller.changeFontColor,
-          onToggleMode: _toggleMode,
-        ),
-        Expanded(
-          child: Center(
-            child: Container(
-              width: widget.width,
-              height: widget.height,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400, width: 1.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: _padding,
-                child: Scrollbar(
-                  controller: _scrollController,
-                  child: RawEditor(
-                    scrollController: _scrollController,
-                    width: widget.width,
-                    height: widget.height,
-                    // width: widget.width - _padding.horizontal,
-                    // height: widget.height - _padding.vertical,
-                    controller: widget.controller,
-                    onFocusLost: _onEditCompleted,
-                  ),
-                ),
-              ),
-            ),
+    Widget toolbar = Toolbar(
+      controller: _controller!,
+      fontList: widget.fontList,
+      padding: _padding,
+      onPaddingChanged: _onPaddingChanged,
+      shadow: _controller!.currentStyle.shadows?.firstOrNull,
+      onShadowChanged: (shadow) {
+        // `shadow`가 null이면 null을, 아니면 리스트에 담아 전달합니다.
+        _controller?.changeShadows(shadow == null ? null : [shadow]);
+      },
+      onOutlineChanged: (outline, color) {
+        _controller?.changeOutline(outline, color);
+      },
+      strokeWidth: _controller!.currentStyle.strokeWidth,
+      strokeColor: _controller!.currentStyle.strokeColor,
+      onBold: _controller!.toggleBold,
+      onItalic: _controller!.toggleItalic,
+      onUnderline: _controller!.toggleUnderline,
+      onChangeLetterSpacing: _controller!.changeLetterSpacing,
+      onChangeLineHeight: _controller!.changeLineHeight,
+      onChangeAlign: _controller!.changeTextAlign,
+      onVerticalAlignChanged: _controller!.changeVerticalAlign,
+      onFontFamilyChanged: _controller!.changeFontFamily,
+      onFontSizeChanged: _controller!.changeFontSize,
+      onFontColorChanged: _controller!.changeFontColor,
+      onToggleMode: _toggleMode,
+    );
+    Widget editor = Container(
+      width: widget.width,
+      height: widget.height,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade400, width: 1.0),
+        color: widget.backgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: _padding,
+        child: Scrollbar(
+          controller: _scrollController,
+          child: RawEditor(
+            scrollController: _scrollController,
+            width: widget.width,
+            height: widget.height,
+            // width: widget.width - _padding.horizontal,
+            // height: widget.height - _padding.vertical,
+            controller: _controller!,
+            onFocusLost: _onEditCompleted,
           ),
         ),
-      ],
+      ),
     );
+
+    // 편집 모드: 툴바와 RawEditor 표시
+    if (widget.showToolbar) {
+      return Column(
+        children: [
+          toolbar,
+          Expanded(
+            child: Center(
+              child: editor,
+            ),
+          ),
+        ],
+      );
+    }
+    return editor;
   }
 }

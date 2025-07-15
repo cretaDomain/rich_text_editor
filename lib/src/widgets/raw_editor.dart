@@ -39,6 +39,8 @@ class _RawEditorState extends State<RawEditor>
   int _tapCount = 0;
   final GlobalKey _editorKey = GlobalKey();
 
+  bool _isInitialized = false;
+
   //TextPainter? _textPainter;
 
   //int? _scrollOffset;
@@ -156,7 +158,7 @@ class _RawEditorState extends State<RawEditor>
       //    '[RawEditor] _openConnection: setEditingState with ${currentTextEditingValue.selection}');
       _connection!.setEditingState(currentTextEditingValue);
       _connection!.show();
-      _updateSizeAndTransform();
+      //_updateSizeAndTransform();
     }
   }
 
@@ -429,7 +431,11 @@ class _RawEditorState extends State<RawEditor>
     // build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _updateSizeAndTransform();
+        if (!_isInitialized) {
+          _isInitialized = true;
+          //print('******** updateSizeAndTransform');
+          _updateSizeAndTransform();
+        }
       }
     });
 

@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: RichTextEditor(
-          initialMode: EditorMode.view,
+          initialMode: EditorMode.edit,
           fontList: const ['Roboto', 'Arial', 'Courier', 'Long name font...'],
           showTitleBar: false,
           width: 900,
