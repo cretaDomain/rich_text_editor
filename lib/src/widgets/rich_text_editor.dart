@@ -208,8 +208,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
         padding: _padding,
         child: Align(
           alignment: _calculateAlignment(
-              widget.controller.document.textAlign, widget.controller.document.textAlignVertical),
-          DocumentView(document: _controller!.document),
+              _controller!.document.textAlign, _controller!.document.textAlignVertical),
+          child: DocumentView(document: _controller!.document),
         ),
       );
 
