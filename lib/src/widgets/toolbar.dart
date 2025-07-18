@@ -292,6 +292,7 @@ class _ToolbarState extends State<Toolbar> {
                       TextAlign.right,
                       TextAlign.justify
                     ];
+                    setState(() {});
                     widget.onChangeAlign(aligns[index]);
                   },
                   children: const [
@@ -323,6 +324,7 @@ class _ToolbarState extends State<Toolbar> {
                       TextAlignVertical.center,
                       TextAlignVertical.bottom,
                     ];
+                    setState(() {});
                     widget.onVerticalAlignChanged(aligns[index]);
                   },
                   children: const [
@@ -353,7 +355,10 @@ class _ToolbarState extends State<Toolbar> {
                 _buildSpacingSlider(
                   label: 'letter spacing',
                   value: widget.controller.currentStyle.letterSpacing ?? 0.0,
-                  onChanged: widget.onChangeLetterSpacing,
+                  onChanged: (v) {
+                    setState(() {});
+                    widget.onChangeLetterSpacing(v);
+                  },
                   min: -5.0,
                   max: 10.0,
                   divisions: 30,
@@ -362,9 +367,12 @@ class _ToolbarState extends State<Toolbar> {
                 _buildSpacingSlider(
                   label: 'line height',
                   value: widget.controller.currentStyle.height ?? 1.0,
-                  onChanged: widget.onChangeLineHeight,
+                  onChanged: (v) {
+                    setState(() {});
+                    widget.onChangeLineHeight(v);
+                  },
                   min: 0.1,
-                  max: 3.0,
+                  max: 10.0,
                   divisions: 25,
                 ),
               ],
