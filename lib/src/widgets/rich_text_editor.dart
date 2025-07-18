@@ -1,4 +1,4 @@
-import 'dart:convert';
+//import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import '../controllers/rich_text_editor_controller.dart';
@@ -17,7 +17,7 @@ class RichTextEditor extends StatefulWidget {
     this.initialText,
     required this.width,
     required this.height,
-    required this.onEditCompleted,
+    this.onEditCompleted,
     this.backgroundColor = Colors.transparent,
     this.title,
     this.showTitleBar = true,
@@ -127,6 +127,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   /// 여백이 변경될 때 호출됩니다.
   void _onPaddingChanged(EdgeInsets newPadding) {
+    _controller?.changePadding(newPadding);
     setState(() {
       _padding = newPadding;
     });
@@ -202,18 +203,24 @@ class _RichTextEditorState extends State<RichTextEditor> {
   Widget _buildContent() {
     if (_controller!.mode == EditorMode.view) {
       // 보기 모드: DocumentView만 표시
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onDoubleTap: _toggleMode,
-        onTap: () {
-          //_onEditCompleted();
-          //print('****** RichTextEditor onTap');
-          _controller?.setMode(EditorMode.edit);
-        },
-        child: Padding(
-          padding: _padding,
-          child: DocumentView(document: _controller!.document),
-        ),
+      if (widget.onEditCompleted != null) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onDoubleTap: _toggleMode,
+          onTap: () {
+            //_onEditCompleted();
+            //print('****** RichTextEditor onTap');
+            _controller?.setMode(EditorMode.edit);
+          },
+          child: Padding(
+            padding: _padding,
+            child: DocumentView(document: _controller!.document),
+          ),
+        );
+      }
+      return Padding(
+        padding: _padding,
+        child: DocumentView(document: _controller!.document),
       );
     }
 
@@ -242,7 +249,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
       onFontFamilyChanged: _controller!.changeFontFamily,
       onFontSizeChanged: _controller!.changeFontSize,
       onFontColorChanged: _controller!.changeFontColor,
-      onToggleMode: _toggleMode,
+      onToggleMode: widget.onEditCompleted != null ? _toggleMode : null,
     );
     Widget editor = Container(
       width: widget.width,

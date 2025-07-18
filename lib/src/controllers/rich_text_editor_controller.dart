@@ -361,6 +361,11 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 문서의 패딩(여백)을 변경합니다.
+  void changePadding(EdgeInsets padding) {
+    paddingNotifier.value = padding;
+  }
+
   /// 선택된 영역의 그림자 속성을 변경합니다.
   void changeShadows(List<Shadow>? shadows) {
     if (shadows == null) {

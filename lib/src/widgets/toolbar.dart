@@ -78,7 +78,7 @@ class Toolbar extends StatefulWidget {
   final double? strokeWidth;
   final Color? strokeColor;
   final void Function(double? strokeWidth, Color? color) onOutlineChanged;
-  final VoidCallback onToggleMode;
+  final VoidCallback? onToggleMode;
 
   @override
   State<Toolbar> createState() => _ToolbarState();
@@ -164,17 +164,18 @@ class _ToolbarState extends State<Toolbar> {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             // 모드 전환 버튼
-            buildToolGroup(
-              children: [
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.arrow_back),
-                  color: Colors.red.shade700,
-                  tooltip: 'View Mode',
-                  onPressed: widget.onToggleMode,
-                ),
-              ],
-            ),
+            if (widget.onToggleMode != null)
+              buildToolGroup(
+                children: [
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(Icons.arrow_back),
+                    color: Colors.red.shade700,
+                    tooltip: 'View Mode',
+                    onPressed: widget.onToggleMode,
+                  ),
+                ],
+              ),
 
             // 폰트 종류 및 크기
             buildToolGroup(
