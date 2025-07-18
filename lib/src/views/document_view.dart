@@ -8,10 +8,12 @@ class DocumentView extends StatelessWidget {
   const DocumentView({
     super.key,
     required this.document,
+    this.applyScale = 1.0,
   });
 
   /// 화면에 표시할 문서 데이터입니다.
   final DocumentModel document;
+  final double applyScale;
 
   @override
   Widget build(BuildContext context) {
@@ -32,26 +34,7 @@ class DocumentView extends StatelessWidget {
   /// `DocumentModel`의 `spans` 리스트를 Flutter의 `TextSpan` 위젯 리스트로 변환합니다.
   List<TextSpan> _buildTextSpans() {
     return document.spans.map((spanModel) {
-      return TextSpan(
-        text: spanModel.text,
-        style: _convertAttributeToTextStyle(spanModel.attribute),
-      );
+      return spanModel.toTextSpan(applyScale: applyScale);
     }).toList();
-  }
-
-  /// `SpanAttribute`를 Flutter의 `TextStyle`로 변환합니다.
-  TextStyle _convertAttributeToTextStyle(SpanAttribute attribute) {
-    return TextStyle(
-      fontFamily: attribute.fontFamily,
-      fontSize: attribute.fontSize,
-      color: attribute.color,
-      fontWeight: attribute.fontWeight,
-      fontStyle: attribute.fontStyle,
-      decoration: attribute.decoration,
-      shadows: attribute.shadows,
-      foreground: attribute.foreground,
-      letterSpacing: attribute.letterSpacing,
-      height: attribute.height,
-    );
   }
 }
