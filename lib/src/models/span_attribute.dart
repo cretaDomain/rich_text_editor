@@ -80,27 +80,21 @@ class SpanAttribute {
   }
 
   /// 이 속성을 Flutter의 `TextStyle` 객체로 변환합니다.
-  TextStyle toTextStyle({required double applyScale}) {
+  TextStyle toTextStyle() {
     return TextStyle(
       color: color,
       fontFamily: fontFamily,
-      fontSize: fontSize != null ? fontSize! * applyScale : null,
+      fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       decoration: decoration,
-      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : null,
-      height: height, // Line height is a multiplier, not a pixel value, so it should not be scaled.
-      shadows: shadows
-          ?.map((s) => Shadow(
-                color: s.color,
-                offset: s.offset * applyScale,
-                blurRadius: s.blurRadius * applyScale,
-              ))
-          .toList(),
+      letterSpacing: letterSpacing,
+      height: height,
+      shadows: shadows,
       foreground: strokeWidth != null && strokeColor != null
           ? (Paint()
             ..style = PaintingStyle.stroke
-            ..strokeWidth = strokeWidth! * applyScale
+            ..strokeWidth = strokeWidth!
             ..color = strokeColor!)
           : null,
     );

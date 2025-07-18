@@ -8,12 +8,10 @@ class DocumentView extends StatelessWidget {
   const DocumentView({
     super.key,
     required this.document,
-    required this.applyScale,
   });
 
   /// 화면에 표시할 문서 데이터입니다.
   final DocumentModel document;
-  final double applyScale;
 
   @override
   Widget build(BuildContext context) {
@@ -45,28 +43,15 @@ class DocumentView extends StatelessWidget {
   TextStyle _convertAttributeToTextStyle(SpanAttribute attribute) {
     return TextStyle(
       fontFamily: attribute.fontFamily,
-      fontSize: attribute.fontSize != null ? attribute.fontSize! * applyScale : null,
+      fontSize: attribute.fontSize,
       color: attribute.color,
       fontWeight: attribute.fontWeight,
       fontStyle: attribute.fontStyle,
       decoration: attribute.decoration,
-      //shadows: attribute.shadows,
-      //foreground: attribute.foreground,
+      shadows: attribute.shadows,
+      foreground: attribute.foreground,
       letterSpacing: attribute.letterSpacing,
       height: attribute.height,
-      shadows: attribute.shadows
-          ?.map((s) => Shadow(
-                color: s.color,
-                offset: s.offset * applyScale,
-                blurRadius: s.blurRadius * applyScale,
-              ))
-          .toList(),
-      foreground: attribute.strokeWidth != null && attribute.strokeColor != null
-          ? (Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = attribute.strokeWidth! * applyScale
-            ..color = attribute.strokeColor!)
-          : null,
     );
   }
 }

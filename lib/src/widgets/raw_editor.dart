@@ -16,7 +16,6 @@ class RawEditor extends StatefulWidget {
     this.onFocusLost,
     required this.width,
     required this.height,
-    required this.applyScale,
   });
 
   /// The controller that manages the document and selection.
@@ -26,7 +25,6 @@ class RawEditor extends StatefulWidget {
   final VoidCallback? onFocusLost;
   final double width;
   final double height;
-  final double applyScale;
 
   @override
   State<RawEditor> createState() => _RawEditorState();
@@ -259,9 +257,7 @@ class _RawEditorState extends State<RawEditor>
     // }
     final textPainter = TextPainter(
       text: TextSpan(
-        children: widget.controller.document.spans
-            .map((s) => s.toTextSpan(applyScale: widget.applyScale))
-            .toList(),
+        children: widget.controller.document.spans.map((s) => s.toTextSpan()).toList(),
       ),
       textDirection: TextDirection.ltr,
       textAlign: widget.controller.document.textAlign,
@@ -461,7 +457,6 @@ class _RawEditorState extends State<RawEditor>
                 isFocused: _focusNode.hasFocus,
                 cursorOpacity: _cursorBlink.value,
                 textPainter: textPainter,
-                applyScale: widget.applyScale,
               ),
               size: textPainter.size + const Offset(20, 20), //외부에 여백을 조금 두어야 함.
             );
@@ -537,7 +532,6 @@ class DocumentPainter extends CustomPainter {
     required this.selection,
     required this.isFocused,
     required this.cursorOpacity,
-    required this.applyScale,
     this.textPainter,
   });
 
@@ -546,7 +540,6 @@ class DocumentPainter extends CustomPainter {
   final bool isFocused;
   final double cursorOpacity;
   final TextPainter? textPainter;
-  final double applyScale;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -576,7 +569,7 @@ class DocumentPainter extends CustomPainter {
 
   TextPainter _createLocalTextPainter(Size size) {
     final text = TextSpan(
-      children: document.spans.map((s) => s.toTextSpan(applyScale: applyScale)).toList(),
+      children: document.spans.map((s) => s.toTextSpan()).toList(),
     );
 
     final painter = TextPainter(
