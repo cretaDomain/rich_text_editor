@@ -118,7 +118,7 @@ class SpanAttribute {
                 'color': s.color.value,
                 'offsetX': s.offset.dx,
                 'offsetY': s.offset.dy,
-                'blurRadius': s.blurRadius,
+                'blurRadius': s.blurRadius
               })
           .toList();
     }
