@@ -26,6 +26,7 @@ class RichTextEditor extends StatefulWidget {
     this.initialMode = EditorMode.edit,
     this.fontList = const [],
     this.showToolbar = true,
+    this.autoResize = true,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -63,6 +64,8 @@ class RichTextEditor extends StatefulWidget {
 
   final bool showToolbar;
 
+  final bool autoResize;
+
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
 }
@@ -93,8 +96,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
     _controller?.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
-    if (widget.showToolbar) {
-      _controller?.addListener(_update);
+    if (widget.showToolbar && widget.autoResize) {
+      _controller?.addListener(_resize);
     }
     // 컨트롤러의 패딩 값 변경을 구독합니다.
     _controller?.paddingNotifier.addListener(_onPaddingNotified);
@@ -103,8 +106,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
   @override
   void dispose() {
     // 컨트롤러 리스너를 정리합니다.
-    if (widget.showToolbar) {
-      _controller?.removeListener(_update);
+    if (widget.showToolbar && widget.autoResize) {
+      _controller?.removeListener(_resize);
     }
     _controller?.paddingNotifier.removeListener(_onPaddingNotified);
     _controller?.dispose();
@@ -127,7 +130,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   }
 
   // ignore: unused_element
-  void _update() {
+  void _resize() {
     if (mounted) {
       setState(() {
         // 모드 변경에 따라 에디터 사이즈를 동적으로 조절하는 로직
