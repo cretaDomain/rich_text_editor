@@ -1,4 +1,5 @@
 //import 'dart:ui';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 
 class SpanAttribute {
@@ -142,6 +143,15 @@ class SpanAttribute {
       height: json['height'],
       fontFamily: json['fontFamily'],
       decoration: json['decoration'] != null ? _decorationFromString(json['decoration']) : null,
+      shadows: json['shadows'] != null
+          ? (json['shadows'] as List)
+              .map((s) => Shadow(
+                    color: Color(s['color']),
+                    offset: Offset(s['offsetX'], s['offsetY']),
+                    blurRadius: s['blurRadius'],
+                  ))
+              .toList()
+          : null,
       strokeWidth: json['strokeWidth'],
       strokeColor: json['strokeColor'] != null ? Color(json['strokeColor']) : null,
     );
@@ -175,7 +185,7 @@ class SpanAttribute {
         other.height == height &&
         other.fontFamily == fontFamily &&
         other.decoration == decoration &&
-        other.shadows == shadows &&
+        listEquals(other.shadows, shadows) &&
         other.strokeWidth == strokeWidth &&
         other.strokeColor == strokeColor;
   }
@@ -191,7 +201,7 @@ class SpanAttribute {
         height,
         fontFamily,
         decoration,
-        shadows,
+        Object.hashAll(shadows ?? []),
         strokeWidth,
         strokeColor,
       );

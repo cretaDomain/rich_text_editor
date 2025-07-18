@@ -190,7 +190,6 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    print('RichTextEditor build');
     return SizedBox(
       width: _currentWidth,
       height: _currentHeight,
@@ -206,7 +205,6 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   Widget _buildContent() {
     if (_controller!.mode == EditorMode.view) {
-      print('DocumentView');
       Widget view = Padding(
         padding: _padding,
         child: Align(
