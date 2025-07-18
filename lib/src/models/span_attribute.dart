@@ -111,6 +111,17 @@ class SpanAttribute {
     if (height != null) json['height'] = height;
     if (fontFamily != null) json['fontFamily'] = fontFamily;
     if (decoration != null) json['decoration'] = decoration.toString();
+    if (shadows != null) {
+      json['shadows'] = shadows!
+          .map((s) => {
+                // ignore: deprecated_member_use
+                'color': s.color.value,
+                'offsetX': s.offset.dx,
+                'offsetY': s.offset.dy,
+                'blurRadius': s.blurRadius,
+              })
+          .toList();
+    }
     if (strokeWidth != null) json['strokeWidth'] = strokeWidth;
     // ignore: deprecated_member_use
     if (strokeColor != null) json['strokeColor'] = strokeColor!.value;

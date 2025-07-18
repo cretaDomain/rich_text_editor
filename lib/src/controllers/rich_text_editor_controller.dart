@@ -116,6 +116,23 @@ class RichTextEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 현재 문서와 에디터 관련 설정을 JSON 문자열로 직렬화합니다.
+  String toJson() {
+    // Create a new map to hold both document and padding data
+    final padding = paddingNotifier.value;
+    final data = {
+      'document': document.toJson(),
+      'padding': {
+        'left': padding.left,
+        'top': padding.top,
+        'right': padding.right,
+        'bottom': padding.bottom,
+      },
+    };
+    final jsonString = jsonEncode(data);
+    return jsonString;
+  }
+
   /// 일반 텍스트로부터 문서를 업데이트합니다.
   ///
   /// 현재는 모든 텍스트를 기본 스타일의 단일 스팬으로 만듭니다.
