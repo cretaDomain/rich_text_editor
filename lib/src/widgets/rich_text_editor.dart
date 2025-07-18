@@ -98,7 +98,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
     _controller = widget.controller;
 
     _controller ??= RichTextEditorController();
-    if (widget.initialText != null) {
+    if (widget.controller == null && widget.initialText != null) {
       _controller?.setDocumentFromJsonString(widget.initialText!);
     }
 
@@ -116,6 +116,40 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
     if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
       _resize();
+    }
+  }
+
+  @override
+  void didUpdateWidget(RichTextEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.width != widget.width) {
+      _currentWidth = widget.width;
+      if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
+        _resize();
+      }
+      setState(() {});
+    }
+    if (oldWidget.height != widget.height) {
+      _currentHeight = widget.height;
+      if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
+        _resize();
+      }
+      setState(() {});
+    }
+
+    if (oldWidget.applyScale != widget.applyScale) {
+      _currentWidth = widget.width;
+      _currentHeight = widget.height;
+      if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
+        _resize();
+      }
+      setState(() {});
+    }
+    if (oldWidget.initialText != widget.initialText) {
+      if (widget.initialText != null) {
+        _controller?.setDocumentFromJsonString(widget.initialText!);
+        setState(() {});
+      }
     }
   }
 

@@ -84,12 +84,13 @@ class SpanAttribute {
     return TextStyle(
       color: color,
       fontFamily: fontFamily,
-      fontSize: fontSize != null ? fontSize! * applyScale : null,
+      fontSize: fontSize != null ? fontSize! * applyScale : 48.0 * applyScale,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       decoration: decoration,
-      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : null,
-      height: height, // Line height is a multiplier, not a pixel value, so it should not be scaled.
+      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : 1.0 * applyScale,
+      height: height ??
+          1.0, // Line height is a multiplier, not a pixel value, so it should not be scaled.
       shadows: shadows
           ?.map((s) => Shadow(
                 color: s.color,
