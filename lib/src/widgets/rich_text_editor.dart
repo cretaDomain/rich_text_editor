@@ -204,13 +204,14 @@ class _RichTextEditorState extends State<RichTextEditor> {
   }
 
   Widget _buildContent() {
+    final scaledPadding = _padding * widget.applyScale;
     if (_controller!.mode == EditorMode.view) {
       Widget view = Padding(
-        padding: _padding,
+        padding: scaledPadding,
         child: Align(
           alignment: _calculateAlignment(
               _controller!.document.textAlign, _controller!.document.textAlignVertical),
-          child: DocumentView(document: _controller!.document),
+          child: DocumentView(document: _controller!.document, applyScale: widget.applyScale),
         ),
       );
 
@@ -273,13 +274,14 @@ class _RichTextEditorState extends State<RichTextEditor> {
         ],
       ),
       child: Padding(
-        padding: _padding,
+        padding: scaledPadding,
         child: Scrollbar(
           controller: _scrollController,
           child: RawEditor(
             scrollController: _scrollController,
             width: widget.width,
             height: widget.height,
+            applyScale: widget.applyScale,
             // width: widget.width - _padding.horizontal,
             // height: widget.height - _padding.vertical,
             controller: _controller!,
