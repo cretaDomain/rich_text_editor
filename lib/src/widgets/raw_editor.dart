@@ -16,6 +16,7 @@ class RawEditor extends StatefulWidget {
     this.onFocusLost,
     required this.width,
     required this.height,
+    required this.padding,
   });
 
   /// The controller that manages the document and selection.
@@ -25,6 +26,7 @@ class RawEditor extends StatefulWidget {
   final VoidCallback? onFocusLost;
   final double width;
   final double height;
+  final EdgeInsets padding;
 
   @override
   State<RawEditor> createState() => _RawEditorState();
@@ -443,44 +445,47 @@ class _RawEditorState extends State<RawEditor>
       focusNode: _focusNode,
       child: SingleChildScrollView(
         controller: widget.scrollController,
-        child: SizedBox(
-          width: widget.width,
-          //height: widget.height,
-          key: _editorKey,
-          child: LayoutBuilder(builder: (context, constraints) {
-            final textPainter = _createTextPainter(constraints.biggest);
+        child: Padding(
+          padding: widget.padding,
+          child: SizedBox(
+            width: widget.width,
+            //height: widget.height,
+            key: _editorKey,
+            child: LayoutBuilder(builder: (context, constraints) {
+              final textPainter = _createTextPainter(constraints.biggest);
 
-            final painter = CustomPaint(
-              painter: DocumentPainter(
-                document: widget.controller.document,
-                selection: widget.controller.selection,
-                isFocused: _focusNode.hasFocus,
-                cursorOpacity: _cursorBlink.value,
-                textPainter: textPainter,
-              ),
-              size: textPainter.size + const Offset(20, 20), //외부에 여백을 조금 두어야 함.
-            );
+              final painter = CustomPaint(
+                painter: DocumentPainter(
+                  document: widget.controller.document,
+                  selection: widget.controller.selection,
+                  isFocused: _focusNode.hasFocus,
+                  cursorOpacity: _cursorBlink.value,
+                  textPainter: textPainter,
+                ),
+                size: textPainter.size + const Offset(20, 20), //외부에 여백을 조금 두어야 함.
+              );
 
-            final gestureHandler = GestureDetector(
-              onTapDown: (details) => _handleTapDown(details, textPainter),
-              //onPanStart: (details) => _handlePanStart(details, textPainter),
-              //onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
-              onPanEnd: (details) => _handlePanEnd(details, textPainter),
-              child: painter,
-            );
+              final gestureHandler = GestureDetector(
+                onTapDown: (details) => _handleTapDown(details, textPainter),
+                //onPanStart: (details) => _handlePanStart(details, textPainter),
+                //onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
+                onPanEnd: (details) => _handlePanEnd(details, textPainter),
+                child: painter,
+              );
 
-            // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: widget.height,
-              ),
-              child: Align(
-                alignment: _calculateAlignment(widget.controller.document.textAlign,
-                    widget.controller.document.textAlignVertical),
-                child: gestureHandler,
-              ),
-            );
-          }),
+              // 항상 Align 위젯으로 감싸서 정렬을 처리합니다.
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: widget.height,
+                ),
+                child: Align(
+                  alignment: _calculateAlignment(widget.controller.document.textAlign,
+                      widget.controller.document.textAlignVertical),
+                  child: gestureHandler,
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );
