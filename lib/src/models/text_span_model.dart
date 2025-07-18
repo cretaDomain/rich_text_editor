@@ -48,10 +48,10 @@ class TextSpanModel {
   /// 이 모델을 Flutter의 `TextSpan` 위젯으로 변환합니다.
   ///
   /// `TextPainter`가 텍스트를 렌더링하는 데 사용됩니다.
-  TextSpan toTextSpan() {
+  TextSpan toTextSpan({double applyScale = 1.0}) {
     return TextSpan(
       text: text,
-      style: attribute.toTextStyle(),
+      style: attribute.toTextStyle(applyScale: applyScale),
     );
   }
 
