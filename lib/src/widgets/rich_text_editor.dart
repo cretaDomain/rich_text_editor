@@ -28,6 +28,8 @@ class RichTextEditor extends StatefulWidget {
     this.showToolbar = true,
     this.autoResize = true,
     this.applyScale = 1.0,
+    this.toolbarHeight = 76 * 2 + 8 * 3,
+    this.minToolbarWidth = 812,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -69,6 +71,10 @@ class RichTextEditor extends StatefulWidget {
 
   final double applyScale;
 
+  final double toolbarHeight;
+
+  final double minToolbarWidth;
+
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
 }
@@ -102,20 +108,24 @@ class _RichTextEditorState extends State<RichTextEditor> {
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
     _controller?.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
-    if (widget.showToolbar && widget.autoResize) {
-      _controller?.addListener(_resize);
-    }
+    // if (widget.showToolbar && widget.autoResize) {
+    //   _controller?.addListener(_resize);
+    // }
     // 컨트롤러의 패딩 값 변경을 구독합니다.
     _controller?.paddingNotifier.addListener(_onPaddingNotified);
+
+    if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
+      _resize();
+    }
   }
 
   @override
   void dispose() {
     // 컨트롤러 리스너를 정리합니다.
-    if (widget.showToolbar && widget.autoResize) {
-      _controller?.removeListener(_resize);
-    }
-    _controller?.paddingNotifier.removeListener(_onPaddingNotified);
+    // if (widget.showToolbar && widget.autoResize) {
+    //   _controller?.removeListener(_resize);
+    // }
+    // _controller?.paddingNotifier.removeListener(_onPaddingNotified);
     _controller?.dispose();
 
     _scrollController.dispose();
@@ -137,26 +147,34 @@ class _RichTextEditorState extends State<RichTextEditor> {
   }
 
   // ignore: unused_element
-  void _resize() {
-    if (mounted) {
-      setState(() {
-        // 모드 변경에 따라 에디터 사이즈를 동적으로 조절하는 로직
-        const double estimatedToolbarHeight = 160.0;
-        final double originalHeight = widget.height;
+  // void _resize() {
+  //   if (mounted) {
+  //     setState(() {
+  //       // 모드 변경에 따라 에디터 사이즈를 동적으로 조절하는 로직
+  //       const double estimatedToolbarHeight = 76 * 2 + 8 * 3;
+  //       final double originalHeight = widget.height;
 
-        if (_controller!.mode == EditorMode.edit) {
-          if (widget.width < 900) {
-            _currentWidth = 900;
-          } else {
-            _currentWidth = widget.width;
-          }
-          _currentHeight = originalHeight + estimatedToolbarHeight;
-        } else {
-          _currentWidth = widget.width;
-          _currentHeight = originalHeight;
-        }
-      });
+  //       if (_controller!.mode == EditorMode.edit) {
+  //         if (widget.width < 900) {
+  //           _currentWidth = 900;
+  //         } else {
+  //           _currentWidth = widget.width;
+  //         }
+  //         _currentHeight = originalHeight + estimatedToolbarHeight;
+  //       } else {
+  //         _currentWidth = widget.width;
+  //         _currentHeight = originalHeight;
+  //       }
+  //     });
+  //   }
+  // }
+
+  void _resize() {
+    // 모드 변경에 따라 에디터 사이즈를 동적으로 조절하는 로직
+    if (widget.width < widget.minToolbarWidth) {
+      _currentWidth = widget.minToolbarWidth;
     }
+    _currentHeight = widget.height + widget.toolbarHeight;
   }
 
   void _onEditCompleted() {
@@ -192,7 +210,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: _currentWidth,
-      height: _currentHeight,
+      height: _currentHeight, // //, + (76 * 2 + 8 * 3),
       child: Container(
         decoration: BoxDecoration(
           color: widget.backgroundColor,
