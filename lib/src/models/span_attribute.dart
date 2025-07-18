@@ -88,7 +88,7 @@ class SpanAttribute {
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       decoration: decoration,
-      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : 1.0 * applyScale,
+      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : 2.0 * applyScale,
       height: height ??
           1.0, // Line height is a multiplier, not a pixel value, so it should not be scaled.
       shadows: shadows
