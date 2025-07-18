@@ -158,16 +158,17 @@ class _RichTextEditorState extends State<RichTextEditor> {
   void _onEditCompleted() {
     if (widget.onEditCompleted != null) {
       // Create a new map to hold both document and padding data
-      final data = {
-        'document': _controller!.document.toJson(),
-        'padding': {
-          'left': _padding.left,
-          'top': _padding.top,
-          'right': _padding.right,
-          'bottom': _padding.bottom
-        },
-      };
-      final jsonString = jsonEncode(data);
+      // final data = {
+      //   'document': _controller!.document.toJson(),
+      //   'padding': {
+      //     'left': _padding.left,
+      //     'top': _padding.top,
+      //     'right': _padding.right,
+      //     'bottom': _padding.bottom
+      //   },
+      // };
+      // final jsonString = jsonEncode(data);
+      final jsonString = _controller?.toJson() ?? '';
       widget.onEditCompleted!(jsonString);
     }
   }
