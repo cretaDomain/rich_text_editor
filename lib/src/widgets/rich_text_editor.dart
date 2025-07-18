@@ -96,6 +96,9 @@ class _RichTextEditorState extends State<RichTextEditor> {
       _controller?.setDocumentFromJsonString(widget.initialText!);
     }
 
+    // 컨트롤러에 설정된 패딩 값으로 위젯의 _padding 상태를 초기화합니다.
+    _padding = _controller!.paddingNotifier.value;
+
     // 위젯 생성 시 전달된 초기 모드를 컨트롤러에 설정합니다.
     _controller?.setMode(widget.initialMode);
     // 컨트롤러의 변경사항을 구독하여 UI를 업데이트합니다.
