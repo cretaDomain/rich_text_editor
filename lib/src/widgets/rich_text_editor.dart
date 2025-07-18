@@ -290,9 +290,6 @@ class _RichTextEditorState extends State<RichTextEditor> {
           ),
         ],
       ),
-      //child:
-      //Padding(
-      //padding: _padding,
       child: Scrollbar(
         controller: _scrollController,
         child: RawEditor(
@@ -300,13 +297,11 @@ class _RichTextEditorState extends State<RichTextEditor> {
           scrollController: _scrollController,
           width: widget.width,
           height: widget.height,
-          // width: widget.width - _padding.horizontal,
-          // height: widget.height - _padding.vertical,
           controller: _controller!,
           onFocusLost: _onEditCompleted,
+          applyScale: widget.applyScale,
         ),
       ),
-      //), //Padding
     );
 
     // 편집 모드: 툴바와 RawEditor 표시
