@@ -27,6 +27,7 @@ class RichTextEditor extends StatefulWidget {
     this.fontList = const [],
     this.showToolbar = true,
     this.autoResize = true,
+    this.applyScale = 1.0,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -65,6 +66,8 @@ class RichTextEditor extends StatefulWidget {
   final bool showToolbar;
 
   final bool autoResize;
+
+  final double applyScale;
 
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
@@ -161,7 +164,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
           'left': _padding.left,
           'top': _padding.top,
           'right': _padding.right,
-          'bottom': _padding.bottom,
+          'bottom': _padding.bottom
         },
       };
       final jsonString = jsonEncode(data);

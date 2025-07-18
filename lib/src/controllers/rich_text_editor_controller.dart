@@ -126,7 +126,7 @@ class RichTextEditorController extends ChangeNotifier {
         'left': padding.left,
         'top': padding.top,
         'right': padding.right,
-        'bottom': padding.bottom,
+        'bottom': padding.bottom
       },
     };
     final jsonString = jsonEncode(data);
