@@ -17,6 +17,7 @@ class RichTextEditor extends StatefulWidget {
     this.initialText,
     required this.width,
     required this.height,
+    required this.maxSize,
     this.onEditCompleted,
     this.backgroundColor = Colors.transparent,
     this.title,
@@ -75,6 +76,8 @@ class RichTextEditor extends StatefulWidget {
 
   final double minToolbarWidth;
 
+  final Size maxSize;
+
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
 }
@@ -86,14 +89,15 @@ class _RichTextEditorState extends State<RichTextEditor> {
   late final ScrollController _scrollController;
   // late final FocusNode _scrollFocusNode;
   RichTextEditorController? _controller;
+  bool _isMaximized = true;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     // _scrollFocusNode = FocusNode(debugLabel: 'RichTextEditorScrollView');
-    _currentWidth = widget.width;
-    _currentHeight = widget.height;
+    _currentWidth = widget.maxSize.width;
+    _currentHeight = widget.maxSize.height;
 
     _controller = widget.controller;
 
@@ -123,14 +127,23 @@ class _RichTextEditorState extends State<RichTextEditor> {
   void didUpdateWidget(RichTextEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.width != widget.width) {
-      _currentWidth = widget.width;
+      if (_isMaximized) {
+        _currentWidth = widget.maxSize.width;
+      } else {
+        _currentWidth = widget.width;
+      }
+
       if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
         _resize();
       }
       setState(() {});
     }
     if (oldWidget.height != widget.height) {
-      _currentHeight = widget.height;
+      if (_isMaximized) {
+        _currentHeight = widget.maxSize.height;
+      } else {
+        _currentHeight = widget.height;
+      }
       if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
         _resize();
       }
@@ -143,6 +156,12 @@ class _RichTextEditorState extends State<RichTextEditor> {
       if (widget.autoResize && widget.initialMode == EditorMode.edit && widget.showToolbar) {
         _resize();
       }
+      setState(() {});
+    }
+    if (oldWidget.maxSize != widget.maxSize) {
+      _isMaximized = true;
+      _currentWidth = widget.maxSize.width;
+      _currentHeight = widget.maxSize.height;
       setState(() {});
     }
     if (oldWidget.initialText != widget.initialText) {
@@ -208,7 +227,11 @@ class _RichTextEditorState extends State<RichTextEditor> {
     if (widget.width < widget.minToolbarWidth) {
       _currentWidth = widget.minToolbarWidth;
     }
-    _currentHeight = widget.height + widget.toolbarHeight;
+    if (_isMaximized) {
+      _currentHeight = widget.maxSize.height;
+    } else {
+      _currentHeight = widget.height + widget.toolbarHeight;
+    }
   }
 
   void _onEditCompleted() {
@@ -238,6 +261,27 @@ class _RichTextEditorState extends State<RichTextEditor> {
     _controller?.setMode(
       currentMode == EditorMode.edit ? EditorMode.view : EditorMode.edit,
     );
+  }
+
+  /// 에디터의 크기를 최대/일반 크기로 토글합니다.
+  void _toggleSize() {
+    setState(() {
+      _isMaximized = !_isMaximized;
+      if (_isMaximized) {
+        _currentWidth = widget.maxSize.width;
+        _currentHeight = widget.maxSize.height;
+      } else {
+        _currentWidth = widget.width;
+        _currentHeight = widget.height;
+      }
+      // autoResize가 활성화된 경우, 일반 크기에서 툴바 높이를 추가합니다.
+      if (widget.autoResize && !_isMaximized) {
+        if (widget.width < widget.minToolbarWidth) {
+          _currentWidth = widget.minToolbarWidth;
+        }
+        _currentHeight = widget.height + widget.toolbarHeight;
+      }
+    });
   }
 
   @override
@@ -312,10 +356,12 @@ class _RichTextEditorState extends State<RichTextEditor> {
       onFontSizeChanged: _controller!.changeFontSize,
       onFontColorChanged: _controller!.changeFontColor,
       onToggleMode: widget.onEditCompleted != null ? _toggleMode : null,
+      isMaximized: _isMaximized,
+      onToggleSize: _toggleSize,
     );
     Widget editor = Container(
-      width: widget.width,
-      height: widget.height,
+      width: _isMaximized ? _currentWidth : widget.width,
+      height: _isMaximized ? _currentHeight : widget.height,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade400, width: 1.0),
         color: widget.backgroundColor,

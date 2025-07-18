@@ -142,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
           initialMode: EditorMode.edit,
           fontList: const ['Roboto', 'Arial', 'Courier', 'Long name font...'],
           showTitleBar: false,
+          maxSize: const Size(1200, 600),
           width: 900,
           height: 200,
           controller: _controller,

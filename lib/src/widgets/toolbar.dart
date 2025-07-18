@@ -29,6 +29,8 @@ class Toolbar extends StatefulWidget {
     this.strokeColor,
     required this.onOutlineChanged,
     required this.onToggleMode,
+    this.onToggleSize,
+    this.isMaximized = true,
   });
 
   /// 위젯의 상태를 관리하는 컨트롤러입니다.
@@ -79,6 +81,8 @@ class Toolbar extends StatefulWidget {
   final Color? strokeColor;
   final void Function(double? strokeWidth, Color? color) onOutlineChanged;
   final VoidCallback? onToggleMode;
+  final VoidCallback? onToggleSize;
+  final bool isMaximized;
 
   @override
   State<Toolbar> createState() => _ToolbarState();
@@ -173,6 +177,19 @@ class _ToolbarState extends State<Toolbar> {
                     color: Colors.red.shade700,
                     tooltip: 'View Mode',
                     onPressed: widget.onToggleMode,
+                  ),
+                ],
+              ),
+
+            // 크기 전환 버튼
+            if (widget.onToggleSize != null)
+              buildToolGroup(
+                children: [
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    icon: Icon(widget.isMaximized ? Icons.fullscreen_exit : Icons.fullscreen),
+                    tooltip: widget.isMaximized ? 'Normal Size' : 'Maximize',
+                    onPressed: widget.onToggleSize,
                   ),
                 ],
               ),
