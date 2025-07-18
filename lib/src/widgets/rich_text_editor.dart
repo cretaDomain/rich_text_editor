@@ -187,6 +187,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   @override
   Widget build(BuildContext context) {
+    print('RichTextEditor build');
     return SizedBox(
       width: _currentWidth,
       height: _currentHeight,
@@ -202,6 +203,16 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   Widget _buildContent() {
     if (_controller!.mode == EditorMode.view) {
+      print('DocumentView');
+      Widget view = Padding(
+        padding: _padding,
+        child: Align(
+          alignment: _calculateAlignment(
+              widget.controller.document.textAlign, widget.controller.document.textAlignVertical),
+          DocumentView(document: _controller!.document),
+        ),
+      );
+
       // 보기 모드: DocumentView만 표시
       if (widget.onEditCompleted != null) {
         return GestureDetector(
@@ -212,16 +223,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
             //print('****** RichTextEditor onTap');
             _controller?.setMode(EditorMode.edit);
           },
-          child: Padding(
-            padding: _padding,
-            child: DocumentView(document: _controller!.document),
-          ),
+          child: view,
         );
       }
-      return Padding(
-        padding: _padding,
-        child: DocumentView(document: _controller!.document),
-      );
+      return view;
     }
 
     Widget toolbar = Toolbar(
@@ -297,5 +302,43 @@ class _RichTextEditorState extends State<RichTextEditor> {
       );
     }
     return editor;
+  }
+
+  Alignment _calculateAlignment(TextAlign horizontal, TextAlignVertical vertical) {
+    final double x;
+    switch (horizontal) {
+      case TextAlign.left:
+      case TextAlign.start:
+        x = -1.0;
+        break;
+      case TextAlign.right:
+      case TextAlign.end:
+        x = 1.0;
+        break;
+      case TextAlign.center:
+      case TextAlign.justify: // Justify는 가로로 꽉 채우지만, Align에서는 중앙으로 처리
+      // ignore: unreachable_switch_default
+      default:
+        x = 0.0;
+        break;
+    }
+
+    final double y;
+    switch (vertical) {
+      case TextAlignVertical.top:
+        y = -1.0;
+        break;
+      case TextAlignVertical.center:
+        y = 0.0;
+        break;
+      case TextAlignVertical.bottom:
+        y = 1.0;
+        break;
+      default:
+        y = -1.0;
+        break;
+    }
+
+    return Alignment(x, y);
   }
 }
