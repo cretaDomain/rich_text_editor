@@ -206,7 +206,7 @@ class _ShadowSettingsState extends State<ShadowSettings> {
             icon: Icons.remove,
             onPressed: () {
               var value = double.tryParse(controller.text) ?? 0.0;
-              value = (value - 0.1).clamp(min, max);
+              value = (value - 1).clamp(min, max);
               controller.text = value.toStringAsFixed(1);
               _onChanged();
             },
@@ -237,7 +237,7 @@ class _ShadowSettingsState extends State<ShadowSettings> {
             icon: Icons.add,
             onPressed: () {
               var value = double.tryParse(controller.text) ?? 0.0;
-              value = (value + 0.1).clamp(min, max);
+              value = (value + 1).clamp(min, max);
               controller.text = value.toStringAsFixed(1);
               _onChanged();
             },
