@@ -17,7 +17,7 @@ class RichTextEditor extends StatefulWidget {
     this.initialText,
     required this.width,
     required this.height,
-    required this.maxSize,
+    this.maxSize,
     this.onEditCompleted,
     this.backgroundColor = Colors.transparent,
     this.title,
@@ -76,7 +76,7 @@ class RichTextEditor extends StatefulWidget {
 
   final double minToolbarWidth;
 
-  final Size maxSize;
+  final Size? maxSize;
 
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();
@@ -96,8 +96,13 @@ class _RichTextEditorState extends State<RichTextEditor> {
     super.initState();
     _scrollController = ScrollController();
     // _scrollFocusNode = FocusNode(debugLabel: 'RichTextEditorScrollView');
-    _currentWidth = widget.maxSize.width;
-    _currentHeight = widget.maxSize.height;
+    if (widget.maxSize != null) {
+      _currentWidth = widget.maxSize!.width;
+      _currentHeight = widget.maxSize!.height;
+    } else {
+      _currentWidth = widget.width;
+      _currentHeight = widget.height;
+    }
 
     _controller = widget.controller;
 
@@ -127,8 +132,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
   void didUpdateWidget(RichTextEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.width != widget.width) {
-      if (_isMaximized) {
-        _currentWidth = widget.maxSize.width;
+      if (_isMaximized && widget.maxSize != null) {
+        _currentWidth = widget.maxSize!.width;
       } else {
         _currentWidth = widget.width;
       }
@@ -139,8 +144,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
       setState(() {});
     }
     if (oldWidget.height != widget.height) {
-      if (_isMaximized) {
-        _currentHeight = widget.maxSize.height;
+      if (_isMaximized && widget.maxSize != null) {
+        _currentHeight = widget.maxSize!.height;
       } else {
         _currentHeight = widget.height;
       }
@@ -160,8 +165,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
     }
     if (oldWidget.maxSize != widget.maxSize) {
       _isMaximized = true;
-      _currentWidth = widget.maxSize.width;
-      _currentHeight = widget.maxSize.height;
+      _currentWidth = widget.maxSize!.width;
+      _currentHeight = widget.maxSize!.height;
       setState(() {});
     }
     if (oldWidget.initialText != widget.initialText) {
@@ -227,8 +232,8 @@ class _RichTextEditorState extends State<RichTextEditor> {
     if (widget.width < widget.minToolbarWidth) {
       _currentWidth = widget.minToolbarWidth;
     }
-    if (_isMaximized) {
-      _currentHeight = widget.maxSize.height;
+    if (_isMaximized && widget.maxSize != null) {
+      _currentHeight = widget.maxSize!.height;
     } else {
       _currentHeight = widget.height + widget.toolbarHeight;
     }
@@ -267,9 +272,9 @@ class _RichTextEditorState extends State<RichTextEditor> {
   void _toggleSize() {
     setState(() {
       _isMaximized = !_isMaximized;
-      if (_isMaximized) {
-        _currentWidth = widget.maxSize.width;
-        _currentHeight = widget.maxSize.height;
+      if (_isMaximized && widget.maxSize != null) {
+        _currentWidth = widget.maxSize!.width;
+        _currentHeight = widget.maxSize!.height;
       } else {
         _currentWidth = widget.width;
         _currentHeight = widget.height;
