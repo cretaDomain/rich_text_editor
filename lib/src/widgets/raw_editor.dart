@@ -434,7 +434,7 @@ class _RawEditorState extends State<RawEditor>
 
   @override
   Widget build(BuildContext context) {
-    // build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
+    //build가 끝난 후 프레임이 렌더링되고 나면 사이즈와 위치를 업데이트합니다.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         if (!_isInitialized) {
@@ -472,8 +472,8 @@ class _RawEditorState extends State<RawEditor>
 
               final gestureHandler = GestureDetector(
                 onTapDown: (details) => _handleTapDown(details, textPainter),
-                //onPanStart: (details) => _handlePanStart(details, textPainter),
-                //onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
+                onPanStart: (details) => _handlePanStart(details, textPainter),
+                onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
                 onPanEnd: (details) => _handlePanEnd(details, textPainter),
                 child: painter,
               );
