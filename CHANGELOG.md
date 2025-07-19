@@ -1,3 +1,5 @@
+## 1.1.0
+* remove border
 ## 1.0.9
 * final transform = renderBox.getTransformTo(renderBox);
 ## 1.0.8

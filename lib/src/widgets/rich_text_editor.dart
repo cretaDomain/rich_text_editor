@@ -295,10 +295,10 @@ class _RichTextEditorState extends State<RichTextEditor> {
       width: _currentWidth,
       height: _currentHeight, // //, + (76 * 2 + 8 * 3),
       child: Container(
-        decoration: BoxDecoration(
-          //color: widget.backgroundColor,
-          border: Border.all(color: Colors.grey.shade300),
-        ),
+        // decoration: BoxDecoration(
+        //   //color: widget.backgroundColor,
+        //   border: Border.all(color: Colors.grey.shade300),
+        // ),
         child: _buildContent(),
       ),
     );
@@ -368,7 +368,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
       width: _isMaximized ? _currentWidth : widget.width,
       height: _isMaximized ? _currentHeight : widget.height,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400, width: 1.0),
+        //border: Border.all(color: Colors.grey.shade400, width: 1.0),
         color: widget.backgroundColor,
         boxShadow: [
           BoxShadow(
