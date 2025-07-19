@@ -162,7 +162,7 @@ class _RawEditorState extends State<RawEditor>
       //    '[RawEditor] _openConnection: setEditingState with ${currentTextEditingValue.selection}');
       _connection!.setEditingState(currentTextEditingValue);
       _connection!.show();
-      //_updateSizeAndTransform();
+      _updateSizeAndTransform();
     }
   }
 
@@ -226,10 +226,9 @@ class _RawEditorState extends State<RawEditor>
       final size = renderBox.size;
 
       //print('******** size: $size');
-      final transform = renderBox.getTransformTo(null);
+      final transform = renderBox.getTransformTo(renderBox);
       _connection!.setEditableSizeAndTransform(
         size,
-        //Size(widget.width, widget.height),
         transform,
       );
     }
