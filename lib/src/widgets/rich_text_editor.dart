@@ -296,7 +296,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
       height: _currentHeight, // //, + (76 * 2 + 8 * 3),
       child: Container(
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          //color: widget.backgroundColor,
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: _buildContent(),
