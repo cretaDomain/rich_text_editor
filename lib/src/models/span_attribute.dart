@@ -138,7 +138,7 @@ class SpanAttribute {
 
   factory SpanAttribute.fromJson(Map<String, dynamic> json) {
     return SpanAttribute(
-      fontSize: json['fontSize'],
+      fontSize: (json['fontSize'] as num?)?.toDouble(),
       fontWeight: json['fontWeight'] != null
           ? FontWeight.values.firstWhere((e) => e.toString() == json['fontWeight'])
           : null,
@@ -146,20 +146,21 @@ class SpanAttribute {
           ? FontStyle.values.firstWhere((e) => e.toString() == json['fontStyle'])
           : null,
       color: json['color'] != null ? Color(json['color']) : null,
-      letterSpacing: json['letterSpacing'],
-      height: json['height'],
+      letterSpacing: (json['letterSpacing'] as num?)?.toDouble(),
+      height: (json['height'] as num?)?.toDouble(),
       fontFamily: json['fontFamily'],
       decoration: json['decoration'] != null ? _decorationFromString(json['decoration']) : null,
       shadows: json['shadows'] != null
           ? (json['shadows'] as List)
               .map((s) => Shadow(
                     color: Color(s['color']),
-                    offset: Offset(s['offsetX'], s['offsetY']),
-                    blurRadius: s['blurRadius'],
+                    offset:
+                        Offset((s['offsetX'] as num).toDouble(), (s['offsetY'] as num).toDouble()),
+                    blurRadius: (s['blurRadius'] as num).toDouble(),
                   ))
               .toList()
           : null,
-      strokeWidth: json['strokeWidth'],
+      strokeWidth: (json['strokeWidth'] as num?)?.toDouble(),
       strokeColor: json['strokeColor'] != null ? Color(json['strokeColor']) : null,
     );
   }
