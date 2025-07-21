@@ -204,7 +204,7 @@ class _RawEditorState extends State<RawEditor>
       final newText = oldValue.text.replaceRange(
         oldValue.selection.start,
         oldValue.selection.end,
-        '\n',
+        '\\n',
       );
       final newValue = TextEditingValue(
         text: newText,

@@ -34,19 +34,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late RichTextEditorController _controller;
+  late String sampleJsonString;
 
   @override
   void initState() {
     super.initState();
     _controller = RichTextEditorController();
 
-    Future.microtask(() {
-      const sampleJsonString = '''
+    //Future.microtask(() {
+    sampleJsonString = '''
       {
           "document": {
               "spans": [
                   {
-                      "text": "Hello, Rich Text Editor! 12345 678901234\\n",
+                      "text": "Hello, Rich Text Editor! 12345 678901234\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
@@ -119,8 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
           }
       }
       ''';
-      _controller.setDocumentFromJsonString(sampleJsonString);
-    });
+    _controller.setDocumentFromJsonString(sampleJsonString);
+    //});
   }
 
   @override
@@ -138,19 +139,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: RichTextEditor(
-          showToolbar: true,
-          initialMode: EditorMode.edit,
-          fontList: const ['Roboto', 'Arial', 'Courier', 'Long name font...'],
+          showToolbar: false,
+          initialMode: EditorMode.view,
+          fontList: const [],
           showTitleBar: false,
-          maxSize: const Size(1200, 600),
           width: 900,
           height: 200,
-          controller: _controller,
-          onEditCompleted: (json) {
-            //print('-----------------------------------------------------------');
-            // ignore: avoid_print
-            print('onEditCompleted: $json');
-          },
+          initialText: sampleJsonString,
+          // controller: _controller,
+          // onEditCompleted: (json) {
+          //   //print('-----------------------------------------------------------');
+          //   // ignore: avoid_print
+          //   print('onEditCompleted: $json');
+          // },
         ),
       ),
       // floatingActionButton: FloatingActionButton(
