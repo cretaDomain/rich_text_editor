@@ -1,3 +1,5 @@
+## 1.1.1
+* for windows OS
 ## 1.1.0
 * remove border
 ## 1.0.9
