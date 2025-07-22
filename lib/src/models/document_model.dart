@@ -26,7 +26,7 @@ class DocumentModel {
   final TextAlignVertical textAlignVertical;
 
   /// JSON 맵으로부터 `DocumentModel` 인스턴스를 생성합니다.
-  factory DocumentModel.fromJson(Map<String, dynamic> json) {
+  factory DocumentModel.fromJson(Map<String, dynamic> json, {List<String>? fontList}) {
     try {
       // 'spans' 필드가 리스트 형태인지 확인합니다.
       final spansList = json['spans'] as List?;
@@ -34,7 +34,9 @@ class DocumentModel {
         throw const FormatException('Required "spans" field is missing or not a List.');
       }
       return DocumentModel(
-        spans: spansList.map((spanJson) => TextSpanModel.fromJson(spanJson)).toList(),
+        spans: spansList
+            .map((spanJson) => TextSpanModel.fromJson(spanJson, fontList: fontList))
+            .toList(),
         textAlign: TextAlign.values.firstWhere(
           (e) => e.name == (json['textAlign'] as String? ?? TextAlign.start.name),
           orElse: () => TextAlign.start,

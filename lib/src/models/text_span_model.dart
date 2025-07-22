@@ -20,7 +20,7 @@ class TextSpanModel {
   final SpanAttribute attribute;
 
   /// JSON 맵으로부터 `TextSpanModel` 인스턴스를 생성합니다.
-  factory TextSpanModel.fromJson(Map<String, dynamic> json) {
+  factory TextSpanModel.fromJson(Map<String, dynamic> json, {List<String>? fontList}) {
     try {
       // 필수 필드인 'text'와 'attribute'가 존재하는지 확인합니다.
       if (json['text'] == null || json['attribute'] == null) {
@@ -28,7 +28,7 @@ class TextSpanModel {
       }
       return TextSpanModel(
         text: json['text'],
-        attribute: SpanAttribute.fromJson(json['attribute']),
+        attribute: SpanAttribute.fromJson(json['attribute'], fontList: fontList),
       );
     } catch (e) {
       debugPrint('Failed to parse TextSpanModel from JSON: $e. Source: $json');

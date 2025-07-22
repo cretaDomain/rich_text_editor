@@ -136,7 +136,7 @@ class SpanAttribute {
     return json;
   }
 
-  factory SpanAttribute.fromJson(Map<String, dynamic> json) {
+  factory SpanAttribute.fromJson(Map<String, dynamic> json, {List<String>? fontList}) {
     return SpanAttribute(
       fontSize: (json['fontSize'] as num?)?.toDouble() ?? 48.0,
       fontWeight: json['fontWeight'] != null
@@ -148,7 +148,8 @@ class SpanAttribute {
       color: json['color'] != null ? Color(json['color']) : Colors.black,
       letterSpacing: (json['letterSpacing'] as num?)?.toDouble(),
       height: (json['height'] as num?)?.toDouble() ?? 2.0,
-      fontFamily: json['fontFamily'],
+      fontFamily: json['fontFamily'] ??
+          (fontList != null && fontList.isNotEmpty ? fontList.first : 'Pretendard'),
       decoration: json['decoration'] != null ? _decorationFromString(json['decoration']) : null,
       shadows: json['shadows'] != null
           ? (json['shadows'] as List)

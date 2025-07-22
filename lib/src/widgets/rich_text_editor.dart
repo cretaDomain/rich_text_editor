@@ -171,7 +171,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
     }
     if (oldWidget.initialText != widget.initialText) {
       if (widget.initialText != null) {
-        _controller?.setDocumentFromJsonString(widget.initialText!);
+        _controller?.setDocumentFromJsonString(widget.initialText!, fontList: widget.fontList);
         setState(() {});
       }
     }
