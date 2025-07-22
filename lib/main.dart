@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
           "document": {
               "spans": [
                   {
-                      "text": "Hello, Rich Text Editor! 12345 678901234\n",
+                      "text": "Hello, Rich Text Editor! 12345 678901234\\n",
                       "attribute": {
                           "fontSize": 24,
                           "color": 4278190080
