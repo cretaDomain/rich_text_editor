@@ -108,16 +108,17 @@ class SpanAttribute {
   }
 
   /// `SpanAttribute` 인스턴스를 JSON 맵으로 변환합니다.
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({List<String>? fontList}) {
     final json = <String, dynamic>{};
-    if (fontSize != null) json['fontSize'] = fontSize;
+    json['fontSize'] = fontSize ?? 48.0;
     if (fontWeight != null) json['fontWeight'] = fontWeight.toString();
     if (fontStyle != null) json['fontStyle'] = fontStyle.toString();
     // ignore: deprecated_member_use
-    if (color != null) json['color'] = color!.value;
+    json['color'] = (color ?? Colors.black).value;
     if (letterSpacing != null) json['letterSpacing'] = letterSpacing;
-    if (height != null) json['height'] = height;
-    if (fontFamily != null) json['fontFamily'] = fontFamily;
+    json['height'] = height ?? 2.0;
+    json['fontFamily'] =
+        fontFamily ?? (fontList != null && fontList.isNotEmpty ? fontList.first : 'Pretendard');
     if (decoration != null) json['decoration'] = decoration.toString();
     if (shadows != null) {
       json['shadows'] = shadows!

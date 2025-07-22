@@ -252,8 +252,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
       //   },
       // };
       // final jsonString = jsonEncode(data);
-      final jsonString = _controller?.toJson() ?? '';
-      widget.onEditCompleted!(jsonString);
+      widget.onEditCompleted!(_controller!.toJson(fontList: widget.fontList));
     }
   }
 

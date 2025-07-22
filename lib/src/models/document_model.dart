@@ -51,9 +51,9 @@ class DocumentModel {
   }
 
   /// `DocumentModel` 인스턴스를 JSON 맵으로 변환합니다.
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({List<String>? fontList}) {
     return {
-      'spans': spans.map((span) => span.toJson()).toList(),
+      'spans': spans.map((span) => span.toJson(fontList: fontList)).toList(),
       'textAlign': textAlign.name,
       'textAlignVertical': _textAlignVerticalToString(textAlignVertical),
     };

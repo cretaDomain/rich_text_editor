@@ -38,10 +38,10 @@ class TextSpanModel {
   }
 
   /// `TextSpanModel` 인스턴스를 JSON 맵으로 변환합니다.
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({List<String>? fontList}) {
     return {
       'text': text,
-      'attribute': attribute.toJson(),
+      'attribute': attribute.toJson(fontList: fontList),
     };
   }
 

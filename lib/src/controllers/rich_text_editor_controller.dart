@@ -117,11 +117,11 @@ class RichTextEditorController extends ChangeNotifier {
   }
 
   /// 현재 문서와 에디터 관련 설정을 JSON 문자열로 직렬화합니다.
-  String toJson() {
+  String toJson({List<String> fontList = const []}) {
     // Create a new map to hold both document and padding data
     final padding = paddingNotifier.value;
     final data = {
-      'document': document.toJson(),
+      'document': document.toJson(fontList: fontList),
       'padding': {
         'left': padding.left,
         'top': padding.top,
