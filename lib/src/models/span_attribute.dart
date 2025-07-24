@@ -88,7 +88,9 @@ class SpanAttribute {
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       decoration: decoration,
-      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : 2.0 * applyScale,
+      letterSpacing: letterSpacing != null
+          ? letterSpacing! * applyScale
+          : 2.0 * applyScale,
       height: height ??
           2.0, // Line height is a multiplier, not a pixel value, so it should not be scaled.
       shadows: shadows
@@ -117,8 +119,10 @@ class SpanAttribute {
     json['color'] = (color ?? Colors.black).value;
     if (letterSpacing != null) json['letterSpacing'] = letterSpacing;
     json['height'] = height ?? 2.0;
-    json['fontFamily'] =
-        fontFamily ?? (fontList != null && fontList.isNotEmpty ? fontList.first : 'Pretendard');
+    json['fontFamily'] = fontFamily ??
+        (fontList != null && fontList.isNotEmpty
+            ? fontList.first
+            : 'Pretendard');
     if (decoration != null) json['decoration'] = decoration.toString();
     if (shadows != null) {
       json['shadows'] = shadows!
@@ -137,33 +141,71 @@ class SpanAttribute {
     return json;
   }
 
-  factory SpanAttribute.fromJson(Map<String, dynamic> json, {List<String>? fontList}) {
+  /*
+  FontWeight 을 toString() 한 값이 
+  디버그 모드와 릴리즈 모드가 다른 문제 발견되어 _fontWeightFromJson 함수 만듬 아래 fromJson의 fontWeight 지정 부분에 사용함
+  디버그 e.toString() = FontWeight.w100
+  릴리즈 e.toString() = Instance of 'FontWeight'
+  */
+
+  static FontWeight? _fontWeightFromJson(String? value) {
+    if (value == null) return null;
+
+    final cleaned = value.replaceAll('FontWeight.', '');
+
+    const fontWeightMap = {
+      'w100': FontWeight.w100,
+      'w200': FontWeight.w200,
+      'w300': FontWeight.w300,
+      'w400': FontWeight.w400,
+      'w500': FontWeight.w500,
+      'w600': FontWeight.w600,
+      'w700': FontWeight.w700,
+      'w800': FontWeight.w800,
+      'w900': FontWeight.w900,
+    };
+
+    return fontWeightMap[cleaned];
+  }
+
+  factory SpanAttribute.fromJson(Map<String, dynamic> json,
+      {List<String>? fontList}) {
     return SpanAttribute(
       fontSize: (json['fontSize'] as num?)?.toDouble() ?? 48.0,
+      //기존 코드
+      /*
       fontWeight: json['fontWeight'] != null
           ? FontWeight.values.firstWhere((e) => e.toString() == json['fontWeight'])
           : null,
+      */
+      fontWeight: _fontWeightFromJson(json['fontWeight']),
       fontStyle: json['fontStyle'] != null
-          ? FontStyle.values.firstWhere((e) => e.toString() == json['fontStyle'])
+          ? FontStyle.values
+              .firstWhere((e) => e.toString() == json['fontStyle'])
           : null,
       color: json['color'] != null ? Color(json['color']) : Colors.black,
       letterSpacing: (json['letterSpacing'] as num?)?.toDouble(),
       height: (json['height'] as num?)?.toDouble() ?? 2.0,
       fontFamily: json['fontFamily'] ??
-          (fontList != null && fontList.isNotEmpty ? fontList.first : 'Pretendard'),
-      decoration: json['decoration'] != null ? _decorationFromString(json['decoration']) : null,
+          (fontList != null && fontList.isNotEmpty
+              ? fontList.first
+              : 'Pretendard'),
+      decoration: json['decoration'] != null
+          ? _decorationFromString(json['decoration'])
+          : null,
       shadows: json['shadows'] != null
           ? (json['shadows'] as List)
               .map((s) => Shadow(
                     color: Color(s['color']),
-                    offset:
-                        Offset((s['offsetX'] as num).toDouble(), (s['offsetY'] as num).toDouble()),
+                    offset: Offset((s['offsetX'] as num).toDouble(),
+                        (s['offsetY'] as num).toDouble()),
                     blurRadius: (s['blurRadius'] as num).toDouble(),
                   ))
               .toList()
           : null,
       strokeWidth: (json['strokeWidth'] as num?)?.toDouble(),
-      strokeColor: json['strokeColor'] != null ? Color(json['strokeColor']) : null,
+      strokeColor:
+          json['strokeColor'] != null ? Color(json['strokeColor']) : null,
     );
   }
 
