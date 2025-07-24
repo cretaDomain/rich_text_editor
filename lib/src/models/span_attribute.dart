@@ -88,9 +88,7 @@ class SpanAttribute {
       fontWeight: fontWeight,
       fontStyle: fontStyle,
       decoration: decoration,
-      letterSpacing: letterSpacing != null
-          ? letterSpacing! * applyScale
-          : 2.0 * applyScale,
+      letterSpacing: letterSpacing != null ? letterSpacing! * applyScale : 2.0 * applyScale,
       height: height ??
           2.0, // Line height is a multiplier, not a pixel value, so it should not be scaled.
       shadows: shadows
@@ -119,10 +117,8 @@ class SpanAttribute {
     json['color'] = (color ?? Colors.black).value;
     if (letterSpacing != null) json['letterSpacing'] = letterSpacing;
     json['height'] = height ?? 2.0;
-    json['fontFamily'] = fontFamily ??
-        (fontList != null && fontList.isNotEmpty
-            ? fontList.first
-            : 'Pretendard');
+    json['fontFamily'] =
+        fontFamily ?? (fontList != null && fontList.isNotEmpty ? fontList.first : 'HDHarmony');
     if (decoration != null) json['decoration'] = decoration.toString();
     if (shadows != null) {
       json['shadows'] = shadows!
@@ -168,8 +164,7 @@ class SpanAttribute {
     return fontWeightMap[cleaned];
   }
 
-  factory SpanAttribute.fromJson(Map<String, dynamic> json,
-      {List<String>? fontList}) {
+  factory SpanAttribute.fromJson(Map<String, dynamic> json, {List<String>? fontList}) {
     return SpanAttribute(
       fontSize: (json['fontSize'] as num?)?.toDouble() ?? 48.0,
       //기존 코드
@@ -180,32 +175,26 @@ class SpanAttribute {
       */
       fontWeight: _fontWeightFromJson(json['fontWeight']),
       fontStyle: json['fontStyle'] != null
-          ? FontStyle.values
-              .firstWhere((e) => e.toString() == json['fontStyle'])
+          ? FontStyle.values.firstWhere((e) => e.toString() == json['fontStyle'])
           : null,
       color: json['color'] != null ? Color(json['color']) : Colors.black,
       letterSpacing: (json['letterSpacing'] as num?)?.toDouble(),
       height: (json['height'] as num?)?.toDouble() ?? 2.0,
       fontFamily: json['fontFamily'] ??
-          (fontList != null && fontList.isNotEmpty
-              ? fontList.first
-              : 'Pretendard'),
-      decoration: json['decoration'] != null
-          ? _decorationFromString(json['decoration'])
-          : null,
+          (fontList != null && fontList.isNotEmpty ? fontList.first : 'HDHarmony'),
+      decoration: json['decoration'] != null ? _decorationFromString(json['decoration']) : null,
       shadows: json['shadows'] != null
           ? (json['shadows'] as List)
               .map((s) => Shadow(
                     color: Color(s['color']),
-                    offset: Offset((s['offsetX'] as num).toDouble(),
-                        (s['offsetY'] as num).toDouble()),
+                    offset:
+                        Offset((s['offsetX'] as num).toDouble(), (s['offsetY'] as num).toDouble()),
                     blurRadius: (s['blurRadius'] as num).toDouble(),
                   ))
               .toList()
           : null,
       strokeWidth: (json['strokeWidth'] as num?)?.toDouble(),
-      strokeColor:
-          json['strokeColor'] != null ? Color(json['strokeColor']) : null,
+      strokeColor: json['strokeColor'] != null ? Color(json['strokeColor']) : null,
     );
   }
 
