@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 /// 텍스트 그림자 속성을 설정하는 UI를 제공하는 위젯입니다.
 class ShadowSettings extends StatefulWidget {
@@ -90,8 +90,18 @@ class _ShadowSettingsState extends State<ShadowSettings> {
           title: const Text('그림자 색상 선택'),
           content: SingleChildScrollView(
             child: ColorPicker(
-              pickerColor: _color,
+              color: _color,
               onColorChanged: (color) => setState(() => _color = color),
+              enableOpacity: true,
+              pickersEnabled: const <ColorPickerType, bool>{
+                ColorPickerType.both: false,
+                ColorPickerType.primary: true,
+                ColorPickerType.accent: true,
+                ColorPickerType.wheel: true,
+              },
+              width: 40,
+              height: 40,
+              borderRadius: 12,
             ),
           ),
           actions: [

@@ -139,8 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: RichTextEditor(
-          showToolbar: false,
-          initialMode: EditorMode.view,
+          showToolbar: true,
+          initialMode: EditorMode.edit,
           fontList: const [],
           showTitleBar: false,
           width: 900,

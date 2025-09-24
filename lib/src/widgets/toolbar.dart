@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import '../controllers/rich_text_editor_controller.dart';
 import 'shadow_settings.dart';
 //import 'outline_settings.dart';
@@ -440,8 +440,18 @@ class _ToolbarState extends State<Toolbar> {
           title: const Text('Pick a color!'),
           content: SingleChildScrollView(
             child: ColorPicker(
-              pickerColor: widget.controller.currentStyle.color ?? Colors.black,
+              color: widget.controller.currentStyle.color ?? Colors.black,
               onColorChanged: widget.onFontColorChanged,
+              enableOpacity: true,
+              pickersEnabled: const <ColorPickerType, bool>{
+                ColorPickerType.both: false,
+                ColorPickerType.primary: true,
+                ColorPickerType.accent: true,
+                ColorPickerType.wheel: true,
+              },
+              width: 40,
+              height: 40,
+              borderRadius: 12,
             ),
           ),
           actions: <Widget>[
