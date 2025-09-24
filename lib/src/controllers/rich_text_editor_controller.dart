@@ -88,7 +88,7 @@ class RichTextEditorController extends ChangeNotifier {
   /// 잘못된 형식의 JSON이 입력될 경우 에러를 로깅하고 현재 문서를 비웁니다.
   void setDocumentFromJsonString(String jsonString, {List<String> fontList = const []}) {
     try {
-      jsonString = jsonString.replaceAll('\\n', '\n');
+      jsonString = jsonString.replaceAll('\n', '\\n');
 
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
 
