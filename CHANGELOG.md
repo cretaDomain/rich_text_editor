@@ -1,3 +1,6 @@
+## 1.1.4
+* jsonString = jsonString.replaceAll('\n', '\\n');
+
 ## 1.1.3
 * Replace flutter_colorpicker with flex_color_picker and add reusable picker dialog
 * Support editable hexadecimal color input across toolbar, shadow, and outline pickers
