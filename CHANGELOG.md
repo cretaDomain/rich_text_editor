@@ -1,3 +1,9 @@
+## 1.1.3
+* Replace flutter_colorpicker with flex_color_picker and add reusable picker dialog
+* Support editable hexadecimal color input across toolbar, shadow, and outline pickers
+* Provide safer defaults when parsing JSON (font, height, colors) and improve Windows compatibility
+* Fix color serialization to avoid deprecated APIs
+
 ## 1.1.2
 * for Test
 ## 1.1.1

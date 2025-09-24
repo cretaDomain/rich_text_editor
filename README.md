@@ -29,7 +29,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  creta_rich_text_editor: ^1.0.4
+  creta_rich_text_editor: ^1.1.3
 ```
 
 Then, import the library in your Dart code:
