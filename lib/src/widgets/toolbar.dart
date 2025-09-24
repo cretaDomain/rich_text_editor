@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flex_color_picker/flex_color_picker.dart';
 import '../controllers/rich_text_editor_controller.dart';
+import 'color_picker_dialog.dart';
 import 'shadow_settings.dart';
 //import 'outline_settings.dart';
 
@@ -433,37 +433,11 @@ class _ToolbarState extends State<Toolbar> {
   }
 
   void _showColorPicker(BuildContext context) {
-    showDialog(
+    showEditableHexColorPicker(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Pick a color!'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              color: widget.controller.currentStyle.color ?? Colors.black,
-              onColorChanged: widget.onFontColorChanged,
-              enableOpacity: true,
-              pickersEnabled: const <ColorPickerType, bool>{
-                ColorPickerType.both: false,
-                ColorPickerType.primary: true,
-                ColorPickerType.accent: true,
-                ColorPickerType.wheel: true,
-              },
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Got it'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+      title: 'Pick a color!',
+      initialColor: widget.controller.currentStyle.color ?? Colors.black,
+      onColorChanged: widget.onFontColorChanged,
     );
   }
 
