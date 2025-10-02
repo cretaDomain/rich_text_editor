@@ -393,7 +393,7 @@ class _ToolbarState extends State<Toolbar> {
                     setState(() {});
                     widget.onChangeLineHeight(v);
                   },
-                  min: 0.0,
+                  min: 0.1,
                   max: 10.0,
                 ),
               ],
