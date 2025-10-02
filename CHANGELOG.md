@@ -1,3 +1,6 @@
+## 1.1.5
+* LineHeight control
+
 ## 1.1.4
 * jsonString = jsonString.replaceAll('\n', '\\n');
 

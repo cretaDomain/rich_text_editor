@@ -89,6 +89,7 @@ class Toolbar extends StatefulWidget {
 }
 
 class _ToolbarState extends State<Toolbar> {
+  final Map<String, TextEditingController> _sliderControllers = {};
   late final TextEditingController _fontSizeController;
 
   @override
@@ -118,6 +119,10 @@ class _ToolbarState extends State<Toolbar> {
 
   @override
   void dispose() {
+    for (final controller in _sliderControllers.values) {
+      controller.dispose();
+    }
+    _sliderControllers.clear();
     _fontSizeController.dispose();
     super.dispose();
   }
@@ -389,7 +394,7 @@ class _ToolbarState extends State<Toolbar> {
                     setState(() {});
                     widget.onChangeLineHeight(v);
                   },
-                  min: 1,
+                  min: 0,
                   max: 10.0,
                   divisions: 25,
                 ),
@@ -409,6 +414,17 @@ class _ToolbarState extends State<Toolbar> {
     required double max,
     required int divisions,
   }) {
+    final allowNegative = min < 0;
+
+    final controllerMap = _sliderControllers.putIfAbsent(
+      label,
+      () => TextEditingController(text: value.toStringAsFixed(1)),
+    );
+
+    if (controllerMap.text != value.toStringAsFixed(1)) {
+      controllerMap.text = value.toStringAsFixed(1);
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,16 +433,52 @@ class _ToolbarState extends State<Toolbar> {
           '$label: ${value.toStringAsFixed(1)}',
           style: const TextStyle(fontSize: 12),
         ),
-        SizedBox(
-          width: 150,
-          child: Slider(
-            value: value,
-            min: min,
-            max: max,
-            divisions: divisions,
-            label: value.toStringAsFixed(1),
-            onChanged: onChanged,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 150,
+              child: Slider(
+                value: value,
+                min: min,
+                max: max,
+                divisions: divisions,
+                label: value.toStringAsFixed(1),
+                onChanged: onChanged,
+              ),
+            ),
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 68,
+              child: TextFormField(
+                controller: controllerMap,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.numberWithOptions(
+                  signed: allowNegative,
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(allowNegative ? r'[-0-9\.]' : r'[0-9\.]'),
+                  ),
+                ],
+                decoration: const InputDecoration(
+                  isDense: true,
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                ),
+                onFieldSubmitted: (submitted) {
+                  final parsed = double.tryParse(submitted);
+                  if (parsed == null) {
+                    return;
+                  }
+                  final clamped = parsed.clamp(min, max);
+                  onChanged(clamped.toDouble());
+                  controllerMap.text = clamped.toStringAsFixed(1);
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );

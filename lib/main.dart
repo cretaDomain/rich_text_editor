@@ -118,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
               "right": 16,
               "bottom": 16
           }
+        
       }
       ''';
     _controller.setDocumentFromJsonString(sampleJsonString);
