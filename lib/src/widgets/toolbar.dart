@@ -384,7 +384,6 @@ class _ToolbarState extends State<Toolbar> {
                   },
                   min: -5.0,
                   max: 10.0,
-                  divisions: 30,
                 ),
                 const SizedBox(width: 16),
                 _buildSpacingSlider(
@@ -394,9 +393,8 @@ class _ToolbarState extends State<Toolbar> {
                     setState(() {});
                     widget.onChangeLineHeight(v);
                   },
-                  min: -2.0,
+                  min: 0.0,
                   max: 10.0,
-                  divisions: 25,
                 ),
               ],
             ),
@@ -412,17 +410,25 @@ class _ToolbarState extends State<Toolbar> {
     required ValueChanged<double> onChanged,
     required double min,
     required double max,
-    required int divisions,
   }) {
+    const double step = 0.1;
     final allowNegative = min < 0;
 
-    final controllerMap = _sliderControllers.putIfAbsent(
+    final textController = _sliderControllers.putIfAbsent(
       label,
       () => TextEditingController(text: value.toStringAsFixed(1)),
     );
 
-    if (controllerMap.text != value.toStringAsFixed(1)) {
-      controllerMap.text = value.toStringAsFixed(1);
+    final formattedValue = value.toStringAsFixed(1);
+    if (textController.text != formattedValue) {
+      textController.text = formattedValue;
+    }
+
+    void updateValue(double newValue) {
+      final clamped = newValue.clamp(min, max);
+      final rounded = double.parse(clamped.toStringAsFixed(1));
+      onChanged(rounded);
+      textController.text = rounded.toStringAsFixed(1);
     }
 
     return Column(
@@ -437,21 +443,20 @@ class _ToolbarState extends State<Toolbar> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              width: 150,
-              child: Slider(
-                value: value,
-                min: min,
-                max: max,
-                divisions: divisions,
-                label: value.toStringAsFixed(1),
-                onChanged: onChanged,
+              width: 36,
+              height: 32,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.remove),
+                visualDensity: VisualDensity.compact,
+                onPressed: value <= min ? null : () => updateValue(value - step),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             SizedBox(
               width: 68,
               child: TextFormField(
-                controller: controllerMap,
+                controller: textController,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.numberWithOptions(
                   signed: allowNegative,
@@ -470,12 +475,30 @@ class _ToolbarState extends State<Toolbar> {
                 onFieldSubmitted: (submitted) {
                   final parsed = double.tryParse(submitted);
                   if (parsed == null) {
+                    textController.text = value.toStringAsFixed(1);
                     return;
                   }
-                  final clamped = parsed.clamp(min, max);
-                  onChanged(clamped.toDouble());
-                  controllerMap.text = clamped.toStringAsFixed(1);
+                  updateValue(parsed);
                 },
+                onEditingComplete: () {
+                  final parsed = double.tryParse(textController.text);
+                  if (parsed == null) {
+                    textController.text = value.toStringAsFixed(1);
+                    return;
+                  }
+                  updateValue(parsed);
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 36,
+              height: 32,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.add),
+                visualDensity: VisualDensity.compact,
+                onPressed: value >= max ? null : () => updateValue(value + step),
               ),
             ),
           ],

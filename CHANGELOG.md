@@ -1,3 +1,6 @@
+## 1.1.6
+* LineHeight control
+
 ## 1.1.5
 * LineHeight control
 
