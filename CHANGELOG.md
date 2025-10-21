@@ -1,3 +1,6 @@
+## 1.1.7
+* Mouse Drag problem
+
 ## 1.1.6
 * LineHeight control
 

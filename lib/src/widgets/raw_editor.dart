@@ -401,11 +401,18 @@ class _RawEditorState extends State<RawEditor>
 
     // final position = textPainter.getPositionForOffset(localPosition);
     final position = textPainter.getPositionForOffset(details.localPosition);
+    final currentSelection = widget.controller.selection;
+    final baseOffset = currentSelection.baseOffset;
     widget.controller.updateSelection(
-      widget.controller.selection.copyWith(
+      //widget.controller.selection,
+      TextSelection(
+        baseOffset: baseOffset,
         extentOffset: position.offset,
       ),
     );
+    if (_focusNode.hasFocus) {
+      _connection?.setEditingState(currentTextEditingValue);
+    }
   }
 
   void _handlePanEnd(DragEndDetails details, TextPainter textPainter) {
@@ -423,12 +430,25 @@ class _RawEditorState extends State<RawEditor>
     // final localPosition = localPositionInSizedBox - offset;
 
     //final position = textPainter.getPositionForOffset(localPosition);
+    //final position = textPainter.getPositionForOffset(details.localPosition);
+    // widget.controller.updateSelection(
+    //   widget.controller.selection.copyWith(
+    //     extentOffset: position.offset,
+    //   ),
+    // );
     final position = textPainter.getPositionForOffset(details.localPosition);
+    final currentSelection = widget.controller.selection;
+    final baseOffset = currentSelection.baseOffset;
     widget.controller.updateSelection(
-      widget.controller.selection.copyWith(
+      //widget.controller.selection,
+      TextSelection(
+        baseOffset: baseOffset,
         extentOffset: position.offset,
       ),
     );
+    if (_focusNode.hasFocus) {
+      _connection?.setEditingState(currentTextEditingValue);
+    }
   }
 
   @override
@@ -471,7 +491,7 @@ class _RawEditorState extends State<RawEditor>
 
               final gestureHandler = GestureDetector(
                 onTapDown: (details) => _handleTapDown(details, textPainter),
-                onPanStart: (details) => _handlePanStart(details, textPainter),
+                //onPanStart: (details) => _handlePanStart(details, textPainter),
                 onPanUpdate: (details) => _handlePanUpdate(details, textPainter),
                 onPanEnd: (details) => _handlePanEnd(details, textPainter),
                 child: painter,
